@@ -1,5 +1,5 @@
 /**
- *  Cree Bulb
+ *  Cree Bulbs
  *
  *  Copyright 2016 SmartThings
  *
