@@ -36,9 +36,7 @@ metadata {
         capability "Configuration"
         capability "Sensor"
          
-        attribute "motion", "string"
         attribute "battery", "string"
-        attribute "illuminance", "string"
         
         attribute "lastCheckin", "Date"
          
