@@ -93,7 +93,10 @@ def setInfo(String app_url, String id) {
 def setStatus(params){
  	switch(params.key){
     case "motion":
-        sendEvent(name:"motion", value: (params.data == "true" ? "active" : "inactive") )
+        sendEvent(name:"motion", value: (params.data == "true" ? "active" : null) )
+	delay 100
+        sendEvent(name:"motion", value: "inactive" )
+		
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data + "%")
