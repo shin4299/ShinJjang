@@ -39,6 +39,7 @@ metadata {
         attribute "battery", "string"
         
         attribute "lastCheckin", "Date"
+	command "reset"	
          
 	}
 
@@ -132,6 +133,10 @@ def updated() {
 }
 
 def stopMotion() {
+   sendEvent(name:"motion", value:"inactive")
+}
+
+def reset() {
    sendEvent(name:"motion", value:"inactive")
 }
 
