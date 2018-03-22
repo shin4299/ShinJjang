@@ -32,6 +32,9 @@ import groovy.json.JsonSlurper
 metadata {
 	definition (name: "Xiaomi Motion", namespace: "fison67", author: "fison67") {
         capability "Motion Sensor"
+        capability "Illuminance Measurement"
+        capability "Configuration"
+        capability "Sensor"
          
         attribute "motion", "string"
         attribute "battery", "string"
