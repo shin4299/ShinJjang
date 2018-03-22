@@ -45,6 +45,10 @@ metadata {
 
 	simulator {
 	}
+	preferences {
+		input "motionReset", "number", title: "Number of seconds after the last reported activity to report that motion is inactive (in seconds). \n\n(The device will always remain blind to motion for 60seconds following first detected motion. This value just clears the 'active' status after the number of seconds you set here but the device will still remain blind for 60seconds in normal operation.)", description: "", value:120, displayDuringSetup: true
+	}
+
 
 	tiles {
 		multiAttributeTile(name:"motion", type: "generic", width: 6, height: 4){
@@ -73,7 +77,11 @@ metadata {
         valueTile("battery", "device.battery", width: 2, height: 2) {
             state "val", label:'${currentValue}', defaultState: true
         }
-        
+                standardTile("reset", "device.reset", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", action:"reset", label: "Reset Motion", icon:"st.motion.motion.active"
+        }
+
+
 	}
 }
 
@@ -92,8 +100,8 @@ def setStatus(params){
  	switch(params.key){
     case "motion":
         sendEvent(name:"motion", value: (params.data == "true" ? "active" : null) )
-	delay 100
-        sendEvent(name:"motion", value: "inactive" )
+        if (settings.motionReset == null || settings.motionReset == "" ) settings.motionReset = 120
+        if (params.data == "true") runIn(settings.motionReset, stopMotion)
 		
     	break;
     case "batteryLevel":
@@ -121,6 +129,10 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 }
 
 def updated() {
+}
+
+def stopMotion() {
+   sendEvent(name:"motion", value:"inactive")
 }
 
 def sendCommand(options, _callback){
