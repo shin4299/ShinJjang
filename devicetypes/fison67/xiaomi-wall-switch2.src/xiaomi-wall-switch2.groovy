@@ -31,19 +31,16 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Wall Switch1", namespace: "fison67", author: "fison67") {
+	definition (name: "Xiaomi Wall Switch2", namespace: "fison67", author: "fison67") {
         capability "Switch"						
          
-        attribute "status", "string"
-        attribute "switch", "string"
-        attribute "mode", "string"
+        attribute "switch2", "string"
         
         attribute "lastCheckin", "Date"
+        attribute "lastCheckin2", "Date"
         
-        command "localOn"
-        command "localOff"
-        command "on"
-        command "off"
+        command "on2"
+        command "off2"
 	}
 
 	simulator { }
@@ -51,17 +48,32 @@ metadata {
 	tiles {
 		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"localOff", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"localOn", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'${name}', action:"switch.off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"localOff", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"localOn", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
+        		multiAttributeTile(name:"switch2", type: "generic", width: 6, height: 4, canChangeIcon: true){
+			tileAttribute ("device.switch2", key: "PRIMARY_CONTROL") {
+                attributeState "on2", label:'${name}', action:"off2", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off2", label:'${name}', action:"on2", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                
+                attributeState "turningOn", label:'${name}', action:"off2", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"on2", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+			}
+            
+            tileAttribute("device.lastCheckin2", key: "SECONDARY_CONTROL") {
+    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
+            }
+		}
+
+
 	}
 }
 
@@ -80,40 +92,9 @@ def setStatus(params){
     log.debug "${params.key} >> ${params.data}"
  
  	switch(params.key){
-    case "on":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "on >> ${params.data}"
-    	break;
-    case "channel":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "channel >> ${params.data}"
-    	break;
-    case "power":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "power >> ${params.data}"
-    	break;
-    case "0":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "0 >> ${params.data}"
-    	break;
-    case "channel_0":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "channel_0 >> ${params.data}"
-    	break;
-    case "powerChannel":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "powerChannel >> ${params.data}"
-    	break;
     case "powerChannel0":
 //    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
     	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "powerChannel >> ${params.data}"
     	break;
     }
     
@@ -121,37 +102,55 @@ def setStatus(params){
     sendEvent(name: "lastCheckin", value: now)
 }
 
-def localOn(){
+def on(){
 	log.debug "On >> ${state.id}"
     def body = [
         "id": state.id,
         "channel": "0",
-        "cmd": "power",
+        "cmd": "powerChannel0",
         "data": "on"
     ]
     def options = makeCommand(body)
     sendCommand(options, null)
 }
 
-def localOff(){
+def off(){
 	log.debug "Off >> ${state.id}"
 	def body = [
         "id": state.id,
         "channel": "0",
-        "cmd": "power",
+        "cmd": "powerChannel0",
         "data": "off"
     ]
     def options = makeCommand(body)
     sendCommand(options, null)
 }
 
-def on(){
-	localOn()
+def on2(){
+	log.debug "On >> ${state.id}"
+    def body = [
+        "id": state.id,
+        "channel": "0",
+        "cmd": "powerChannel1",
+        "data": "on"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
 }
 
-def off(){
-	localOff()
+def off2(){
+	log.debug "Off >> ${state.id}"
+	def body = [
+        "id": state.id,
+        "channel": "0",
+        "cmd": "powerChannel1",
+        "data": "off"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
 }
+
+
 
 def callback(physicalgraph.device.HubResponse hubResponse){
 	def msg

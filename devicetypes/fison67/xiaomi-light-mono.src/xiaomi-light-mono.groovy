@@ -1,5 +1,5 @@
 /**
- *  Xiaomi Wall Switch1 (v.0.0.1)
+ *  Xiaomi Light (v.0.0.1)
  *
  * MIT License
  *
@@ -27,29 +27,41 @@
  * OTHER DEALINGS IN THE SOFTWARE.
 */
 
- 
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Wall Switch1", namespace: "fison67", author: "fison67") {
-        capability "Switch"						
+	definition (name: "Xiaomi Light Mono", namespace: "fison67", author: "fison67") {
+        capability "Switch"						//"on", "off"
+        capability "Actuator"
+        capability "Configuration"
+        capability "Refresh"
+        capability "Switch Level"
+        capability "Health Check"
+        capability "Light"
+
          
-        attribute "status", "string"
         attribute "switch", "string"
-        attribute "mode", "string"
+        attribute "color", "string"
+        attribute "brightness", "string"
         
         attribute "lastCheckin", "Date"
-        
+         
         command "localOn"
         command "localOff"
         command "on"
         command "off"
+        
+        command "setColor"
+        command "setBrightness"
+        
 	}
 
-	simulator { }
+
+	simulator {
+	}
 
 	tiles {
-		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
+		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: true){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
                 attributeState "on", label:'${name}', action:"localOff", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
                 attributeState "off", label:'${name}', action:"localOn", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
@@ -59,9 +71,15 @@ metadata {
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
+    			attributeState("default", label:'Updated: ${currentValue}')
+            }
+            
+            tileAttribute ("device.level", key: "SLIDER_CONTROL") {
+                attributeState "level", action:"switch level.setLevel"
             }
 		}
+        
+       
 	}
 }
 
@@ -77,43 +95,13 @@ def setInfo(String app_url, String id) {
 }
 
 def setStatus(params){
-    log.debug "${params.key} >> ${params.data}"
- 
  	switch(params.key){
-    case "on":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "on >> ${params.data}"
-    	break;
-    case "channel":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "channel >> ${params.data}"
-    	break;
     case "power":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "power >> ${params.data}"
+    	log.debug "MI >> power " + (params.data == "true" ? "on" : "off")
+    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off") )
     	break;
-    case "0":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "0 >> ${params.data}"
-    	break;
-    case "channel_0":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "channel_0 >> ${params.data}"
-    	break;
-    case "powerChannel":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "powerChannel >> ${params.data}"
-    	break;
-    case "powerChannel0":
-//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
-    	log.debug "powerChannel >> ${params.data}"
+    case "brightness":
+    	sendEvent(name:"level", value: params.data )
     	break;
     }
     
@@ -121,11 +109,33 @@ def setStatus(params){
     sendEvent(name: "lastCheckin", value: now)
 }
 
-def localOn(){
-	log.debug "On >> ${state.id}"
+def setLevel(brightness){
+	log.debug "setBrightness >> ${state.id}, val=${brightness}"
     def body = [
         "id": state.id,
-        "channel": "0",
+        "cmd": "brightness",
+        "data": brightness
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+}
+
+def setColor(color){
+	log.debug "setColor >> ${state.id}"
+    log.debug "${color.hex}"
+    def body = [
+        "id": state.id,
+        "cmd": "color",
+        "data": color.hex
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+}
+
+def localOn(){
+	log.debug "Off >> ${state.id}"
+    def body = [
+        "id": state.id,
         "cmd": "power",
         "data": "on"
     ]
@@ -137,7 +147,6 @@ def localOff(){
 	log.debug "Off >> ${state.id}"
 	def body = [
         "id": state.id,
-        "channel": "0",
         "cmd": "power",
         "data": "off"
     ]
@@ -158,14 +167,13 @@ def callback(physicalgraph.device.HubResponse hubResponse){
     try {
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
-        setStatus(jsonObj.state)
+ //       setStatus(jsonObj)
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
     }
 }
 
-def updated() {
-}
+def updated() {}
 
 def sendCommand(options, _callback){
 	def myhubAction = new physicalgraph.device.HubAction(options, null, [callback: _callback])
