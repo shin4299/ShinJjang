@@ -92,7 +92,7 @@ def localOn(){
 	log.debug "On >> ${state.id}"
     def body = [
         "id": state.id,
-        "cmd": "0", "power",
+        "cmd": "powerChannel0",
         "data": "on"
     ]
     def options = makeCommand(body)
@@ -103,7 +103,7 @@ def localOff(){
 	log.debug "Off >> ${state.id}"
 	def body = [
         "id": state.id,
-        "cmd": "0", "power",
+        "cmd": "powerChannel0",
         "data": "off"
     ]
     def options = makeCommand(body)
