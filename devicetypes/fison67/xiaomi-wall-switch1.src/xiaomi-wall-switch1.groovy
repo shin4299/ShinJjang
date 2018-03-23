@@ -34,8 +34,6 @@ metadata {
 	definition (name: "Xiaomi Wall Switch1", namespace: "fison67", author: "fison67") {
         capability "Switch"						
          
-        attribute "status", "string"
-        attribute "switch", "string"
         attribute "mode", "string"
         
         attribute "lastCheckin", "Date"
@@ -94,7 +92,7 @@ def localOn(){
 	log.debug "On >> ${state.id}"
     def body = [
         "id": state.id,
-        "cmd": "powerChannel0",
+        "cmd": "0", "power",
         "data": "on"
     ]
     def options = makeCommand(body)
@@ -105,7 +103,7 @@ def localOff(){
 	log.debug "Off >> ${state.id}"
 	def body = [
         "id": state.id,
-        "cmd": "powerChannel0",
+        "cmd": "0", "power",
         "data": "off"
     ]
     def options = makeCommand(body)
