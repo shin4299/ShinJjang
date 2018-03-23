@@ -49,8 +49,8 @@ metadata {
 	simulator { }
 
 	tiles {
-		multiAttributeTile(name:"status", type: "generic", width: 6, height: 4, canChangeIcon: true){
-			tileAttribute ("device.status", key: "PRIMARY_CONTROL") {
+		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
+			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
                 attributeState "on", label:'${name}', action:"localOff", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
                 attributeState "off", label:'${name}', action:"localOn", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
                 
@@ -80,8 +80,8 @@ def setStatus(params){
     log.debug "${params.key} >> ${params.data}"
  
  	switch(params.key){
-    case "power":
-    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
+    case "powerChannel0":
+//    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
     	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
     	break;
     }
@@ -94,7 +94,7 @@ def localOn(){
 	log.debug "On >> ${state.id}"
     def body = [
         "id": state.id,
-        "cmd": "power",
+        "cmd": "powerChannel0",
         "data": "on"
     ]
     def options = makeCommand(body)
@@ -105,7 +105,7 @@ def localOff(){
 	log.debug "Off >> ${state.id}"
 	def body = [
         "id": state.id,
-        "cmd": "power",
+        "cmd": "powerChannel0",
         "data": "off"
     ]
     def options = makeCommand(body)
