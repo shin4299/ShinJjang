@@ -51,8 +51,8 @@ metadata {
         command "setStatus"
         command "refresh"
         
-        command "localOn"
-        command "localOff"
+        command "on"
+        command "off"
         
         command "setModeAuto"
         command "setModeSilent"
@@ -75,13 +75,13 @@ metadata {
 	}
 
 	tiles {
-		multiAttributeTile(name:"status", type: "generic", width: 6, height: 4, canChangeIcon: true){
-			tileAttribute ("device.status", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"localOff", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"localOn", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
+			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
+                attributeState "on", label:'${name}', action:"off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'${name}', action:"on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"localOff", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"localOn", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
@@ -221,7 +221,6 @@ def setStatus(params){
     	sendEvent(name:"humidity", value: params.data + "%")
     	break;
     case "power":
-    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
     	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
     	break;
     case "temperature":
@@ -400,7 +399,7 @@ def setBrightOff(){
     sendCommand(options, null)
 }
 
-def localOn(){
+def on(){
 	log.debug "Off >> ${state.id}"
     def body = [
         "id": state.id,
@@ -411,7 +410,7 @@ def localOn(){
     sendCommand(options, null)
 }
 
-def localOff(){
+def off(){
 	log.debug "Off >> ${state.id}"
 	def body = [
         "id": state.id,
@@ -420,14 +419,6 @@ def localOff(){
     ]
     def options = makeCommand(body)
     sendCommand(options, null)
-}
-
-def on(){
-	localOn()
-}
-
-def off(){
-	localOff()
 }
 
 def callback(physicalgraph.device.HubResponse hubResponse){
