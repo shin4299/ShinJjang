@@ -32,11 +32,22 @@ import groovy.json.JsonSlurper
 metadata {
 	definition (name: "Xiaomi Switch", namespace: "fison67", author: "fison67") {
         capability "Sensor"						//"on", "off"
+        capability "Button"
+        capability "Configuration"
          
         attribute "status", "string"
         attribute "battery", "string"
         
         attribute "lastCheckin", "Date"
+        
+        command "click"
+        command "double_click"
+        command "long_click_release"
+        command "btn0-click"
+        command "btn0-double_click"
+        command "btn1-click"
+        command "btn1-double_click"
+        command "both_click"
          
 	}
 
@@ -45,8 +56,8 @@ metadata {
 	}
 
 	tiles {
-		multiAttributeTile(name:"status", type: "generic", width: 6, height: 4, icon:"st.Home.home30", canChangeIcon: true){
-			tileAttribute ("device.status", key: "PRIMARY_CONTROL") {
+		multiAttributeTile(name:"button", type: "generic", width: 6, height: 4, icon:"st.Home.home30", canChangeIcon: true){
+			tileAttribute ("device.button", key: "PRIMARY_CONTROL") {
                 attributeState "click", label:'Click', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
             	attributeState "double_click", label:'Double', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
                 attributeState "long_click_press", label:'Long', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
@@ -93,7 +104,7 @@ def setStatus(params){
 	log.debug "Mi Connector >> ${params.key} : ${params.data}"
  	switch(params.key){
     case "action":
-    	sendEvent(name:"status", value: params.data )
+    	sendEvent(name:"button", value: params.data )
     	sendEvent(name:"switch", value: params.data )
     	break;
     case "batteryLevel":

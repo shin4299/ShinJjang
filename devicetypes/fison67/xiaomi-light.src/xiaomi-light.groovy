@@ -32,6 +32,14 @@ import groovy.json.JsonSlurper
 metadata {
 	definition (name: "Xiaomi Light", namespace: "fison67", author: "fison67") {
         capability "Switch"						//"on", "off"
+        capability "Actuator"
+        capability "Configuration"
+        capability "Refresh"
+		capability "Color Control"
+        capability "Switch Level"
+        capability "Health Check"
+        capability "Light"
+
          
         attribute "switch", "string"
         attribute "color", "string"
@@ -67,8 +75,8 @@ metadata {
     			attributeState("default", label:'Updated: ${currentValue}')
             }
             
-            tileAttribute ("device.brightness", key: "SLIDER_CONTROL") {
-                attributeState "brightness", action:"setBrightness"
+            tileAttribute ("device.level", key: "SLIDER_CONTROL") {
+                attributeState "level", action:"switch level.setLevel"
             }
             tileAttribute ("device.color", key: "COLOR_CONTROL") {
                 attributeState "color", action:"setColor"
@@ -102,7 +110,7 @@ def setStatus(params){
     	sendEvent(name:"color", value: hex )
     	break;
     case "brightness":
-    	sendEvent(name:"brightness", value: params.data )
+    	sendEvent(name:"level", value: params.data )
     	break;
     }
     
@@ -110,7 +118,7 @@ def setStatus(params){
     sendEvent(name: "lastCheckin", value: now)
 }
 
-def setBrightness(brightness){
+def setLevel(brightness){
 	log.debug "setBrightness >> ${state.id}, val=${brightness}"
     def body = [
         "id": state.id,
