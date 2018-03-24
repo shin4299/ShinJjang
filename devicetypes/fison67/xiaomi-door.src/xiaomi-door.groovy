@@ -124,7 +124,7 @@ def resetOpen() {
     def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
     sendEvent(name:"contact", value:"open")
     sendEvent(name: "lastOpened", value: now, displayed: false)
-
+}
 def updated() {
 }
 
