@@ -37,13 +37,17 @@ metadata {
         capability "Battery"
          
         attribute "pressure", "string"
-	attribute "maxTemp", "number"
-	attribute "minTemp", "number"
-	attribute "maxHumidity", "number"
-	attribute "minHumidity", "number"
-	attribute "multiAttributesReport", "String"
-        
+		attribute "maxTemp", "number"
+		attribute "minTemp", "number"
+		attribute "maxHumidity", "number"
+		attribute "minHumidity", "number"
+		attribute "multiAttributesReport", "String"
+		attribute "currentDay", "String"
+
         attribute "lastCheckin", "Date"
+		attribute "lastCheckinDate", "String"
+
+        
 	}
 
 
@@ -54,7 +58,7 @@ metadata {
 	}
 
 
-	tiles {
+	tiles(scale: 2) {
         multiAttributeTile(name:"temperature", type:"generic", width:6, height:4) {
             tileAttribute("device.temperature", key: "PRIMARY_CONTROL") {
                 attributeState("temperature", label:'${currentValue}°',
@@ -78,13 +82,15 @@ metadata {
                     ]
                 )
             }
-            tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
-
-            }
+//            tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
+//    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
+//            }
+            tileAttribute("device.multiAttributesReport", key: "SECONDARY_CONTROL") {
+                attributeState("multiAttributesReport", label:'${currentValue}' //icon:"st.Weather.weather12",
+                ) }
         }        
         valueTile("temperature2", "device.temperature", inactiveLabel: false) {
-            state "temperature", label:'${currentValue}', icon:"st.Weather.weather2",
+            state "temperature", label:'${currentValue}°', icon:"st.Weather.weather2",
             backgroundColors:[
                 // Fahrenheit color set
                 [value: 0, color: "#153591"],
@@ -106,7 +112,7 @@ metadata {
         }
         
         valueTile("humidity", "device.humidity", width: 2, height: 2, unit: "%") {
-            state("val", label:'${currentValue}', defaultState: true, 
+            state("val", label:'${currentValue}%', defaultState: true, 
             	backgroundColors:[
                     [value: 10, color: "#153591"],
                     [value: 30, color: "#1e9cbb"],
@@ -134,11 +140,24 @@ metadata {
             )
         }
         valueTile("battery", "device.battery", width: 2, height: 2) {
-            state "val", label:'${currentValue}', defaultState: true
+            state "val", label:'${currentValue}%', defaultState: true
         }		
-		
+        valueTile("pre", "title", decoration: "flat", inactiveLabel: false, width: 2, height: 1) {
+	    state "default", label:'기압'
+        }		
+        valueTile("humi", "title", decoration: "flat", inactiveLabel: false, width: 2, height: 1) {
+	    state "default", label:'습도'
+        }		
+        valueTile("bat", "title", decoration: "flat", inactiveLabel: false, width: 2, height: 1) {
+	    state "default", label:'베터리'
+        }		
+        valueTile("lastcheckin", "device.lastCheckin", inactiveLabel: false, decoration:"flat", width: 4, height: 1) {
+        state "lastcheckin", label:'Last Event:\n ${currentValue}'
+        }
+
+
         main("temperature2")
-        details(["temperature", "battery", "pressure", "humidity", "lastcheckin"])
+        details(["temperature", "humi", "pre", "bat", "humidity", "pressure", "battery", "lastcheckin"])
     }
 }
 
@@ -158,25 +177,92 @@ def setStatus(params){
  
  	switch(params.key){
     case "relativeHumidity":
-    	sendEvent(name:"humidity", value: params.data + "%")
+		def para = "${params.data}"
+		String data = para
+		def stf = Float.parseFloat(data)
+		def hum = Math.round(stf)
+    	sendEvent(name:"humidity", value: hum )
+        updateMinMaxHumidity(hum)
     	break;
     case "temperature":
-		def data = params.data
-        def t = Float.parseFloat(data)
-		def temp = Math.round(t*10)/10
-        sendEvent(name:"temperature", value: temp )
+		def para = "${params.data}"
+		String data = para
+		def st = data.replace("C","");
+		def stf = Float.parseFloat(st)
+		def tem = Math.round(stf*10)/10
+        sendEvent(name:"temperature", value: tem )
+        updateMinMaxTemps(tem)
+//        log.debug "${st}"
     	break;
     case "atmosphericPressure":
     	sendEvent(name:"pressure", value: params.data )
     	break;
     case "batteryLevel":
-    	sendEvent(name:"battery", value: params.data + "%")
+    	sendEvent(name:"battery", value: params.data )
     	break;		
     }
     
-    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-    sendEvent(name: "lastCheckin", value: now)
-}
+//    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+//    sendEvent(name: "lastCheckin", value: now)
+    def now = formatDate()    
+    def nowDate = new Date(now).getTime()
+
+	// Any report - temp, humidity, pressure, & battery - results in a lastCheckin event and update to Last Checkin tile
+	// However, only a non-parseable report results in lastCheckin being displayed in events log
+    sendEvent(name: "lastCheckin", value: now, displayed: false)
+    sendEvent(name: "lastCheckinDate", value: nowDate, displayed: false)
+
+	// Check if the min/max temp and min/max humidity should be reset
+    checkNewDay(now)
+    }
 
 
 def updated() {}
+
+def checkNewDay(now) {
+	def oldDay = ((device.currentValue("currentDay")) == null) ? "32" : (device.currentValue("currentDay"))
+	def newDay = new Date(now).format("dd")
+	if (newDay != oldDay) {
+		resetMinMax()
+		sendEvent(name: "currentDay", value: newDay, displayed: false)
+	}
+}
+
+def resetMinMax() {
+	def currentTemp = device.currentValue('temperature')
+	def currentHumidity = device.currentValue('humidity')
+    currentTemp = currentTemp ? (int) currentTemp : currentTemp
+	log.debug "${device.displayName}: Resetting daily min/max values to current temperature of ${currentTemp}° and humidity of ${currentHumidity}%"
+    sendEvent(name: "maxTemp", value: currentTemp, displayed: false)
+    sendEvent(name: "minTemp", value: currentTemp, displayed: false)
+    sendEvent(name: "maxHumidity", value: currentHumidity, displayed: false)
+    sendEvent(name: "minHumidity", value: currentHumidity, displayed: false)
+    refreshMultiAttributes()
+}
+
+// Check new min or max temp for the day
+def updateMinMaxTemps(temp) {
+	temp = temp ? (int) temp : temp
+	if ((temp > device.currentValue('maxTemp')) || (device.currentValue('maxTemp') == null))
+		sendEvent(name: "maxTemp", value: temp, displayed: false)	
+	if ((temp < device.currentValue('minTemp')) || (device.currentValue('minTemp') == null))
+		sendEvent(name: "minTemp", value: temp, displayed: false)
+	refreshMultiAttributes()
+}
+
+// Check new min or max humidity for the day
+def updateMinMaxHumidity(humidity) {
+	if ((humidity > device.currentValue('maxHumidity')) || (device.currentValue('maxHumidity') == null))
+		sendEvent(name: "maxHumidity", value: humidity, displayed: false)
+	if ((humidity < device.currentValue('minHumidity')) || (device.currentValue('minHumidity') == null))
+		sendEvent(name: "minHumidity", value: humidity, displayed: false)
+	refreshMultiAttributes()
+}
+
+// Update display of multiattributes in main tile
+def refreshMultiAttributes() {
+	def temphiloAttributes = displayTempHighLow ? (displayHumidHighLow ? "Today's High/Low:  ${device.currentState('maxTemp')?.value}° / ${device.currentState('minTemp')?.value}°" : "Today's High: ${device.currentState('maxTemp')?.value}°  /  Low: ${device.currentState('minTemp')?.value}°") : ""
+	def humidhiloAttributes = displayHumidHighLow ? (displayTempHighLow ? "    ${device.currentState('maxHumidity')?.value}% / ${device.currentState('minHumidity')?.value}%" : "Today's High: ${device.currentState('maxHumidity')?.value}%  /  Low: ${device.currentState('minHumidity')?.value}%") : ""
+	sendEvent(name: "multiAttributesReport", value: "${temphiloAttributes}${humidhiloAttributes}", displayed: false)
+}
+

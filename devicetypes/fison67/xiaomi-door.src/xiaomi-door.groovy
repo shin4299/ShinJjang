@@ -42,8 +42,6 @@ metadata {
 
         command "resetClosed"
         command "resetOpen"
-
-        
         command "refresh"
 	}
 
@@ -51,7 +49,7 @@ metadata {
 	simulator {
 	}
 
-	tiles {
+	tiles(scale: 2) {
 		multiAttributeTile(name:"contact", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.contact", key: "PRIMARY_CONTROL") {
                	attributeState "open", label:'${name}', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
@@ -95,9 +93,13 @@ def setStatus(params){
 
  	switch(params.key){
     case "contact":
-    	sendEvent(name:"contact", value: (params.data == "true" ? "closed" : "open") )
-        sendEvent(name: "lastOpened", value: now, displayed: false)		
-    	break;
+    	if (params.data == "true"){
+    		sendEvent(name:"contact", value: "closed" )  
+            }
+        else {    
+	    	sendEvent(name:"contact", value: "open" )
+    	    sendEvent(name: "lastOpened", value: now, displayed: false)		
+	        }
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data + "%")
     	break;
@@ -116,15 +118,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         log.error "Exception caught while parsing data: "+e;
     }
 }
-def resetClosed() {
-    sendEvent(name:"contact", value:"closed")
-}
 
-def resetOpen() {
-    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-    sendEvent(name:"contact", value:"open")
-    sendEvent(name: "lastOpened", value: now, displayed: false)
-}
 def updated() {
 }
 
@@ -147,4 +141,14 @@ def makeCommand(body){
         "body":body
     ]
     return options
+}
+
+def resetClosed() {
+    sendEvent(name:"contact", value:"closed")
+}
+
+def resetOpen() {
+    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+    sendEvent(name:"contact", value:"open")
+    sendEvent(name: "lastOpened", value: now, displayed: false)
 }
