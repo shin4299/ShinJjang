@@ -140,10 +140,6 @@ metadata {
         main("temperature2")
         details(["temperature", "battery", "pressure", "humidity", "lastcheckin"])
     }
-		
-		
-		
-	}
 }
 
 // parse events into attributes
