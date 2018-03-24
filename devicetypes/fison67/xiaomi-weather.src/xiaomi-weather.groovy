@@ -57,7 +57,7 @@ metadata {
 	tiles {
         multiAttributeTile(name:"temperature", type:"generic", width:6, height:4) {
             tileAttribute("device.temperature", key: "PRIMARY_CONTROL") {
-                attributeState("temperature", label:'${currentValue}',
+                attributeState("temperature", label:'${currentValue}°',
                     backgroundColors:[
                         // Fahrenheit color set
                         [value: 0, color: "#153591"],
