@@ -161,11 +161,12 @@ def setStatus(params){
     	sendEvent(name:"humidity", value: params.data + "%")
     	break;
     case "temperature":
-	def t = Float.parseFloat(params.data)
-	def temp = Math.round(t*10)/10
+		def data = params.data
+        def t = Float.parseFloat(data)
+		def temp = Math.round(t*10)/10
         sendEvent(name:"temperature", value: temp )
     	break;
-    case "pressure":
+    case "atmosphericPressure":
     	sendEvent(name:"pressure", value: params.data )
     	break;
     case "batteryLevel":

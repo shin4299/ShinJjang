@@ -67,7 +67,7 @@ metadata {
         valueTile("powerMeter", "device.powerMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
         	state "powerMeter", label: '현재전력\n${currentValue}', action: "power", defaultState: true
 		}
-        valueTile("powerVolt", "device.powerMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
+        valueTile("powerVolt", "device.powerVolt", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
         	state "volt", label: '현재전압\n${currentValue}', action: "volt", defaultState: true
 		}        
         valueTile("energyMeter", "device.energyMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
