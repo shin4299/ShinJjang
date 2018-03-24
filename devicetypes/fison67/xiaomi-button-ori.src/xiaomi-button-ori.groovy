@@ -58,20 +58,6 @@ metadata {
                 attributeState "long_click_press", label:'Long', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
             	attributeState "long_click_release", label:'Long End', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
                 
-                attributeState "alert", label:'${name}', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
-            	attributeState "flip90", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
-                attributeState "flip180", label:'${name}', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
-            	attributeState "move", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
-                attributeState "tap_twice", label:'${name}', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
-            	attributeState "shake_air", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
-                attributeState "free_fall", label:'${name}', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
-            	attributeState "rotate", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
-                
-                attributeState "btn0-click", label:'${name}', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
-            	attributeState "btn0-double_click", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
-                attributeState "btn1-click", label:'${name}', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
-            	attributeState "btn1-double_click", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
-            	attributeState "both_click", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
 			}
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
@@ -100,7 +86,6 @@ def setStatus(params){
  	switch(params.key){
     case "action":
     	sendEvent(name:"button", value: params.data )
-    	sendEvent(name:"switch", value: params.data )
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data + "%" )
