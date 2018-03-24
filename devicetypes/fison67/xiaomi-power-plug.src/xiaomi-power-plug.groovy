@@ -104,7 +104,7 @@ def setStatus(params){
     case "loadVoltage":
     	sendEvent(name:"powerVolt", value: params.data)
     	break;
-    case "power_consumed":
+    case "powerConsumed":
     	sendEvent(name:"energyMeter", value: params.data)
     	break;
     }
