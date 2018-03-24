@@ -32,15 +32,19 @@ import groovy.json.JsonSlurper
 
 metadata {
 	definition (name: "Xiaomi Power Plug", namespace: "fison67", author: "fison67") {
-        capability "Switch"						
-         
-        attribute "switch", "string"
-        attribute "power", "string"
+	capability "Actuator"
+	capability "Switch"
+	capability "Power Meter"
+	capability "Energy Meter"
+	capability "Configuration"
+	capability "Refresh"
+	capability "Sensor"
+	capability "Outlet"
         
+        attribute "Volt", "string"
+        attribute "temp", "string"
         attribute "lastCheckin", "Date"
         
-        command "on"
-        command "off"
         
 	}
 
@@ -49,21 +53,30 @@ metadata {
 	tiles {
 		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'${name}', action:"switch.off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
+        valueTile("powerMeter", "device.powerMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
+        	state "powerMeter", label: '현재전력\n${currentValue}', action: "power", defaultState: true
+		}
+        valueTile("powerVolt", "device.powerMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
+        	state "volt", label: '현재전압\n${currentValue}', action: "volt", defaultState: true
+		}        
+        valueTile("energyMeter", "device.energyMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
+        	state "energyMeter", label: '누적전력\n${currentValue}', action: "energy", defaultState: true
+		}
         
-        valueTile("powerLoad", "device.powerLoad", width: 2, height: 2) {
-            state("val", label:'${currentValue}', defaultState: true, backgroundColor:"#00a0dc")
-        }
+//        valueTile("powerLoad", "device.powerLoad", width: 2, height: 2) {
+//            state("val", label:'${currentValue}', defaultState: true, backgroundColor:"#00a0dc")
+//        }
 	}
 }
 
@@ -86,7 +99,13 @@ def setStatus(params){
     	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
     	break;
     case "powerLoad":
-    	sendEvent(name:"powerLoad", value: params.data)
+    	sendEvent(name:"powerMeter", value: params.data)
+    	break;
+    case "loadVoltage":
+    	sendEvent(name:"powerVolt", value: params.data)
+    	break;
+    case "power_consumed":
+    	sendEvent(name:"energyMeter", value: params.data)
     	break;
     }
     
