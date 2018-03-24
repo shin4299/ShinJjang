@@ -78,8 +78,9 @@ metadata {
                     ]
                 )
             }
-            tileAttribute("device.multiAttributesReport", key: "SECONDARY_CONTROL") {
-                attributeState("multiAttributesReport", label:'${currentValue}' )
+            tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
+    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
+
             }
         }        
         valueTile("temperature2", "device.temperature", inactiveLabel: false) {
