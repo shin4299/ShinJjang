@@ -174,54 +174,6 @@ def setStatus(params){
     def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
     sendEvent(name: "lastCheckin", value: now)
 }
-// If the day of month has changed from that of previous event, reset the daily min/max temp values
-def checkNewDay(now) {
-	def oldDay = ((device.currentValue("currentDay")) == null) ? "32" : (device.currentValue("currentDay"))
-	def newDay = new Date(now).format("dd")
-	if (newDay != oldDay) {
-		resetMinMax()
-		sendEvent(name: "currentDay", value: newDay, displayed: false)
-	}
-}
-
-// Reset daily min/max temp and humidity values to the current temp/humidity values
-def resetMinMax() {
-	def currentTemp = device.currentValue('temperature')
-	def currentHumidity = device.currentValue('humidity')
-    currentTemp = currentTemp ? (int) currentTemp : currentTemp
-	log.debug "${device.displayName}: Resetting daily min/max values to current temperature of ${currentTemp}° and humidity of ${currentHumidity}%"
-    sendEvent(name: "maxTemp", value: currentTemp, displayed: false)
-    sendEvent(name: "minTemp", value: currentTemp, displayed: false)
-    sendEvent(name: "maxHumidity", value: currentHumidity, displayed: false)
-    sendEvent(name: "minHumidity", value: currentHumidity, displayed: false)
-    refreshMultiAttributes()
-}
-
-// Check new min or max temp for the day
-def updateMinMaxTemps(temp) {
-	temp = temp ? (int) temp : temp
-	if ((temp > device.currentValue('maxTemp')) || (device.currentValue('maxTemp') == null))
-		sendEvent(name: "maxTemp", value: temp, displayed: false)	
-	if ((temp < device.currentValue('minTemp')) || (device.currentValue('minTemp') == null))
-		sendEvent(name: "minTemp", value: temp, displayed: false)
-	refreshMultiAttributes()
-}
-
-// Check new min or max humidity for the day
-def updateMinMaxHumidity(humidity) {
-	if ((humidity > device.currentValue('maxHumidity')) || (device.currentValue('maxHumidity') == null))
-		sendEvent(name: "maxHumidity", value: humidity, displayed: false)
-	if ((humidity < device.currentValue('minHumidity')) || (device.currentValue('minHumidity') == null))
-		sendEvent(name: "minHumidity", value: humidity, displayed: false)
-	refreshMultiAttributes()
-}
-
-// Update display of multiattributes in main tile
-def refreshMultiAttributes() {
-	def temphiloAttributes = displayTempHighLow ? (displayHumidHighLow ? "Today's High/Low:  ${device.currentState('maxTemp')?.value}° / ${device.currentState('minTemp')?.value}°" : "Today's High: ${device.currentState('maxTemp')?.value}°  /  Low: ${device.currentState('minTemp')?.value}°") : ""
-	def humidhiloAttributes = displayHumidHighLow ? (displayTempHighLow ? "    ${device.currentState('maxHumidity')?.value}% / ${device.currentState('minHumidity')?.value}%" : "Today's High: ${device.currentState('maxHumidity')?.value}%  /  Low: ${device.currentState('minHumidity')?.value}%") : ""
-	sendEvent(name: "multiAttributesReport", value: "${temphiloAttributes}${humidhiloAttributes}", displayed: false)
-}
 
 
 def updated() {}
