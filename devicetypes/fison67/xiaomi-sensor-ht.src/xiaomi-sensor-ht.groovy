@@ -119,26 +119,12 @@ metadata {
             )
         }
         
-        
-        valueTile("pressure", "device.pressure", width: 2, height: 2, unit: "") {
-            state("val", label:'${currentValue}', defaultState: true, 
-            	backgroundColors:[
-                    [value: 10, color: "#153591"],
-                    [value: 30, color: "#1e9cbb"],
-                    [value: 40, color: "#90d2a7"],
-                    [value: 50, color: "#44b621"],
-                    [value: 60, color: "#f1d801"],
-                    [value: 80, color: "#d04e00"],
-                    [value: 90, color: "#bc2323"]
-                ]
-            )
-        }
-        valueTile("battery", "device.battery", width: 2, height: 2) {
+                valueTile("battery", "device.battery", width: 2, height: 2) {
             state "val", label:'${currentValue}', defaultState: true
         }		
 		
         main("temperature2")
-        details(["temperature", "battery", "pressure", "humidity", "lastcheckin"])
+        details(["temperature", "battery", "humidity", "lastcheckin"])
     }
 		
 		
@@ -166,9 +152,6 @@ def setStatus(params){
     	break;
     case "temperature":
         sendEvent(name:"temperature", value: params.data )
-    	break;
-    case "pressure":
-    	sendEvent(name:"pressure", value: params.data )
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data + "%")
