@@ -38,6 +38,8 @@ metadata {
         capability "Health Check"
 
         attribute "lastCheckin", "Date"
+        attribute "lastOpened", "String"
+
         command "resetClosed"
         command "resetOpen"
 
