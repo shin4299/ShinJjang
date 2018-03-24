@@ -30,7 +30,7 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Sensor HT", namespace: "fison67", author: "fison67") {
+	definition (name: "xiaomi weather", namespace: "fison67", author: "fison67") {
         capability "Temperature Measurement"
         capability "Relative Humidity Measurement"
         capability "Sensor"
