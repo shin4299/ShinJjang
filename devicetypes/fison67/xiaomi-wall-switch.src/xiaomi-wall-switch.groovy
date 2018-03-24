@@ -1,5 +1,5 @@
 /**
- *  Xiaomi Smoke Dectector (v.0.0.1)
+ *  Xiaomi Wall Switch (v.0.0.1)
  *
  * MIT License
  *
@@ -25,40 +25,39 @@
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- */
+*/
+
  
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Smoke Dectector", namespace: "fison67", author: "fison67") {
-        capability "Sensor"
-        capability "Smoke Detector"    //"detected", "clear", "tested"
+	definition (name: "Xiaomi Wall Switch", namespace: "fison67", author: "fison67") {
+        capability "Switch"						
          
-        attribute "battery", "string"
+        attribute "switch", "string"
         
         attribute "lastCheckin", "Date"
         
-        command "refresh"
+        command "on"
+        command "off"
 	}
 
-
-	simulator {
-	}
+	simulator { }
 
 	tiles {
-		multiAttributeTile(name:"smoke", type: "generic", width: 6, height: 4){
-			tileAttribute ("device.smoke", key: "PRIMARY_CONTROL") {
-               	attributeState "clear", label:'${name}', icon:"st.alarm.smoke.clear" , backgroundColor:"#ffffff"
-            	attributeState "detected", label:'${name}', icon:"st.alarm.smoke.smoke" , backgroundColor:"#e86d13"
+		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
+			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
+                attributeState "on", label:'${name}', action:"off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'${name}', action:"on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                
+                attributeState "turningOn", label:'${name}', action:"off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
+            
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
+    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
-        
-        valueTile("battery", "device.battery", width: 2, height: 2) {
-            state "val", label:'${currentValue}', defaultState: true
-        }
 	}
 }
 
@@ -67,25 +66,49 @@ def parse(String description) {
 	log.debug "Parsing '${description}'"
 }
 
-def setInfo(String app_url, String id) {
+def setInfo(String app_url, String id, String index) {
 	log.debug "${app_url}, ${id}"
 	state.app_url = app_url
     state.id = id
+    state.deviceIndex = index
 }
 
 def setStatus(params){
-	log.debug "${params.key} : ${params.data}"
+    log.debug "${params.key} >> ${params.data}"
+ 
  	switch(params.key){
-    case "smokeDetected":
-    	sendEvent(name:"smoke", value: (params.data == "true" ? "detected" : "clear") )
-    	break;
-    case "batteryLevel":
-    	sendEvent(name:"battery", value: params.data + "%")
+    case "power":
+ 		def power = params.data
+    	sendEvent(name:"switch", value: power)
     	break;
     }
     
     def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
     sendEvent(name: "lastCheckin", value: now)
+}
+
+def on(){
+    log.debug "On >> ${state.id}"
+    def body = [
+        "id": state.id,
+        "cmd": "power",
+        "data": "on",
+        "index": state.deviceIndex
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+}
+
+def off(){
+	log.debug "Off >> ${state.id}"
+	def body = [
+        "id": state.id,
+        "cmd": "power",
+        "data": "off",
+        "index": state.deviceIndex
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
 }
 
 def callback(physicalgraph.device.HubResponse hubResponse){
@@ -100,9 +123,6 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 }
 
 def updated() {
-}
-
-def refresh(){
 }
 
 def sendCommand(options, _callback){

@@ -100,6 +100,7 @@ def setStatus(params){
 	    	sendEvent(name:"contact", value: "open" )
     	    sendEvent(name: "lastOpened", value: now, displayed: false)		
 	        }
+    	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data + "%")
     	break;
