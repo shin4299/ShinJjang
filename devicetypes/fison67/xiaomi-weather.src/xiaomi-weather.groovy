@@ -79,8 +79,7 @@ metadata {
                 )
             }
             tileAttribute("device.multiAttributesReport", key: "SECONDARY_CONTROL") {
-                attributeState("multiAttributesReport", label:'${currentValue}' //icon:"st.Weather.weather12",
-                )
+                attributeState("multiAttributesReport", label:'${currentValue}' )
             }
         }        
         valueTile("temperature2", "device.temperature", inactiveLabel: false) {
