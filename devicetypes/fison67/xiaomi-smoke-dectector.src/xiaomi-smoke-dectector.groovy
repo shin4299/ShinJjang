@@ -45,7 +45,7 @@ metadata {
 	simulator {
 	}
 
-	tiles {
+	tiles(scale: 2) {
 		multiAttributeTile(name:"smoke", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.smoke", key: "PRIMARY_CONTROL") {
                	attributeState "clear", label:'${name}', icon:"st.alarm.smoke.clear" , backgroundColor:"#ffffff"

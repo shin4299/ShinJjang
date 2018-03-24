@@ -50,12 +50,12 @@ metadata {
 	simulator {
 	}
 
-	tiles {
+	tiles(scale: 2) {
 		multiAttributeTile(name:"button", type: "generic", width: 6, height: 4, icon:"st.Home.home30", canChangeIcon: true){
 			tileAttribute ("device.button", key: "PRIMARY_CONTROL") {
-                attributeState "click", label:'Click', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
-            	attributeState "double_click", label:'Double', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
-                attributeState "long_click_press", label:'Long', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
+                attributeState "click", label:'Click', action: 'click', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
+            	attributeState "double_click", label:'Double', action: 'double_click', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
+                attributeState "long_click_press", label:'Long', action: 'long_click_press', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
             	attributeState "long_click_release", label:'Long End', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
                 
 			}
@@ -63,12 +63,30 @@ metadata {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
+        standardTile("click", "device.button", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", label:"click", action:"click"
+        }
+        standardTile("double_click", "device.button", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", label:"double_click", action:"double_click"
+        }
+
+        standardTile("long_click_release", "device.button", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", label:"long_click_release", action:"long_click_release"
+        }
+
+
+        
         
         valueTile("battery", "device.battery", width: 2, height: 2) {
             state "val", label:'${currentValue}', defaultState: true
         }
 	}
 }
+
+
+def click() {buttonEvent(1, "pushed")}
+def double_click() {buttonEvent(2, "pushed")}
+def long_click_press() {buttonEvent(3, "pushed")}
 
 // parse events into attributes
 def parse(String description) {

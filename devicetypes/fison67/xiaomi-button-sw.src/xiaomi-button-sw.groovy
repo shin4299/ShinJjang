@@ -52,7 +52,7 @@ metadata {
 	simulator {
 	}
 
-	tiles {
+	tiles(scale: 2) {
 		multiAttributeTile(name:"button", type: "generic", width: 6, height: 4, icon:"st.Home.home30", canChangeIcon: true){
 			tileAttribute ("device.button", key: "PRIMARY_CONTROL") {
                 attributeState "btn0-click", label:'${name}', icon:"st.contact.contact.open", backgroundColor:"#e86d13"

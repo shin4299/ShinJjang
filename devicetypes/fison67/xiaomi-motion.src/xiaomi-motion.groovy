@@ -51,7 +51,7 @@ metadata {
 	}
 
 
-	tiles {
+	tiles(scale: 2) {
 		multiAttributeTile(name:"motion", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.motion", key: "PRIMARY_CONTROL") {
 				attributeState "active", label:'motion', icon:"st.motion.motion.active", backgroundColor:"#00a0dc"
