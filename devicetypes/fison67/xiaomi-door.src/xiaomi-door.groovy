@@ -31,12 +31,16 @@ import groovy.json.JsonSlurper
 
 metadata {
 	definition (name: "Xiaomi Door", namespace: "fison67", author: "fison67") {
+        capability "Configuration"
         capability "Sensor"
-         
-        attribute "status", "string"
-        attribute "battery", "string"
-        
+        capability "Contact Sensor"
+        capability "Battery"
+        capability "Health Check"
+
         attribute "lastCheckin", "Date"
+        command "resetClosed"
+        command "resetOpen"
+
         
         command "refresh"
 	}
@@ -46,19 +50,29 @@ metadata {
 	}
 
 	tiles {
-		multiAttributeTile(name:"status", type: "generic", width: 6, height: 4){
-			tileAttribute ("device.status", key: "PRIMARY_CONTROL") {
+		multiAttributeTile(name:"contact", type: "generic", width: 6, height: 4){
+			tileAttribute ("device.contact", key: "PRIMARY_CONTROL") {
                	attributeState "open", label:'${name}', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
             	attributeState "closed", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
 			}
-            tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
+            tileAttribute("device.lastOpened", key: "SECONDARY_CONTROL") {
+    			attributeState("default", label:'Last Opened: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
         
-        valueTile("battery", "device.battery", width: 2, height: 2) {
+        valueTile("battery", "device.battery", decoration: "flat", width: 2, height: 2) {
             state "val", label:'${currentValue}', defaultState: true
         }
+        standardTile("resetClosed", "device.resetClosed", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", action:"resetClosed", label:'Override Close', icon:"st.contact.contact.closed"
+        }
+        standardTile("resetOpen", "device.resetOpen", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", action:"resetOpen", label:'Override Open', icon:"st.contact.contact.open"
+	}
+        valueTile("lastcheckin", "device.lastCheckin", decoration: "flat", inactiveLabel: false, width: 4, height: 1) {
+            state "default", label:'Last Checkin:\n${currentValue}'
+        }
+		
 	}
 }
 
@@ -75,16 +89,18 @@ def setInfo(String app_url, String id) {
 
 def setStatus(params){
 	log.debug "${params.key} : ${params.data}"
+	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+
  	switch(params.key){
     case "contact":
-    	sendEvent(name:"status", value: (params.data == "true" ? "closed" : "open") )
+    	sendEvent(name:"contact", value: (params.data == "true" ? "closed" : "open") )
+        sendEvent(name: "lastOpened", value: now, displayed: false)		
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data + "%")
     	break;
     }
     
-    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
     sendEvent(name: "lastCheckin", value: now)
 }
 
@@ -98,6 +114,14 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         log.error "Exception caught while parsing data: "+e;
     }
 }
+def resetClosed() {
+    sendEvent(name:"contact", value:"closed")
+}
+
+def resetOpen() {
+    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+    sendEvent(name:"contact", value:"open")
+    sendEvent(name: "lastOpened", value: now, displayed: false)
 
 def updated() {
 }
