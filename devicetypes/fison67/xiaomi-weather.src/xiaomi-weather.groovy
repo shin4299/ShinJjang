@@ -161,7 +161,9 @@ def setStatus(params){
     	sendEvent(name:"humidity", value: params.data + "%")
     	break;
     case "temperature":
-        sendEvent(name:"temperature", value: params.data )
+	Float t = Float.parseFloat(resp.data.list[0].o3Value)
+	temp = t
+        sendEvent(name:"temperature", value: temp )
     	break;
     case "pressure":
     	sendEvent(name:"pressure", value: params.data )
