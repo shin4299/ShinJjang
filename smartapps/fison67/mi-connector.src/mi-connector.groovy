@@ -168,15 +168,27 @@ def addDevice(){
         }else if(params.type == "lumi.motion" || params.type == "lumi.motion.aq2"){
         	dth = "Xiaomi Motion";
             name = "Xiaomi Motion";
-        }else if(params.type == "lumi.switch" || params.type == "lumi.switch.v2" || params.type == "lumi.86sw1" || params.type == "lumi.86sw2" || params.type == "lumi.cube"){
-        	dth = "Xiaomi Switch";
-            name = "Xiaomi Switch";
+        }else if(params.type == "lumi.switch"){
+        	dth = "Xiaomi Button Ori";
+            name = "Xiaomi Button Ori";
+        }else if(params.type == "lumi.86sw1" || params.type == "lumi.switch.v2"){
+        	dth = "Xiaomi Button AQ";
+            name = "Xiaomi Button AQ";
+        }else if(params.type == "lumi.86sw2"){
+        	dth = "Xiaomi Button SW";
+            name = "Xiaomi Button SW";
+        }else if(params.type == "lumi.cube"){
+        	dth = "Xiaomi Cube";
+            name = "Xiaomi Cube";
         }else if(params.type == "zhimi.humidifier.v1" || params.type == "zhimi.humidifier.ca1"){
         	dth = "Xiaomi Humidifier";
             name = "Xiaomi Humidifier";
-        }else if(params.type == "yeelink.light.lamp1" || params.type == "yeelink.light.mono1" || params.type == "yeelink.light.color1" || params.type == "yeelink.light.strip1"){
+        }else if(params.type == "yeelink.light.color1" || params.type == "yeelink.light.strip1"){
         	dth = "Xiaomi Light";
             name = "Xiaomi Light";
+        }else if(params.type == "yeelink.light.lamp1" || params.type == "yeelink.light.mono1"){
+        	dth = "Xiaomi Light Mono";
+            name = "Xiaomi Light Mono";
         }else if(params.type == "philips.light.sread1" || params.type == "philips.light.bulb"){
         	dth = "Xiaomi Light";
             name = "Philips Light";
@@ -193,15 +205,17 @@ def addDevice(){
         	dth = "Xiaomi Wall Switch1";
             name = "Xiaomi Wall Switch1";
         }else if(params.type == "lumi.ctrl_neutral2" || params.type == "lumi.ctrl_ln2"){
-        	dth = "Xiaomi Wall Switch1";
-            name = "Xiaomi Wall Switch1";
+        	dth = "Xiaomi Wall Switch2";
+            name = "Xiaomi Wall Switch2";
         }else if(params.type == "lumi.sensor_ht"){
         	dth = "Xiaomi Sensor HT";
             name = "Xiaomi Sensor HT";
         }else if(params.type == "lumi.weather"){
         	dth = "Xiaomi Weather";
             name = "Xiaomi Weather";
-        	
+        }else if(params.type == "lumi.smoke"){
+        	dth = "Xiaomi Smoke Dectector";
+            name = "Xiaomi Smoke Dectector";        	
         }else{
         	dth = "Xiaomi Dummy";
             name = "Xiaomi Dummy";
@@ -213,6 +227,32 @@ def addDevice(){
             def resultString = new groovy.json.JsonOutput().toJson("result":"nonExist")
             render contentType: "application/javascript", data: resultString
         	
+        }else if(/*params.type == "lumi.ctrl_neutral2" || */params.type == "lumi.ctrl_ln2"){
+        	try{
+            	for (i = 0; i <2; i++) {
+                	def childDevice = addChildDevice("fison67", dth, (dni + "-" + (i+1)), location.hubs[0].id, [
+                        "label": name + (i+1)
+                    ])    
+                    childDevice.setInfo(settings.address, id)
+                    childDevice.setSubInfo(i+1)
+                    log.debug "Success >> ADD Device : ${type} DNI=${dni}"
+                    data.each { key, value ->
+                    //	log.debug "Key:" + key + ", " + value
+                        def map = [:]
+                        map['key'] = key
+                        map['data'] = value
+                        childDevice.setStatus(map)
+                    }
+                }
+                
+                def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
+                render contentType: "application/javascript", data: resultString
+            	
+            }catch(e){
+                console.log("Failed >> ADD Device Error : " + e);
+                def resultString = new groovy.json.JsonOutput().toJson("result":"fail")
+                render contentType: "application/javascript", data: resultString
+            }
         }else{
             try{
                 def childDevice = addChildDevice("fison67", dth, dni, location.hubs[0].id, [
