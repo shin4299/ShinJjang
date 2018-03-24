@@ -53,9 +53,9 @@ metadata {
 	tiles(scale: 2) {
 		multiAttributeTile(name:"button", type: "generic", width: 6, height: 4, icon:"st.Home.home30", canChangeIcon: true){
 			tileAttribute ("device.button", key: "PRIMARY_CONTROL") {
-                attributeState "click", label:'Click', action: 'click', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
-            	attributeState "double_click", label:'Double', action: 'double_click', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
-                attributeState "long_click_press", label:'Long', action: 'long_click_press', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
+                attributeState "click", label:'Click', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
+            	attributeState "double_click", label:'Double', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
+                attributeState "long_click_press", label:'Long', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
             	attributeState "long_click_release", label:'Long End', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
                 
 			}
@@ -63,15 +63,15 @@ metadata {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
-        standardTile("click", "device.button", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
-            state "default", label:"click", action:"click"
+        valueTile("click", "device.button", decoration: "flat", width: 2, height: 2) {
+            state "default", label:'Button#1_Core \n one_click', action:"click"
         }
-        standardTile("double_click", "device.button", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
-            state "default", label:"double_click", action:"double_click"
+        valueTile("double_click", "device.button", decoration: "flat", width: 2, height: 2) {
+            state "default", label:"Button#2_Core \n double_click", action:"double_click"
         }
 
-        standardTile("long_click_release", "device.button", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
-            state "default", label:"long_click_release", action:"long_click_release"
+        valueTile("long_click_press", "device.button", decoration: "flat", width: 2, height: 2) {
+            state "default", label:"Button#3_Core \n long_click", action:"long_click_release"
         }
 
 
@@ -103,7 +103,23 @@ def setStatus(params){
 	log.debug "Mi Connector >> ${params.key} : ${params.data}"
  	switch(params.key){
     case "action":
-    	sendEvent(name:"button", value: params.data )
+    	if(params.data == "click") {
+    	sendEvent(name:"button", value: "click" );
+//        sendEvent(name: "button", value: "pushed", data: [buttonNumber: 1])
+        buttonEvent(1, "pushed")
+        }
+        else if(params.data == "double_click") {
+    	sendEvent(name:"button", value: "double_click" );
+        buttonEvent(2, "pushed")
+        }
+        else if(params.data == "long_click_press") {
+    	sendEvent(name:"button", value: "long_click_press" );
+        buttonEvent(3, "pushed")
+        }
+        else if(params.data == "long_click_release") {
+    	sendEvent(name:"button", value: "long_click_release" );
+        }
+        else { }
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data + "%" )
@@ -112,6 +128,10 @@ def setStatus(params){
     
     def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
     sendEvent(name: "lastCheckin", value: now)
+}
+
+def buttonEvent(Integer button, String action) {
+    sendEvent(name: "button", value: action, data: [buttonNumber: button], descriptionText: "$device.displayName button $button was $action", isStateChange: true)
 }
 
 def callback(physicalgraph.device.HubResponse hubResponse){

@@ -45,7 +45,6 @@ metadata {
         command "btn1-click"
         command "btn1-double_click"
         command "both_click"
-         
 	}
 
 
@@ -55,22 +54,38 @@ metadata {
 	tiles(scale: 2) {
 		multiAttributeTile(name:"button", type: "generic", width: 6, height: 4, icon:"st.Home.home30", canChangeIcon: true){
 			tileAttribute ("device.button", key: "PRIMARY_CONTROL") {
-                attributeState "btn0-click", label:'${name}', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
+                attributeState "btn0-click", label:'Left_Click', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
             	attributeState "btn0-double_click", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
-                attributeState "btn1-click", label:'${name}', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
+                attributeState "btn1-click", label:'Right_Click', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
             	attributeState "btn1-double_click", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
-            	attributeState "both_click", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
+            	attributeState "both_click", label:'Both_Click', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
 			}
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
         
+        valueTile("btn0-click", "device.button", decoration: "flat", width: 2, height: 2) {
+            state "default", label:'Button#1_Core \n Left_click', action:"Lclick"
+        }
+        valueTile("btn1-click", "device.button", decoration: "flat", width: 2, height: 2) {
+            state "default", label:"Button#2_Core \n Right_click", action:"Rclick"
+        }
+        valueTile("both_click", "device.button", decoration: "flat", width: 2, height: 2) {
+            state "default", label:"Button#3_Core \n Both_click", action:"both_click"
+        }
+
         valueTile("battery", "device.battery", width: 2, height: 2) {
             state "val", label:'${currentValue}', defaultState: true
         }
 	}
 }
+
+
+def Lclick() {buttonEvent(1, "pushed")}
+def Rclick() {buttonEvent(2, "pushed")}
+def both_click() {buttonEvent(3, "pushed")}
+
 
 // parse events into attributes
 def parse(String description) {
@@ -87,8 +102,19 @@ def setStatus(params){
 	log.debug "Mi Connector >> ${params.key} : ${params.data}"
  	switch(params.key){
     case "action":
-    	sendEvent(name:"button", value: params.data )
-    	sendEvent(name:"switch", value: params.data )
+    	if(params.data == "btn0-click") {
+    	sendEvent(name:"button", value: "btn0-click" );
+        buttonEvent(1, "pushed")
+        }
+        else if(params.data == "btn1-click") {
+    	sendEvent(name:"button", value: "btn1-click" );
+        buttonEvent(2, "pushed")
+        }
+        else if(params.data == "both_click") {
+    	sendEvent(name:"button", value: "both_click" );
+        buttonEvent(3, "pushed")
+        }
+        else { }
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data + "%" )
@@ -97,6 +123,10 @@ def setStatus(params){
     
     def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
     sendEvent(name: "lastCheckin", value: now)
+}
+
+def buttonEvent(Integer button, String action) {
+    sendEvent(name: "button", value: action, data: [buttonNumber: button], descriptionText: "$device.displayName button $button was $action", isStateChange: true)
 }
 
 def callback(physicalgraph.device.HubResponse hubResponse){

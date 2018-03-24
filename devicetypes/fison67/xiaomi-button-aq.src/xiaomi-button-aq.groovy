@@ -58,12 +58,21 @@ metadata {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
+        valueTile("click", "device.button", decoration: "flat", width: 2, height: 2) {
+            state "default", label:'Button#1_Core \n one_click', action:"click"
+        }
+        valueTile("double_click", "device.button", decoration: "flat", width: 2, height: 2) {
+            state "default", label:"Button#2_Core \n double_click", action:"double_click"
+        }
         
         valueTile("battery", "device.battery", width: 2, height: 2) {
             state "val", label:'${currentValue}', defaultState: true
         }
 	}
 }
+
+def click() {buttonEvent(1, "pushed")}
+def double_click() {buttonEvent(2, "pushed")}
 
 // parse events into attributes
 def parse(String description) {
@@ -80,7 +89,15 @@ def setStatus(params){
 	log.debug "Mi Connector >> ${params.key} : ${params.data}"
  	switch(params.key){
     case "action":
-    	sendEvent(name:"button", value: params.data )
+    	if(params.data == "click") {
+    	sendEvent(name:"button", value: "click" );
+        buttonEvent(1, "pushed")
+        }
+        else if(params.data == "double_click") {
+    	sendEvent(name:"button", value: "double_click" );
+        buttonEvent(2, "pushed")
+        }
+        else { }
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data + "%" )
@@ -89,6 +106,10 @@ def setStatus(params){
     
     def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
     sendEvent(name: "lastCheckin", value: now)
+}
+
+def buttonEvent(Integer button, String action) {
+    sendEvent(name: "button", value: action, data: [buttonNumber: button], descriptionText: "$device.displayName button $button was $action", isStateChange: true)
 }
 
 def callback(physicalgraph.device.HubResponse hubResponse){
