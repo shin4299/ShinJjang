@@ -88,7 +88,7 @@ def setStatus(params){
 }
 
 def on(){
-    log.debug "On >> ${state.id}"
+    log.debug "On >> ${state.id} >> ${state.deviceIndex}"
     def body = [
         "id": state.id,
         "cmd": "power",
@@ -100,7 +100,7 @@ def on(){
 }
 
 def off(){
-	log.debug "Off >> ${state.id}"
+	log.debug "Off >> ${state.id} >> ${state.deviceIndex}"
 	def body = [
         "id": state.id,
         "cmd": "power",

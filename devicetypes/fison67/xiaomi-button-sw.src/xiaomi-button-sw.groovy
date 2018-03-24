@@ -52,13 +52,9 @@ metadata {
 	}
 
 	tiles(scale: 2) {
-		multiAttributeTile(name:"button", type: "generic", width: 6, height: 4, icon:"st.Home.home30", canChangeIcon: true){
+		multiAttributeTile(name:"button", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.button", key: "PRIMARY_CONTROL") {
-                attributeState "btn0-click", label:'Left_Click', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
-            	attributeState "btn0-double_click", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
-                attributeState "btn1-click", label:'Right_Click', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
-            	attributeState "btn1-double_click", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
-            	attributeState "both_click", label:'Both_Click', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
+                attributeState "click", label:'Button', icon:"http://fibaro-smartthings.s3-eu-west-1.amazonaws.com/button/pb_red_std.png", backgroundColor:"#cd1b11"
 			}
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
@@ -114,16 +110,18 @@ def setStatus(params){
     	sendEvent(name:"button", value: "both_click" );
         buttonEvent(3, "pushed")
         }
-        else { }
+        else {
+	    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+    	sendEvent(name: "lastCheckin", value: now)
+        }
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data + "%" )
+	    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+    	sendEvent(name: "lastCheckin", value: now)
     	break;
     }
-    
-    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-    sendEvent(name: "lastCheckin", value: now)
-}
+ }
 
 def buttonEvent(Integer button, String action) {
     sendEvent(name: "button", value: action, data: [buttonNumber: button], descriptionText: "$device.displayName button $button was $action", isStateChange: true)

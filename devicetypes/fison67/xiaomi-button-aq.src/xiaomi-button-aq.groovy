@@ -49,15 +49,17 @@ metadata {
 	}
 
 	tiles(scale: 2) {
-		multiAttributeTile(name:"button", type: "generic", width: 6, height: 4, icon:"st.Home.home30", canChangeIcon: true){
+		multiAttributeTile(name:"button", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.button", key: "PRIMARY_CONTROL") {
-                attributeState "click", label:'Click', icon:"st.contact.contact.open", backgroundColor:"#e86d13"
-            	attributeState "double_click", label:'Double', icon:"st.contact.contact.closed", backgroundColor:"#00a0dc"
+                attributeState "click", label:'Button', icon:"http://fibaro-smartthings.s3-eu-west-1.amazonaws.com/button/pb_red_std.png", backgroundColor:"#cd1b11"
 			}
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
+        valueTile("main", "device.button", decoration: "flat", width: 2, height: 2) {
+            state "default", label:'Button', action:"click", icon:"http://www.asihome.com/images/Fibaro%20Button%20Orange.png", backgroundColor:"#f48600"
+        }
         valueTile("click", "device.button", decoration: "flat", width: 2, height: 2) {
             state "default", label:'Button#1_Core \n one_click', action:"click"
         }
@@ -68,6 +70,8 @@ metadata {
         valueTile("battery", "device.battery", width: 2, height: 2) {
             state "val", label:'${currentValue}', defaultState: true
         }
+        main (["main"])
+        details(["button", "click", "double_click", "battery"])        
 	}
 }
 
@@ -90,22 +94,23 @@ def setStatus(params){
  	switch(params.key){
     case "action":
     	if(params.data == "click") {
-    	sendEvent(name:"button", value: "click" );
         buttonEvent(1, "pushed")
         }
         else if(params.data == "double_click") {
-    	sendEvent(name:"button", value: "double_click" );
         buttonEvent(2, "pushed")
         }
-        else { }
+        else {
+                def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+        sendEvent(name: "lastCheckin", value: now)
+        }
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data + "%" )
+        def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+        sendEvent(name: "lastCheckin", value: now)        
     	break;
     }
     
-    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-    sendEvent(name: "lastCheckin", value: now)
 }
 
 def buttonEvent(Integer button, String action) {
