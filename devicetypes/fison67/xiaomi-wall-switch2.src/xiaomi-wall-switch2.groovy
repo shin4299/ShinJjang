@@ -39,7 +39,9 @@ metadata {
         attribute "lastCheckin", "Date"
         attribute "lastCheckin2", "Date"
         
-        command "on2"
+        command "on1"
+        command "off1"
+	command "on2"
         command "off2"
 	}
 
@@ -48,11 +50,11 @@ metadata {
 	tiles {
 		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"switch.off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'${name}', action:"off1", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'${name}', action:"on1", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"off1", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"on1", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
@@ -102,7 +104,7 @@ def setStatus(params){
     sendEvent(name: "lastCheckin", value: now)
 }
 
-def on(){
+def on1(){
 	log.debug "On >> ${state.id}"
     def body = [
         "id": state.id,
@@ -114,7 +116,7 @@ def on(){
     sendCommand(options, null)
 }
 
-def off(){
+def off1(){
 	log.debug "Off >> ${state.id}"
 	def body = [
         "id": state.id,
@@ -130,7 +132,7 @@ def on2(){
 	log.debug "On >> ${state.id}"
     def body = [
         "id": state.id,
-        "channel": "0",
+        "channel": "1",
         "cmd": "powerChannel1",
         "data": "on"
     ]
@@ -142,7 +144,7 @@ def off2(){
 	log.debug "Off >> ${state.id}"
 	def body = [
         "id": state.id,
-        "channel": "0",
+        "channel": "1",
         "cmd": "powerChannel1",
         "data": "off"
     ]
