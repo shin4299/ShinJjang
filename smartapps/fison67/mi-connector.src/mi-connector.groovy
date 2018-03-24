@@ -150,6 +150,7 @@ def addDevice(){
         def dth = null
         def name = null
 
+
         if(params.type == "zhimi.airpurifier.m1" || params.type == "zhimi.airpurifier.v1" || params.type == "zhimi.airpurifier.v2" || params.type ==  "zhimi.airpurifier.v3" || params.type ==  "zhimi.airpurifier.v6" || params.type ==  "zhimi.airpurifier.ma2"){
             dth = "Xiaomi Air Purifier";
             name = "Xiaomi Air Purifier";
@@ -202,11 +203,11 @@ def addDevice(){
         	dth = "Xiaomi Power Plug";
             name = "Xiaomi Power Plug";
         }else if(params.type == "lumi.ctrl_neutral1" || params.type == "lumi.ctrl_ln1" ){
-        	dth = "Xiaomi Wall Switch1";
-            name = "Xiaomi Wall Switch1";
+        	dth = "Xiaomi Wall Switch";
+            name = "Xiaomi Wall Switch";
         }else if(params.type == "lumi.ctrl_neutral2" || params.type == "lumi.ctrl_ln2"){
-        	dth = "Xiaomi Wall Switch2";
-            name = "Xiaomi Wall Switch2";
+        	dth = "Xiaomi Wall Switch";
+            name = "Xiaomi Wall Switch";
         }else if(params.type == "lumi.sensor_ht"){
         	dth = "Xiaomi Sensor HT";
             name = "Xiaomi Sensor HT";
@@ -226,35 +227,55 @@ def addDevice(){
         	log.warn("Failed >> Non exist DTH!!! Type >> " + type);
             def resultString = new groovy.json.JsonOutput().toJson("result":"nonExist")
             render contentType: "application/javascript", data: resultString
-        	
-        }else if(/*params.type == "lumi.ctrl_neutral2" || */params.type == "lumi.ctrl_ln2"){
-        	try{
-            	for (i = 0; i <2; i++) {
-                	def childDevice = addChildDevice("fison67", dth, (dni + "-" + (i+1)), location.hubs[0].id, [
-                        "label": name + (i+1)
-                    ])    
-                    childDevice.setInfo(settings.address, id)
-                    childDevice.setSubInfo(i+1)
-                    log.debug "Success >> ADD Device : ${type} DNI=${dni}"
-                    data.each { key, value ->
-                    //	log.debug "Key:" + key + ", " + value
-                        def map = [:]
-                        map['key'] = key
-                        map['data'] = value
-                        childDevice.setStatus(map)
-                    }
-                }
-                
-                def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
-                render contentType: "application/javascript", data: resultString
-            	
-            }catch(e){
-                console.log("Failed >> ADD Device Error : " + e);
-                def resultString = new groovy.json.JsonOutput().toJson("result":"fail")
-                render contentType: "application/javascript", data: resultString
-            }
-        }else{
-            try{
+/*}else if(params.type == "lumi.ctrl_neutral1" || params.type == "lumi.ctrl_ln1"){
+try{
+def childDevice = addChildDevice("fison67", dth, (dni + "-1"), location.hubs[0].id, [
+"label": name + "1"
+]) 
+childDevice.setInfo(settings.address, id, "1")
+log.debug "Success >> ADD Device : ${type} DNI=${dni}"
+def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
+render contentType: "application/javascript", data: resultString
+}catch(e){
+log.error "Failed >> ADD Device Error : ${e}"
+def resultString = new groovy.json.JsonOutput().toJson("result":"fail")
+render contentType: "application/javascript", data: resultString
+}*/
+}else if(params.type == "lumi.ctrl_neutral1" || params.type == "lumi.ctrl_ln1"){
+try{
+def index = 1;
+def childDevice = addChildDevice("fison67", dth, (dni + "-" + index), location.hubs[0].id, [
+"label": name + index
+]) 
+childDevice.setInfo(settings.address, id, index.toString())
+log.debug "Success >> ADD Device : ${type} DNI=${dni}"
+def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
+render contentType: "application/javascript", data: resultString
+}catch(e){
+log.error "Failed >> ADD Device Error : ${e}"
+def resultString = new groovy.json.JsonOutput().toJson("result":"fail")
+render contentType: "application/javascript", data: resultString
+}
+}else if(params.type == "lumi.ctrl_neutral2" || params.type == "lumi.ctrl_ln2"){
+try{
+def index = 1;
+for (i = 0; i <2; i++) {
+def childDevice = addChildDevice("fison67", dth, (dni + "-" + index), location.hubs[0].id, [
+"label": name + index
+]) 
+childDevice.setInfo(settings.address, id, index.toString())
+log.debug "Success >> ADD Device : ${type} DNI=${dni}"
+index += 1
+}
+def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
+render contentType: "application/javascript", data: resultString
+
+}catch(e){
+log.error "Failed >> ADD Device Error : ${e}"
+def resultString = new groovy.json.JsonOutput().toJson("result":"fail")
+render contentType: "application/javascript", data: resultString
+}
+}else{            try{
                 def childDevice = addChildDevice("fison67", dth, dni, location.hubs[0].id, [
                     "label": name
                 ])    
