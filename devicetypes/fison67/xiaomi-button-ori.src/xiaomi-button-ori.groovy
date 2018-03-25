@@ -53,8 +53,7 @@ metadata {
 	tiles(scale: 2) {
 		multiAttributeTile(name:"button", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.button", key: "PRIMARY_CONTROL") {
-                attributeState "click", label:'Button', icon:"http://fibaro-smartthings.s3-eu-west-1.amazonaws.com/button/pb_red_std.png", backgroundColor:"#cd1b11"
-                
+                attributeState "click", label:'Button', icon:"http://fibaro-smartthings.s3-eu-west-1.amazonaws.com/button/pb_red_std.png", backgroundColor:"#cd1b11"                
 			}
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")

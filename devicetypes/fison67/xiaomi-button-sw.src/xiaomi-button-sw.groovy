@@ -99,15 +99,12 @@ def setStatus(params){
  	switch(params.key){
     case "action":
     	if(params.data == "btn0-click") {
-    	sendEvent(name:"button", value: "btn0-click" );
         buttonEvent(1, "pushed")
         }
         else if(params.data == "btn1-click") {
-    	sendEvent(name:"button", value: "btn1-click" );
         buttonEvent(2, "pushed")
         }
         else if(params.data == "both_click") {
-    	sendEvent(name:"button", value: "both_click" );
         buttonEvent(3, "pushed")
         }
         else {
