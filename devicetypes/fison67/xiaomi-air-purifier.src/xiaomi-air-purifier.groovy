@@ -32,6 +32,12 @@ import groovy.json.JsonSlurper
 metadata {
 	definition (name: "Xiaomi Air Purifier", namespace: "fison67", author: "fison67") {
         capability "Switch"						//"on", "off"
+        capability "Switch Level"
+        capability "Temperature Measurement"
+        capability "Relative Humidity Measurement"
+		capability "Refresh"
+		capability "Sensor"
+		capability "Dust Sensor" // fineDustLevel : PM 2.5   dustLevel : PM 10
          
         attribute "switch", "string"
         attribute "temperature", "string"
@@ -87,6 +93,9 @@ metadata {
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
+            tileAttribute ("device.level", key: "SLIDER_CONTROL") {
+                attributeState "level", action:"switch level.setLevel"
+            }            
 		}
         standardTile("switch2", "device.switch", width: 2, height: 2, canChangeIcon: true) {
             state "on", label:'ON', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjcy/MDAxNTIyMTMxNzU3MDk0.N_tjWtJELqei9aUS5a7GDAbood-9HRsE7CEyvOGW9gwg.8Kx4Sq9TB0MdEGwkuT4Pp5R1y85lfhhGh1mSW6DB4E8g.PNG.shin4299/MiAirPurifier2S_on.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOff"
@@ -243,7 +252,11 @@ def setStatus(params){
         sendEvent(name:"ledBrightness", value: params.data)
     	break;
     case "speed":
-        sendEvent(name:"speed", value: params.data)
+		def para = "${params.data}"
+		String data = para
+		def stf = Float.parseFloat(data)
+		def speed = Math.round(stf*625/100)    
+        sendEvent(name:"level", value: speed)
     	break;
     case "led":
         sendEvent(name:"led", value: (params.data == "true" ? "on" : "off"))
@@ -276,7 +289,8 @@ def refresh(){
     sendCommand(options, callback)
 }
 
-def setSpeed(speed){
+def setLevel(level){
+	def speed = Math.round(level/625*100)    
 	log.debug "setSpeed >> ${state.id}, speed=" + speed
     def body = [
         "id": state.id,
@@ -304,7 +318,7 @@ def setModeFavorite(){
     def body = [
         "id": state.id,
         "cmd": "mode",
-        "data": "favorite"
+        "data": "high"
     ]
     def options = makeCommand(body)
     sendCommand(options, null)

@@ -63,11 +63,12 @@ metadata {
 	tiles(scale: 2) {
 		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: true){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"localOff", icon:"https://postfiles.pstatic.net/MjAxODAzMjZfMTky/MDAxNTIyMDQ5OTMyMTQ0.4TTzT2kCKkd-yUfBndUn2fJf8F9YD2NNN5PjDOd4j_8g.0x1MjkasUZv2A08EHwCIxc5HhQuUjijU515jsozdm8Ig.PNG.fuls/yeelight_off_20020098.png?type=w773", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"localOn", icon:"https://postfiles.pstatic.net/MjAxODAzMjZfMTky/MDAxNTIyMDQ5OTMyMTQ0.4TTzT2kCKkd-yUfBndUn2fJf8F9YD2NNN5PjDOd4j_8g.0x1MjkasUZv2A08EHwCIxc5HhQuUjijU515jsozdm8Ig.PNG.fuls/yeelight_off_20020098.png?type=w773", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTU5/MDAxNTIyMTUzOTk3MTgy.j2vWDdDUen5w1lVKthaUgjRTk8EU0X1DTzLkIurRAyMg.Me30JNZPejyeC_GrQ1rffZvzaiUWYxHjLCyVkMjGCHYg.PNG.shin4299/Yeelight_mo_tile_on.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'\n${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfNTAg/MDAxNTIyMTUzOTk3MTcy.XnqpwsxugesLmLzedrSispSEYs8dm3M18Y_UAx5M1icg.XC0qikMbzjwWsl_gQnSoQUnFwzsT78q-9rihSuWvVGEg.PNG.shin4299/Yeelight_mo_tile_off.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"localOff", icon:"https://postfiles.pstatic.net/MjAxODAzMjZfMTky/MDAxNTIyMDQ5OTMyMTQ0.4TTzT2kCKkd-yUfBndUn2fJf8F9YD2NNN5PjDOd4j_8g.0x1MjkasUZv2A08EHwCIxc5HhQuUjijU515jsozdm8Ig.PNG.fuls/yeelight_off_20020098.png?type=w773", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"localOn", icon:"https://postfiles.pstatic.net/MjAxODAzMjZfMTky/MDAxNTIyMDQ5OTMyMTQ0.4TTzT2kCKkd-yUfBndUn2fJf8F9YD2NNN5PjDOd4j_8g.0x1MjkasUZv2A08EHwCIxc5HhQuUjijU515jsozdm8Ig.PNG.fuls/yeelight_off_20020098.png?type=w773", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfNTAg/MDAxNTIyMTUzOTk3MTcy.XnqpwsxugesLmLzedrSispSEYs8dm3M18Y_UAx5M1icg.XC0qikMbzjwWsl_gQnSoQUnFwzsT78q-9rihSuWvVGEg.PNG.shin4299/Yeelight_mo_tile_off.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'\n${name}', action:"switch.ofn", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTU5/MDAxNTIyMTUzOTk3MTgy.j2vWDdDUen5w1lVKthaUgjRTk8EU0X1DTzLkIurRAyMg.Me30JNZPejyeC_GrQ1rffZvzaiUWYxHjLCyVkMjGCHYg.PNG.shin4299/Yeelight_mo_tile_on.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
+
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
@@ -78,7 +79,18 @@ metadata {
                 attributeState "level", action:"switch level.setLevel"
             }
 		}
-        
+		multiAttributeTile(name:"switch2", type: "lighting"){
+			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
+                attributeState "on", label:'ON', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTk4/MDAxNTIyMTUzOTk3MTY1.PJymTUZE8iMBPumZzoG_l0WgKTgqMJccUKBTy3-etrMg.2AdvU9rFVJH0_v6NogrZPCwv-NtqeB5oBqHSqaVoYfgg.PNG.shin4299/Yeelight_mo_main_on.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'OFF', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjU0/MDAxNTIyMTUzOTk3MTU1.ihvsjIGETKpfERltO0G-QgqHG7zls-jxzwrnCx3ivYog.uR77SPI-Dcs40NigVqpeYfMfL4HwJY9C1gcQwbbnmwYg.PNG.shin4299/Yeelight_mo_main_off.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
+                
+                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjU0/MDAxNTIyMTUzOTk3MTU1.ihvsjIGETKpfERltO0G-QgqHG7zls-jxzwrnCx3ivYog.uR77SPI-Dcs40NigVqpeYfMfL4HwJY9C1gcQwbbnmwYg.PNG.shin4299/Yeelight_mo_main_off.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"switch.ofn", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTk4/MDAxNTIyMTUzOTk3MTY1.PJymTUZE8iMBPumZzoG_l0WgKTgqMJccUKBTy3-etrMg.2AdvU9rFVJH0_v6NogrZPCwv-NtqeB5oBqHSqaVoYfgg.PNG.shin4299/Yeelight_mo_main_on.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
+
+			}
+        }
+   	main (["switch2"])
+	details(["switch"])               
        
 	}
 }
@@ -132,7 +144,7 @@ def setColor(color){
     sendCommand(options, null)
 }
 
-def localOn(){
+def on(){
 	log.debug "Off >> ${state.id}"
     def body = [
         "id": state.id,
@@ -143,7 +155,7 @@ def localOn(){
     sendCommand(options, null)
 }
 
-def localOff(){
+def off(){
 	log.debug "Off >> ${state.id}"
 	def body = [
         "id": state.id,
@@ -154,13 +166,6 @@ def localOff(){
     sendCommand(options, null)
 }
 
-def on(){
-	localOn()
-}
-
-def off(){
-	localOff()
-}
 
 def callback(physicalgraph.device.HubResponse hubResponse){
 	def msg
