@@ -64,11 +64,11 @@ metadata {
 	tiles(scale: 2) {
 		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: true){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"localOff", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"localOn", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'${name}', action:"localOff", icon:"https://postfiles.pstatic.net/MjAxODAzMjZfNjQg/MDAxNTIyMDQ5NzY3NTE5.134vVSkiz7cE86vl1AK0b8HIk0zNOTHgC5LUpcGrwNwg.nIJZ7sGm2NmLj7T94nWUvEXYsUgs_I7mvLLQ-IIJvv0g.PNG.fuls/yeelight_on_20020098.png?type=w773", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'${name}', action:"localOn", icon:"https://postfiles.pstatic.net/MjAxODAzMjZfNjQg/MDAxNTIyMDQ5NzY3NTE5.134vVSkiz7cE86vl1AK0b8HIk0zNOTHgC5LUpcGrwNwg.nIJZ7sGm2NmLj7T94nWUvEXYsUgs_I7mvLLQ-IIJvv0g.PNG.fuls/yeelight_on_20020098.png?type=w773", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"localOff", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"localOn", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"localOff", icon:"https://postfiles.pstatic.net/MjAxODAzMjZfNjQg/MDAxNTIyMDQ5NzY3NTE5.134vVSkiz7cE86vl1AK0b8HIk0zNOTHgC5LUpcGrwNwg.nIJZ7sGm2NmLj7T94nWUvEXYsUgs_I7mvLLQ-IIJvv0g.PNG.fuls/yeelight_on_20020098.png?type=w773", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"localOn", icon:"https://postfiles.pstatic.net/MjAxODAzMjZfNjQg/MDAxNTIyMDQ5NzY3NTE5.134vVSkiz7cE86vl1AK0b8HIk0zNOTHgC5LUpcGrwNwg.nIJZ7sGm2NmLj7T94nWUvEXYsUgs_I7mvLLQ-IIJvv0g.PNG.fuls/yeelight_on_20020098.png?type=w773", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {

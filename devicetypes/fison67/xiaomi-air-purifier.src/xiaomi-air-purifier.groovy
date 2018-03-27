@@ -77,18 +77,23 @@ metadata {
 	tiles {
 		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'\n${name}', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'\n${name}', action:"switch.on", icon:"http://blogfiles.naver.net/MjAxODAzMjdfMTk4/MDAxNTIyMTMyNzMxMjEz.BdXDvyyncHtsRwYxAHHWI4zCZaGxYkKAcCbrRYvRtEcg.HHz2i2rn7IdfCFJd-5heHMCllb0TJgXAq8dHtdM1beEg.PNG.shin4299/MiAirPurifier2S_off_tile.png?type=w1", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'\n${name}', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfMTk4/MDAxNTIyMTMyNzMxMjEz.BdXDvyyncHtsRwYxAHHWI4zCZaGxYkKAcCbrRYvRtEcg.HHz2i2rn7IdfCFJd-5heHMCllb0TJgXAq8dHtdM1beEg.PNG.shin4299/MiAirPurifier2S_off_tile.png?type=w1", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'\n${name}', action:"switch.on", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
-        
+        standardTile("switch2", "device.switch", width: 2, height: 2, canChangeIcon: true) {
+            state "on", label:'ON', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjcy/MDAxNTIyMTMxNzU3MDk0.N_tjWtJELqei9aUS5a7GDAbood-9HRsE7CEyvOGW9gwg.8Kx4Sq9TB0MdEGwkuT4Pp5R1y85lfhhGh1mSW6DB4E8g.PNG.shin4299/MiAirPurifier2S_on.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOff"
+            state "off", label:'OFF', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjI3/MDAxNTIyMTMxNzU3MDkz._Am5iYSb9WU7jNHnFF-gy0-KvnsJZaGvEotWYhS6MOcg.uHiBGv8YpSE4zglfog873hRTw-4e59SA21xbyauSx4Eg.PNG.shin4299/MiAirPurifier2S_off.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
+            state "turningOff", label:'turningOff', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjcy/MDAxNTIyMTMxNzU3MDk0.N_tjWtJELqei9aUS5a7GDAbood-9HRsE7CEyvOGW9gwg.8Kx4Sq9TB0MdEGwkuT4Pp5R1y85lfhhGh1mSW6DB4E8g.PNG.shin4299/MiAirPurifier2S_on.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOn"
+            state "turningOn", label:'turningOn', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjI3/MDAxNTIyMTMxNzU3MDkz._Am5iYSb9WU7jNHnFF-gy0-KvnsJZaGvEotWYhS6MOcg.uHiBGv8YpSE4zglfog873hRTw-4e59SA21xbyauSx4Eg.PNG.shin4299/MiAirPurifier2S_off.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOff"
+        }
         valueTile("temperature", "device.temperature", width: 2, height: 2, unit: "°C") {
             state("val", label:'${currentValue}', defaultState: true, 
             	backgroundColors:[
@@ -190,6 +195,11 @@ metadata {
         valueTile("average_aqi", "device.average_aqi", width: 2, height: 2) {
             state("val", label:'${currentValue}', defaultState: true, backgroundColor:"#00a0dc")
         }
+   	main (["switch2"])
+	details(["switch", "temperature", "humidity", "pm25", "led", "buzzer", "mode", "ledBrightness", "speed", 
+    		 "temp1", "f1_hour_used_name", "filter1_life_name", "average_aqi_name", 
+             "f1_hour_used", "filter1_life", "average_aqi"])
+        
 	}
 }
 
