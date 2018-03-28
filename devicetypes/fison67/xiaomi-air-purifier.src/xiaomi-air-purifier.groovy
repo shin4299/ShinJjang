@@ -393,7 +393,7 @@ def setStatus(params){
 		def para = "${params.data}"
 		String data = para
 		def stf = Float.parseFloat(data)
-		def use = Math.round(stf*24)    
+		def use = Math.round(stf/24)    
     	sendEvent(name:"f1_hour_used", value: use)
         break;
     case "filter1_life":
