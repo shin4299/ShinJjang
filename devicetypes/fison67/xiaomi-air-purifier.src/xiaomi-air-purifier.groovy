@@ -49,18 +49,23 @@ metadata {
         attribute "f1_hour_used", "string"
         attribute "filter1_life", "string"
         attribute "average_aqi", "string"
-        
+        attribute "mode", "enum", ["auto", "silent", "favorite", "low", "medium", "high", "strong"]        
         
         attribute "lastCheckin", "Date"
          
         command "setSpeed"
         command "setStatus"
         command "refresh"
+        command "any"
         
         command "on"
         command "off"
         
         command "setModeAuto"
+        command "setModeMedium"
+        command "setModeLow"
+        command "setModeHigh"
+        command "setModeStrong"
         command "setModeSilent"
         command "setModeFavorite"
         command "setModeIdle"
@@ -79,15 +84,24 @@ metadata {
 
 	simulator {
 	}
+	preferences {
+		input name:"model", type:"enum", title:"Select Model", options:["MiAirPurifier", "MiAirPurifier2", "MiAirPurifierPro", "MiAirPurifier2S"], description:"Select Your Airpurifier Model"
+	}
 
 	tiles {
-		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
-			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'\n${name}', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'\n${name}', action:"switch.on", icon:"http://blogfiles.naver.net/MjAxODAzMjdfMTk4/MDAxNTIyMTMyNzMxMjEz.BdXDvyyncHtsRwYxAHHWI4zCZaGxYkKAcCbrRYvRtEcg.HHz2i2rn7IdfCFJd-5heHMCllb0TJgXAq8dHtdM1beEg.PNG.shin4299/MiAirPurifier2S_off_tile.png?type=w1", backgroundColor:"#ffffff", nextState:"turningOn"
+		multiAttributeTile(name:"mode", type: "generic", width: 6, height: 4){
+			tileAttribute ("device.mode", key: "PRIMARY_CONTROL") {
+                attributeState "off", label:'\noff', action:"setModeAuto", icon:"http://blogfiles.naver.net/MjAxODAzMjdfMTk4/MDAxNTIyMTMyNzMxMjEz.BdXDvyyncHtsRwYxAHHWI4zCZaGxYkKAcCbrRYvRtEcg.HHz2i2rn7IdfCFJd-5heHMCllb0TJgXAq8dHtdM1beEg.PNG.shin4299/MiAirPurifier2S_off_tile.png?type=w1", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "auto", label:'\nauto', action:"setModeSilent", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#73C1EC", nextState:"modechange"
+                attributeState "silent", label:'\nsilent', action:"setModeFavorite", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#6eca8f", nextState:"modechange"
+                attributeState "favorite", label:'\nfavorite', action:"setModeAuto", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#ff9eb2", nextState:"modechange"
+                attributeState "low", label:'\nlow', action:"setModeMedium", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#FFDE61", nextState:"modechange"
+                attributeState "medium", label:'\nmedium', action:"setModeHigh", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#f9b959", nextState:"modechange"
+                attributeState "high", label:'\nhigh', action:"setModeStrong", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#ff9eb2", nextState:"modechange"
+                attributeState "strong", label:'\nstrong', action:"setModeAuto", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#db5764", nextState:"modechange"
                 
                 attributeState "turningOn", label:'\n${name}', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfMTk4/MDAxNTIyMTMyNzMxMjEz.BdXDvyyncHtsRwYxAHHWI4zCZaGxYkKAcCbrRYvRtEcg.HHz2i2rn7IdfCFJd-5heHMCllb0TJgXAq8dHtdM1beEg.PNG.shin4299/MiAirPurifier2S_off_tile.png?type=w1", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'\n${name}', action:"switch.on", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "modechange", label:'\n${name}', icon:"st.quirky.spotter.quirky-spotter-motion", backgroundColor:"#C4BBB5"
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
@@ -97,120 +111,214 @@ metadata {
                 attributeState "level", action:"switch level.setLevel"
             }            
 		}
-        standardTile("switch2", "device.switch", width: 2, height: 2, canChangeIcon: true) {
-            state "on", label:'ON', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjcy/MDAxNTIyMTMxNzU3MDk0.N_tjWtJELqei9aUS5a7GDAbood-9HRsE7CEyvOGW9gwg.8Kx4Sq9TB0MdEGwkuT4Pp5R1y85lfhhGh1mSW6DB4E8g.PNG.shin4299/MiAirPurifier2S_on.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOff"
-            state "off", label:'OFF', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjI3/MDAxNTIyMTMxNzU3MDkz._Am5iYSb9WU7jNHnFF-gy0-KvnsJZaGvEotWYhS6MOcg.uHiBGv8YpSE4zglfog873hRTw-4e59SA21xbyauSx4Eg.PNG.shin4299/MiAirPurifier2S_off.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
-            state "turningOff", label:'turningOff', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjcy/MDAxNTIyMTMxNzU3MDk0.N_tjWtJELqei9aUS5a7GDAbood-9HRsE7CEyvOGW9gwg.8Kx4Sq9TB0MdEGwkuT4Pp5R1y85lfhhGh1mSW6DB4E8g.PNG.shin4299/MiAirPurifier2S_on.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOn"
-            state "turningOn", label:'turningOn', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjI3/MDAxNTIyMTMxNzU3MDkz._Am5iYSb9WU7jNHnFF-gy0-KvnsJZaGvEotWYhS6MOcg.uHiBGv8YpSE4zglfog873hRTw-4e59SA21xbyauSx4Eg.PNG.shin4299/MiAirPurifier2S_off.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOff"
-        }
-        valueTile("temperature", "device.temperature", width: 2, height: 2, unit: "°C") {
-            state("val", label:'${currentValue}', defaultState: true, 
-            	backgroundColors:[
-                    [value: 31, color: "#153591"],
-                    [value: 44, color: "#1e9cbb"],
-                    [value: 59, color: "#90d2a7"],
-                    [value: 74, color: "#44b621"],
-                    [value: 84, color: "#f1d801"],
-                    [value: 95, color: "#d04e00"],
-                    [value: 96, color: "#bc2323"]
-                ]
-            )
-        }
-        
-        valueTile("humidity", "device.humidity", width: 2, height: 2, unit: "%") {
-            state("val", label:'${currentValue}', defaultState: true, 
-            	backgroundColors:[
-                    [value: 31, color: "#153591"],
-                    [value: 44, color: "#1e9cbb"],
-                    [value: 59, color: "#90d2a7"],
-                    [value: 74, color: "#44b621"],
-                    [value: 84, color: "#f1d801"],
-                    [value: 95, color: "#d04e00"],
-                    [value: 96, color: "#bc2323"]
-                ]
-            )
-        }
-        
-         valueTile("pm25", "device.pm25", width: 2, height: 2, unit: "") {
-            state("val", label:'${currentValue}', defaultState: true, 
-            	backgroundColors:[
-                    [value: 31, color: "#153591"],
-                    [value: 44, color: "#1e9cbb"],
-                    [value: 59, color: "#90d2a7"],
-                    [value: 74, color: "#44b621"],
-                    [value: 84, color: "#f1d801"],
-                    [value: 95, color: "#d04e00"],
-                    [value: 96, color: "#bc2323"]
-                ]
-            )
-        }
-        
-        standardTile("led", "device.led", width: 2, height: 2, canChangeIcon: true) {
-            state "on", label:'Led', action:"ledOff", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-            state "off", label:'Led', action:"ledOn", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
-             
-        	state "turningOn", label:'${name}', action:"ledOff", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-            state "turningOff", label:'${name}', action:"ledOn", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
-        }
-        
-        standardTile("buzzer", "device.buzzer", inactiveLabel: false, width: 2, height: 2, canChangeIcon: true) {
-            state "on", label:'Sound', action:"buzzerOff", backgroundColor:"#00a0dc", nextState:"turningOff"
-            state "off", label:'Mute', action:"buzzerOn", backgroundColor:"#ffffff", nextState:"turningOn"
-             
-        	state "turningOn", label:'....', action:"buzzerOff", backgroundColor:"#00a0dc", nextState:"turningOff"
-            state "turningOff", label:'....', action:"buzzerOn", backgroundColor:"#ffffff", nextState:"turningOn"
-        }
-        
-        standardTile("mode", "device.mode", width: 2, height: 2, canChangeIcon: true) {
-            state "idle", label: 'Idle', action: "setModeAuto", icon: "st.switches.switch.on", backgroundColor: "#00a0dc", nextState:"auto"
-            state "auto", label: 'Auto', action: "setModeSilent", icon: "st.switches.switch.on", backgroundColor: "#00a0dc", nextState:"silent"
-            state "silent", label: 'Silent', action: "setModeFavorite", icon: "st.switches.switch.on", backgroundColor: "#00a0dc", nextState:"favorite"
-            state "favorite", label: 'Manual', action: "setModeAuto", icon: "st.switches.switch.on", backgroundColor: "#00a0dc", nextState:"auto"
-        }
-        
-        standardTile("ledBrightness", "device.ledBrightness", width: 2, height: 2, canChangeIcon: true) {
-            state "bright", label: 'Bright', action: "setBrightDim", icon: "st.switches.switch.on", backgroundColor: "#00a0dc", nextState:"dim"
-            state "dim", label: 'Dim', action: "setBrightOff", icon: "st.switches.switch.on", backgroundColor: "#00a0dc", nextState:"off"
-            state "off", label: 'Off', action: "setBright", icon: "st.switches.switch.off", backgroundColor: "#ffffff", nextState:"bright"
-        } 
+        standardTile("modemain", "device.mode", width: 2, height: 2) {
+                state "off", label:'off', action:"setModeAuto", icon:"http://blogfiles.naver.net/MjAxODAzMjdfMTk4/MDAxNTIyMTMyNzMxMjEz.BdXDvyyncHtsRwYxAHHWI4zCZaGxYkKAcCbrRYvRtEcg.HHz2i2rn7IdfCFJd-5heHMCllb0TJgXAq8dHtdM1beEg.PNG.shin4299/MiAirPurifier2S_off_tile.png?type=w1", backgroundColor:"#ffffff", nextState:"turningOn"
+                state "auto", label:'auto', action:"setModeSilent", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#73C1EC", nextState:"modechange"
+                state "silent", label:'silent', action:"setModeFavorite", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#6eca8f", nextState:"modechange"
+                state "favorite", label:'favorite', action:"setModeAuto", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#ff9eb2", nextState:"modechange"
+                state "low", label:'low', action:"setModeMedium", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#FFDE61", nextState:"modechange"
+                state "medium", label:'medium', action:"setModeHigh", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#f9b959", nextState:"modechange"
+                state "high", label:'high', action:"setModeStrong", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#ff9eb2", nextState:"modechange"
+                state "strong", label:'strong', action:"setModeAuto", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#db5764", nextState:"modechange"
                 
-        controlTile("speed", "device.speed", "slider",  height: 2, width: 2, inactiveLabel: false, range:"(0..16)") {
-            state "val", action:"setSpeed", label:"${currentValue}"
+                state "turningOn", label:'${name}', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfMTk4/MDAxNTIyMTMyNzMxMjEz.BdXDvyyncHtsRwYxAHHWI4zCZaGxYkKAcCbrRYvRtEcg.HHz2i2rn7IdfCFJd-5heHMCllb0TJgXAq8dHtdM1beEg.PNG.shin4299/MiAirPurifier2S_off_tile.png?type=w1", backgroundColor:"#00a0dc", nextState:"turningOff"
+                state "modechange", label:'${name}', icon:"st.quirky.spotter.quirky-spotter-motion", backgroundColor:"#C4BBB5"
         }
         
-        standardTile("temp1", "device.ledBrightness", width: 2, height: 2) {
-        } 
+//-------------------------
+
+
+        standardTile("switch", "device.switch", inactiveLabel: false, width: 2, height: 2) {
+            state "on", label:'ON', action:"switch.off", icon:"st.Appliances.appliances17", backgroundColor:"#00a0dc", nextState:"turningOff"
+            state "off", label:'OFF', action:"switch.on", icon:"st.Appliances.appliances17", backgroundColor:"#ffffff", nextState:"turningOn"
+             
+        	state "turningOn", label:'turningOn', action:"switch.off", icon:"st.Appliances.appliances17", backgroundColor:"#00a0dc", nextState:"turningOff"
+            state "turningOff", label:'turningOff', action:"switch.on", icon:"st.Appliances.appliances17", backgroundColor:"#ffffff", nextState:"turningOn"
+        }
+        valueTile("pm25_label", "", decoration: "flat") {
+            state "default", label:'PM2.5 \n㎍/㎥'
+        }        
+        valueTile("aqi_label", "", decoration: "flat") {
+            state "default", label:'AQI \n㎍/㎥'
+        }        
+        valueTile("temp_label", "", decoration: "flat") {
+            state "default", label:'온도'
+        }
+        valueTile("humi_label", "", decoration: "flat") {
+            state "default", label:'습도'
+        }
+		valueTile("pm25_value", "device.fineDustLevel", decoration: "flat") {
+        	state "default", label:'${currentValue}', unit:"㎍/㎥", backgroundColors:[
+				[value: -1, color: "#C4BBB5"],
+            	[value: 0, color: "#7EC6EE"],
+            	[value: 15, color: "#51B2E8"],
+            	[value: 50, color: "#e5c757"],
+            	[value: 75, color: "#E40000"],
+            	[value: 500, color: "#970203"]
+            ]
+        }
+		valueTile("aqi", "device.airQualityLevel", decoration: "flat") {
+        	state "default", label:'${currentValue}', unit:"㎍/㎥", backgroundColors:[
+				[value: -1, color: "#bcbcbc"],
+				[value: 0, color: "#bcbcbc"],
+            	[value: 0.5, color: "#7EC6EE"],
+            	[value: 15, color: "#51B2E8"],
+            	[value: 50, color: "#e5c757"],
+            	[value: 75, color: "#E40000"],
+            	[value: 500, color: "#970203"]
+            ]
+        }        
+        valueTile("temperature", "device.temperature") {
+            state("val", label:'${currentValue}', defaultState: true, 
+            	backgroundColors:[
+                    [value: -1, color: "#bcbcbc"],
+                    [value: 0, color: "#bcbcbc"],
+                    [value: 0.1, color: "#153591"],
+                    [value: 5, color: "#153591"],
+                    [value: 10, color: "#1e9cbb"],
+                    [value: 20, color: "#90d2a7"],
+                    [value: 30, color: "#44b621"],
+                    [value: 40, color: "#f1d801"],
+                    [value: 70, color: "#d04e00"],
+                    [value: 90, color: "#bc2323"]
+                ]
+            )
+        }
+        valueTile("humidity", "device.humidity") {
+            state("val", label:'${currentValue}', defaultState: true, 
+            	backgroundColors:[
+                    [value: -1, color: "#bcbcbc"],
+                    [value: 0, color: "#bcbcbc"],
+                    [value: 10, color: "#153591"],
+                    [value: 30, color: "#1e9cbb"],
+                    [value: 40, color: "#90d2a7"],
+                    [value: 50, color: "#44b621"],
+                    [value: 60, color: "#f1d801"],
+                    [value: 80, color: "#d04e00"],
+                    [value: 90, color: "#bc2323"]
+                ]
+            )
+        }   
         
-        standardTile("f1_hour_used_name", "device.f1_hour_used_name", inactiveLabel: false, width: 2, height: 1) {
-            state "temp", label:'Filter Hour Used',  backgroundColor:"#ffffff"
+        valueTile("auto_label", "", decoration: "flat") {
+            state "default", label:'Auto \nMode'
+        }
+        valueTile("silent_label", "", decoration: "flat") {
+            state "default", label:'Silent \nMode'
+        }
+        valueTile("favorit_label", "", decoration: "flat") {
+            state "default", label:'Favorite \nMode'
+        }
+        valueTile("low_label", "", decoration: "flat") {
+            state "default", label:'Low \nMode'
+        }
+        valueTile("medium_label", "", decoration: "flat") {
+            state "default", label:'Medium \nMode'
+        }
+        valueTile("high_label", "", decoration: "flat") {
+            state "default", label:'High \nMode'
+        }
+        valueTile("strong_label", "", decoration: "flat") {
+            state "default", label:'Strong \nMode'
+        }
+        valueTile("led_label", "", decoration: "flat") {
+            state "default", label:'Brightness \nMode'
+        }
+        valueTile("buzzer_label", "", decoration: "flat") {
+            state "default", label:'Buzzer \nMode'
+        }
+        valueTile("usage_label", "", decoration: "flat") {
+            state "default", label:'Usage \nTime'
+        }
+        valueTile("remain_label", "", decoration: "flat") {
+            state "default", label:'Remaining \nTime'
         }
         
-        standardTile("filter1_life_name", "device.filter1_life_name", inactiveLabel: false, width: 2, height: 1) {
-            state "temp", label:'Filter Life Remain',  backgroundColor:"#ffffff"
+        standardTile("mode1", "device.mode1") {
+			state "default", label: "Auto", action: "setModeAuto", icon:"st.unknown.zwave.static-controller", backgroundColor:"#73C1EC"
+		}
+        standardTile("mode2", "device.mode2") {
+			state "default", label: "Silent", action: "setModeSilent", icon:"st.quirky.spotter.quirky-spotter-sound-off", backgroundColor:"#6eca8f"
+		}
+        standardTile("mode3", "device.mode3") {
+			state "default", label: "Favor", action: "setModeFavorite", icon:"st.presence.tile.presence-default", backgroundColor:"#ff9eb2"
+			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc"
+		}
+        standardTile("mode4", "device.mode4") {
+			state "default", label: "Low", action: "setModeLow", icon:"st.quirky.spotter.quirky-spotter-luminance-dark", backgroundColor:"#FFDE61"
+			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc"
+		}
+        standardTile("mode5", "device.mode5") {
+			state "default", label: "Medium", action: "setModeMedium", icon:"st.quirky.spotter.quirky-spotter-luminance-light", backgroundColor:"#f9b959"
+			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc"
+		}
+        standardTile("mode6", "device.mode6") {
+			state "default", label: "High", action: "setModeHigh", icon:"st.quirky.spotter.quirky-spotter-luminance-bright", backgroundColor:"#ff9eb2"
+			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc"
+		}
+        standardTile("mode7", "device.mode7") {
+			state "default", label: "Strong", action: "setModeStrong", icon:"st.Weather.weather1", backgroundColor:"#db5764"
+			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc"
+		}
+        standardTile("buzzer", "device.buzzer") {
+            state "on", label:'Sound', action:"buzzerOff", icon: "st.custom.sonos.unmuted", backgroundColor:"#BAA7BC", nextState:"turningOff"
+            state "off", label:'Mute', action:"buzzerOn", icon: "st.custom.sonos.muted", backgroundColor:"#d1cdd2", nextState:"turningOn"
+             
+        	state "turningOn", label:'....', action:"buzzerOff", backgroundColor:"#d1cdd2", nextState:"turningOff"
+            state "turningOff", label:'....', action:"buzzerOn", backgroundColor:"#BAA7BC", nextState:"turningOn"
+        }
+        standardTile("ledBrightness", "device.ledBrightness") {
+            state "bright", label: 'Bright', action: "setBrightDim", icon: "st.illuminance.illuminance.bright", backgroundColor: "#ff93ac", nextState:"change"
+            state "dim", label: 'Dim', action: "setBrightOff", icon: "st.illuminance.illuminance.light", backgroundColor: "#ffc2cd", nextState:"change"
+            state "off", label: 'Off', action: "setBright", icon: "st.illuminance.illuminance.dark", backgroundColor: "#d6c6c9", nextState:"change"
+            state "change", label:'....', action:"setBrightOff", backgroundColor:"#d6c6c9"
+        }         
+
+        valueTile("f1_hour_used", "device.f1_hour_used", width: 2, height: 1) {
+            state("val", label:'${currentValue} hours', defaultState: true, backgroundColor:"#bcbcbc")
         }
         
-        standardTile("average_aqi_name", "device.average_aqi_name", inactiveLabel: false, width: 2, height: 1) {
-            state "temp", label:'Average Aqi',  backgroundColor:"#ffffff"
+        valueTile("filter1_life", "device.filter1_life", width: 2, height: 1) {
+            state("val", label:'${currentValue} hours', defaultState: true, backgroundColor:"#bcbcbc")
         }
-        
-        valueTile("f1_hour_used", "device.f1_hour_used", width: 2, height: 2) {
-            state("val", label:'${currentValue}', defaultState: true, backgroundColor:"#00a0dc")
-        }
-        
-        valueTile("filter1_life", "device.filter1_life", width: 2, height: 2) {
-            state("val", label:'${currentValue}', defaultState: true, backgroundColor:"#00a0dc")
-        }
-        
-        valueTile("average_aqi", "device.average_aqi", width: 2, height: 2) {
-            state("val", label:'${currentValue}', defaultState: true, backgroundColor:"#00a0dc")
-        }
-   	main (["switch2"])
-	details(["switch", "temperature", "humidity", "pm25", "led", "buzzer", "mode", "ledBrightness", "speed", 
-    		 "temp1", "f1_hour_used_name", "filter1_life_name", "average_aqi_name", 
-             "f1_hour_used", "filter1_life", "average_aqi"])
+
+
+
+   	main (["modemain"])
+	details(["mode", "switch", "pm25_label", "aqi_label", "temp_label", "humi_label", 
+    "pm25_value", "aqi", "temperature", "humidity", 
+    "auto_label", "silent_label", "favorit_label", "low_label", "medium_label", "high_label", 
+    "mode1", "mode2", "mode3", "mode4", "mode5", "mode6", 
+    "strong_label", "led_label", "buzzer_label", "usage_label", "f1_hour_used", 
+    "mode7", "buzzer", "ledBrightness", "remain_label", "filter1_life"
+    ])
         
 	}
 }
+
+def updated() {
+    if(model == "MiAirPurifier"){
+		sendEvent(name:"airQualityLevel", value: "N/A" )
+		sendEvent(name:"mode3", value: "notab" )
+		sendEvent(name:"temperature", value: "N/A" )
+		sendEvent(name:"humidity", value: "N/A" )
+		sendEvent(name:"mode4", value: "default" )
+		sendEvent(name:"mode5", value: "default" )
+		sendEvent(name:"mode6", value: "default" )
+		sendEvent(name:"mode7", value: "default" )
+        }
+     else {
+		sendEvent(name:"mode4", value: "notab" )
+		sendEvent(name:"mode5", value: "notab" )
+		sendEvent(name:"mode6", value: "notab" )
+		sendEvent(name:"mode7", value: "notab" )
+		sendEvent(name:"airQualityLevel", value: 20 )
+		sendEvent(name:"mode3", value: "default" )
+		sendEvent(name:"temperature", value: 20 )
+		sendEvent(name:"humidity", value: 40 )
+        }
+}
+
 
 // parse events into attributes
 def parse(String description) {
@@ -228,22 +336,37 @@ def setStatus(params){
  
  	switch(params.key){
     case "mode":
-    	sendEvent(name:"mode", value: params.data )
+    	if(params.data == "idle") {
+        }
+    	else {
+        sendEvent(name:"mode", value: params.data )
+        }
     	break;
     case "pm2.5":
-    	sendEvent(name:"pm25", value: params.data + "㎍/㎥")
+    	sendEvent(name:"fineDustLevel", value: params.data)
     	break;
     case "aqi":
-    	sendEvent(name:"pm25", value: params.data + "㎍/㎥")
+    	sendEvent(name:"fineDustLevel", value: params.data)
     	break;
     case "relativeHumidity":
-    	sendEvent(name:"humidity", value: params.data + "%")
+    	sendEvent(name:"humidity", value: params.data +"%")
     	break;
     case "power":
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
+    	if(params.data == "true") {
+    	sendEvent(name:"switch", value:"on")
+        }
+        else if(params.data == "false") {
+    	sendEvent(name:"mode", value: "off")
+    	sendEvent(name:"switch", value:"off")
+        }
     	break;
     case "temperature":
-        sendEvent(name:"temperature", value: params.data)
+		def para = "${params.data}"
+		String data = para
+		def st = data.replace("C","");
+		def stf = Float.parseFloat(st)
+		def tem = Math.round(stf*10)/10
+        sendEvent(name:"temperature", value: tem +"°" )
     	break;
     case "buzzer":
         sendEvent(name:"buzzer", value: (params.data == "true" ? "on" : "off"))
@@ -259,7 +382,7 @@ def setStatus(params){
         sendEvent(name:"level", value: speed)
     	break;
     case "led":
-        sendEvent(name:"led", value: (params.data == "true" ? "on" : "off"))
+        sendEvent(name:"ledBrightness", value: (params.data == "true" ? "bright" : "off"))
     	break;
     case "f1_hour_used":
     	sendEvent(name:"f1_hour_used", value: params.data)
@@ -268,7 +391,8 @@ def setStatus(params){
     	sendEvent(name:"filter1_life", value: params.data)
     	break;
     case "average_aqi":
-    	sendEvent(name:"average_aqi", value: params.data + "㎍/㎥")
+    
+    	sendEvent(name:"aqi", value: params.data  + "㎍/㎥")
     	break;
     }
     
@@ -302,6 +426,17 @@ def setLevel(level){
 	sendEvent(name: "level", value: speed)
 }
 
+def setModeAuto(){
+	log.debug "setModeAuto >> ${state.id}"
+    def body = [
+        "id": state.id,
+        "cmd": "mode",
+        "data": "auto"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+}
+
 def setModeSilent(){
     log.debug "setModeSilent >> ${state.id}"
     def body = [
@@ -315,6 +450,50 @@ def setModeSilent(){
 
 def setModeFavorite(){
 	log.debug "setModeFavorite >> ${state.id}"
+    if(model == "MiAirPurifier"){
+    def body = [
+        "id": state.id,
+        "cmd": "mode",
+        "data": "low"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+    }
+    else {
+    def body = [
+        "id": state.id,
+        "cmd": "mode",
+        "data": "favorite"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+    }
+}
+
+def setModeLow(){
+    log.debug "setModeSilent >> ${state.id}"
+    def body = [
+        "id": state.id,
+        "cmd": "mode",
+        "data": "low"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+}
+
+def setModeMedium(){
+    log.debug "setModeSilent >> ${state.id}"
+    def body = [
+        "id": state.id,
+        "cmd": "mode",
+        "data": "medium"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+}
+
+def setModeHigh(){
+    log.debug "setModeSilent >> ${state.id}"
     def body = [
         "id": state.id,
         "cmd": "mode",
@@ -324,23 +503,12 @@ def setModeFavorite(){
     sendCommand(options, null)
 }
 
-def setModeIdle(){
+def setModeStrong(){
 	log.debug "setModeIdle >> ${state.id}"
     def body = [
         "id": state.id,
         "cmd": "mode",
-        "data": "idle"
-    ]
-    def options = makeCommand(body)
-    sendCommand(options, null)
-}
-
-def setModeAuto(){
-	log.debug "setModeAuto >> ${state.id}"
-    def body = [
-        "id": state.id,
-        "cmd": "mode",
-        "data": "auto"
+        "data": "strong"
     ]
     def options = makeCommand(body)
     sendCommand(options, null)
@@ -368,6 +536,9 @@ def buzzerOff(){
     sendCommand(options, null)
 }
 
+def any(){
+}
+
 def ledOn(){
 	log.debug "ledOn >> ${state.id}"
     def body = [
@@ -392,6 +563,16 @@ def ledOff(){
 
 def setBright(){
 	log.debug "setBright >> ${state.id}"
+    if(model == "MiAirPurifier"){
+    def body = [
+        "id": state.id,
+        "cmd": "led",
+        "data": "on"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+    }
+    else {
     def body = [
         "id": state.id,
         "cmd": "ledBrightness",
@@ -399,10 +580,21 @@ def setBright(){
     ]
     def options = makeCommand(body)
     sendCommand(options, null)
+    }    
 }
 
 def setBrightDim(){
 	log.debug "setDim >> ${state.id}"
+        if(model == "MiAirPurifier"){
+    def body = [
+        "id": state.id,
+        "cmd": "led",
+        "data": "off"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+    }
+    else {
     def body = [
         "id": state.id,
         "cmd": "ledBrightness",
@@ -410,6 +602,7 @@ def setBrightDim(){
     ]
     def options = makeCommand(body)
     sendCommand(options, null)
+    }    
 }
 
 def setBrightOff(){
@@ -455,9 +648,6 @@ def callback(physicalgraph.device.HubResponse hubResponse){
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
     }
-}
-
-def updated() {
 }
 
 def sendCommand(options, _callback){

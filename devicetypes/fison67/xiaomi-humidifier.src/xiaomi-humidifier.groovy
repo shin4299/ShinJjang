@@ -71,12 +71,12 @@ metadata {
 		multiAttributeTile(name:"mode", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.mode", key: "PRIMARY_CONTROL") {
                 attributeState "off", label:'\nOFF', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTQ2/MDAxNTIyMTUxNzIxMTk3.xeCR1k4pk0vDOozb43Lfo6g2fMC1a_VJFUpTQ071XRUg.dyhFTAUaCwWPUYc4hPUdGiuUI5yeRJ4QpP3kX802AlIg.PNG.shin4299/Humi_tile_off.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
-                attributeState "auto", label:'\nAuto Mode', action:"setModeSilent", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTQ1/MDAxNTIyMTUxNzIxMTk5.LTiuV1QSyPu6WgMB3uR7Bc-Hy19Uwgard5XKG5jj1JIg.XpdiwfmUg3Rz6IgIWyamtsrYeW0BJRqj28XyHRuADA0g.PNG.shin4299/Humi_tile_auto.png?type=w580", backgroundColor:"#73C1EC", nextState:"modechage"
-                attributeState "silent", label:'\nSilent Mode', action:"setModeMedium", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTE2/MDAxNTIyMTUxNzIxMTE3.wVp36he9l0up0SalfSgNMOff9y_U9F2wyPc5AfmK-nEg.coHcd4mj2byTBFzTWnc4yjKi7xbJb7QhfgBn9ASt5eUg.PNG.shin4299/Humi_tile_1.png?type=w580", backgroundColor:"#6eca8f", nextState:"modechage"
-                attributeState "medium", label:'\nMedium Mode', action:"setModeHigh", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjEz/MDAxNTIyMTUxNzIxMTk4.VfHSHeU2sS9J-T03zqc_sSjgO4ifOxiyBtGorUPxD2kg.dnC3xCu45F_153OJfUm0Pd1_HAWFp9DWVGHLagDqOSgg.PNG.shin4299/Humi_tile_2.png?type=w580", backgroundColor:"#FFDE61", nextState:"modechage"
-                attributeState "high", label:'\nHigh Mode', action:"setModeAuto", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTA5/MDAxNTIyMTUxNzIxMTk3.r9waU9A5WmDgRz6p6eiGYTl67F1jo5HGcurD9i57Mj0g.a1R4bIefNK0gT-NdDFmYveohdkXxUuRgJIszH9Q38Ogg.PNG.shin4299/Humi_tile_3.png?type=w580", backgroundColor:"#ff9eb2", nextState:"modechage"
+                attributeState "auto", label:'\nAuto Mode', action:"setModeSilent", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTQ1/MDAxNTIyMTUxNzIxMTk5.LTiuV1QSyPu6WgMB3uR7Bc-Hy19Uwgard5XKG5jj1JIg.XpdiwfmUg3Rz6IgIWyamtsrYeW0BJRqj28XyHRuADA0g.PNG.shin4299/Humi_tile_auto.png?type=w580", backgroundColor:"#73C1EC", nextState:"modechange"
+                attributeState "silent", label:'\nSilent Mode', action:"setModeMedium", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTE2/MDAxNTIyMTUxNzIxMTE3.wVp36he9l0up0SalfSgNMOff9y_U9F2wyPc5AfmK-nEg.coHcd4mj2byTBFzTWnc4yjKi7xbJb7QhfgBn9ASt5eUg.PNG.shin4299/Humi_tile_1.png?type=w580", backgroundColor:"#6eca8f", nextState:"modechange"
+                attributeState "medium", label:'\nMedium Mode', action:"setModeHigh", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjEz/MDAxNTIyMTUxNzIxMTk4.VfHSHeU2sS9J-T03zqc_sSjgO4ifOxiyBtGorUPxD2kg.dnC3xCu45F_153OJfUm0Pd1_HAWFp9DWVGHLagDqOSgg.PNG.shin4299/Humi_tile_2.png?type=w580", backgroundColor:"#FFDE61", nextState:"modechange"
+                attributeState "high", label:'\nHigh Mode', action:"setModeAuto", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTA5/MDAxNTIyMTUxNzIxMTk3.r9waU9A5WmDgRz6p6eiGYTl67F1jo5HGcurD9i57Mj0g.a1R4bIefNK0gT-NdDFmYveohdkXxUuRgJIszH9Q38Ogg.PNG.shin4299/Humi_tile_3.png?type=w580", backgroundColor:"#ff9eb2", nextState:"modechange"
                 
-                attributeState "modechage", label:'\n${name}', icon:"st.quirky.spotter.quirky-spotter-motion", backgroundColor:"#C4BBB5"
+                attributeState "modechange", label:'\n${name}', icon:"st.quirky.spotter.quirky-spotter-motion", backgroundColor:"#C4BBB5"
                 attributeState "turningOn", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTQ2/MDAxNTIyMTUxNzIxMTk3.xeCR1k4pk0vDOozb43Lfo6g2fMC1a_VJFUpTQ071XRUg.dyhFTAUaCwWPUYc4hPUdGiuUI5yeRJ4QpP3kX802AlIg.PNG.shin4299/Humi_tile_off.png?type=w580", backgroundColor:"#C4BBB5", nextState:"off"
 			}
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
@@ -87,12 +87,12 @@ metadata {
 		multiAttributeTile(name:"modem", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.mode", key: "PRIMARY_CONTROL") {
                 attributeState "off", label:'OFF', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTI5/MDAxNTIyMTUxNzIxMTE0.jV8vnwjhiMGM3cMj0AOAkpXxMn67VHVSCOI0Oifaw_gg.caD0We4bMaw4zDle-ZElMaJ5J7X9XtgJK8r273B441cg.PNG.shin4299/Humi_main_off.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
-                attributeState "auto", label:'Auto Mode', action:"setModeSilent", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjQz/MDAxNTIyMTUxNzIxMTEy.N1MKnCLLEKvjsBsc8AOhUiqWpGqFIjjBIdFVuDAUT48g.Ms4kVngzHK7Ce0IzTKi9KKmU1DULsGBNMXU23xZofPUg.PNG.shin4299/Humi_main_auto.png?type=w580", backgroundColor:"#73C1EC", nextState:"modechage"
-                attributeState "silent", label:'Silent Mode', action:"setModeMedium", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTAy/MDAxNTIyMTUxNzIxMTEy.F_FV8JiIWNtgg9TA-JmpykMS3nFMJ7SZwAnbQdbrxG4g.tlD1AuFoeWgHaPY_Wc7IVoMll6tGuyZZpteoyuvLYLIg.PNG.shin4299/Humi_main_1.png?type=w580", backgroundColor:"#6eca8f", nextState:"modechage"
-                attributeState "medium", label:'Medium Mode', action:"setModeHigh", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjIx/MDAxNTIyMTUxNzIxMTE2.C_mh1eH-qS9v7JDao8rTggW8ISf_JD4tumQ-TSpnUBcg.W0tNgspXKTM8X-EWHu3BL_OePZjGve43W4ZM83oMBLcg.PNG.shin4299/Humi_main_2.png?type=w580", backgroundColor:"#FFDE61", nextState:"modechage"
-                attributeState "high", label:'High Mode', action:"setModeAuto", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfODUg/MDAxNTIyMTUxNzIxMTEy.bgJ3fJQMIqt3A60PiRitHuTih18yk3cVZezGoNnLsU0g.7njxuU4uNsJ-VUbgrkkDaoUFFq9Cy85N7oOz9Yx8DYQg.PNG.shin4299/Humi_main_3.png?type=w580", backgroundColor:"#ff9eb2", nextState:"modechage"
+                attributeState "auto", label:'Auto Mode', action:"setModeSilent", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjQz/MDAxNTIyMTUxNzIxMTEy.N1MKnCLLEKvjsBsc8AOhUiqWpGqFIjjBIdFVuDAUT48g.Ms4kVngzHK7Ce0IzTKi9KKmU1DULsGBNMXU23xZofPUg.PNG.shin4299/Humi_main_auto.png?type=w580", backgroundColor:"#73C1EC", nextState:"modechange"
+                attributeState "silent", label:'Silent Mode', action:"setModeMedium", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTAy/MDAxNTIyMTUxNzIxMTEy.F_FV8JiIWNtgg9TA-JmpykMS3nFMJ7SZwAnbQdbrxG4g.tlD1AuFoeWgHaPY_Wc7IVoMll6tGuyZZpteoyuvLYLIg.PNG.shin4299/Humi_main_1.png?type=w580", backgroundColor:"#6eca8f", nextState:"modechange"
+                attributeState "medium", label:'Medium Mode', action:"setModeHigh", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjIx/MDAxNTIyMTUxNzIxMTE2.C_mh1eH-qS9v7JDao8rTggW8ISf_JD4tumQ-TSpnUBcg.W0tNgspXKTM8X-EWHu3BL_OePZjGve43W4ZM83oMBLcg.PNG.shin4299/Humi_main_2.png?type=w580", backgroundColor:"#FFDE61", nextState:"modechange"
+                attributeState "high", label:'High Mode', action:"setModeAuto", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfODUg/MDAxNTIyMTUxNzIxMTEy.bgJ3fJQMIqt3A60PiRitHuTih18yk3cVZezGoNnLsU0g.7njxuU4uNsJ-VUbgrkkDaoUFFq9Cy85N7oOz9Yx8DYQg.PNG.shin4299/Humi_main_3.png?type=w580", backgroundColor:"#ff9eb2", nextState:"modechange"
                 
-                attributeState "modechage", label:'${name}', icon:"st.quirky.spotter.quirky-spotter-motion", backgroundColor:"#C4BBB5"
+                attributeState "modechange", label:'${name}', icon:"st.quirky.spotter.quirky-spotter-motion", backgroundColor:"#C4BBB5"
                 attributeState "turningOn", label:'${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTI5/MDAxNTIyMTUxNzIxMTE0.jV8vnwjhiMGM3cMj0AOAkpXxMn67VHVSCOI0Oifaw_gg.caD0We4bMaw4zDle-ZElMaJ5J7X9XtgJK8r273B441cg.PNG.shin4299/Humi_main_off.png?type=w580", backgroundColor:"#C4BBB5", nextState:"off"
 			}
 		}
@@ -117,17 +117,17 @@ metadata {
         valueTile("high_label", "", decoration: "flat") {
             state "default", label:'High \nMode'
         }
-        standardTile("mode1", "device.mode", decoration: "flat") {
-			state "default", label: "", action: "setModeAuto", icon:"st.unknown.zwave.static-controller", backgroundColor:"#73C1EC"
+        standardTile("mode1", "device.mode") {
+			state "default", label: "Auto", action: "setModeAuto", icon:"st.unknown.zwave.static-controller", backgroundColor:"#73C1EC"
 		}
-        standardTile("mode2", "device.mode", decoration: "flat") {
-			state "default", label: "", action: "setModeSilent", icon:"st.quirky.spotter.quirky-spotter-luminance-dark", backgroundColor:"#6eca8f"
+        standardTile("mode2", "device.mode") {
+			state "default", label: "Silent", action: "setModeSilent", icon:"st.quirky.spotter.quirky-spotter-luminance-dark", backgroundColor:"#6eca8f"
 		}
-        standardTile("mode3", "device.mode", decoration: "flat") {
-			state "default", label: "", action: "setModeMedium", icon:"st.quirky.spotter.quirky-spotter-luminance-light", backgroundColor:"#FFDE61"
+        standardTile("mode3", "device.mode") {
+			state "default", label: "Medium", action: "setModeMedium", icon:"st.quirky.spotter.quirky-spotter-luminance-light", backgroundColor:"#FFDE61"
 		}
-        standardTile("mode4", "device.mode", decoration: "flat") {
-			state "default", label: "", action: "setModeHigh", icon:"st.quirky.spotter.quirky-spotter-luminance-bright", backgroundColor:"#ff9eb2"
+        standardTile("mode4", "device.mode") {
+			state "default", label: "High", action: "setModeHigh", icon:"st.quirky.spotter.quirky-spotter-luminance-bright", backgroundColor:"#ff9eb2"
 		}
 
 
