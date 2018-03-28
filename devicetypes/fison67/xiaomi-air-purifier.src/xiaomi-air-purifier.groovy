@@ -280,11 +280,11 @@ metadata {
         }         
 
         valueTile("f1_hour_used", "device.f1_hour_used", width: 2, height: 1) {
-            state("val", label:'${currentValue} hours', defaultState: true, backgroundColor:"#bcbcbc")
+            state("val", label:'${currentValue} days', defaultState: true, backgroundColor:"#bcbcbc")
         }
         
         valueTile("filter1_life", "device.filter1_life", width: 2, height: 1) {
-            state("val", label:'${currentValue} hours', defaultState: true, backgroundColor:"#bcbcbc")
+            state("val", label:'${currentValue} days', defaultState: true, backgroundColor:"#bcbcbc")
         }
 
 
@@ -390,10 +390,18 @@ def setStatus(params){
         sendEvent(name:"ledBrightness", value: (params.data == "true" ? "bright" : "off"))
     	break;
     case "f1_hour_used":
-    	sendEvent(name:"f1_hour_used", value: params.data)
+		def para = "${params.data}"
+		String data = para
+		def stf = Float.parseFloat(data)
+		def use = Math.round(stf*24)    
+    	sendEvent(name:"f1_hour_used", value: use)
         break;
     case "filter1_life":
-    	sendEvent(name:"filter1_life", value: params.data)
+		def para = "${params.data}"
+		String data = para
+		def stf = Float.parseFloat(data)
+		def life = Math.round(stf*1.435)    
+    	sendEvent(name:"filter1_life", value: life)
     	break;
     case "average_aqi":
     
