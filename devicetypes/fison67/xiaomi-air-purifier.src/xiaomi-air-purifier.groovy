@@ -242,23 +242,28 @@ metadata {
 		}
         standardTile("mode3", "device.mode3") {
 			state "default", label: "Favor", action: "setModeFavorite", icon:"st.presence.tile.presence-default", backgroundColor:"#ff9eb2"
-			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc"
+			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc", nextState:"notab1"
+			state "notab1", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc", nextState:"notab"
 		}
         standardTile("mode4", "device.mode4") {
 			state "default", label: "Low", action: "setModeLow", icon:"st.quirky.spotter.quirky-spotter-luminance-dark", backgroundColor:"#FFDE61"
-			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc"
+			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc", nextState:"notab1"
+			state "notab1", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc", nextState:"notab"
 		}
         standardTile("mode5", "device.mode5") {
 			state "default", label: "Medium", action: "setModeMedium", icon:"st.quirky.spotter.quirky-spotter-luminance-light", backgroundColor:"#f9b959"
-			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc"
+			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc", nextState:"notab1"
+			state "notab1", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc", nextState:"notab"
 		}
         standardTile("mode6", "device.mode6") {
 			state "default", label: "High", action: "setModeHigh", icon:"st.quirky.spotter.quirky-spotter-luminance-bright", backgroundColor:"#ff9eb2"
-			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc"
+			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc", nextState:"notab1"
+			state "notab1", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc", nextState:"notab"
 		}
         standardTile("mode7", "device.mode7") {
 			state "default", label: "Strong", action: "setModeStrong", icon:"st.Weather.weather1", backgroundColor:"#db5764"
-			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc"
+			state "notab", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc", nextState:"notab1"
+			state "notab1", label: "N/A", action: "any", icon:"st.presence.house.secured", backgroundColor:"#bcbcbc", nextState:"notab"
 		}
         standardTile("buzzer", "device.buzzer") {
             state "on", label:'Sound', action:"buzzerOff", icon: "st.custom.sonos.unmuted", backgroundColor:"#BAA7BC", nextState:"turningOff"
