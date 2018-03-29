@@ -35,20 +35,19 @@ metadata {
         capability "Switch Level"
         capability "Temperature Measurement"
         capability "Relative Humidity Measurement"
+		capability "Filter Status"
+		capability "Air Quality Sensor"
+		capability "Fan Speed"
 		capability "Refresh"
 		capability "Sensor"
 		capability "Dust Sensor" // fineDustLevel : PM 2.5   dustLevel : PM 10
          
         attribute "switch", "string"
-        attribute "temperature", "string"
-        attribute "humidity", "string"
-        attribute "pm25", "string"
-        attribute "buzzer", "string"
-        attribute "mode", "string"
-        attribute "ledBrightness", "string"
-        attribute "f1_hour_used", "string"
-        attribute "filter1_life", "string"
-        attribute "average_aqi", "string"
+        attribute "buzzer", "enum", ["on", "off"]        
+        attribute "ledBrightness", "enum", ["bright", "dim", "off"]        
+        attribute "f1_hour_used", "number"
+        attribute "filter1_life", "number"
+        attribute "average_aqi", "number"
         attribute "mode", "enum", ["auto", "silent", "favorite", "low", "medium", "high", "strong"]        
         
         attribute "lastCheckin", "Date"
@@ -107,19 +106,19 @@ metadata {
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
-            tileAttribute ("device.level", key: "SLIDER_CONTROL") {
-                attributeState "level", action:"switch level.setLevel"
+            tileAttribute ("device.fanSpeed", key: "SLIDER_CONTROL") {
+                attributeState "level", action:"FanSpeed.setFanSpeed"
             }            
 		}
         standardTile("modemain", "device.mode", width: 2, height: 2) {
                 state "off", label:'off', action:"setModeAuto", icon:"http://blogfiles.naver.net/MjAxODAzMjdfMTk4/MDAxNTIyMTMyNzMxMjEz.BdXDvyyncHtsRwYxAHHWI4zCZaGxYkKAcCbrRYvRtEcg.HHz2i2rn7IdfCFJd-5heHMCllb0TJgXAq8dHtdM1beEg.PNG.shin4299/MiAirPurifier2S_off_tile.png?type=w1", backgroundColor:"#ffffff", nextState:"turningOn"
-                state "auto", label:'auto', action:"setModeSilent", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#73C1EC", nextState:"modechange"
-                state "silent", label:'silent', action:"setModeFavorite", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#6eca8f", nextState:"modechange"
-                state "favorite", label:'favorite', action:"setModeAuto", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#ff9eb2", nextState:"modechange"
-                state "low", label:'low', action:"setModeMedium", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#FFDE61", nextState:"modechange"
-                state "medium", label:'medium', action:"setModeHigh", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#f9b959", nextState:"modechange"
-                state "high", label:'high', action:"setModeStrong", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#ff9eb2", nextState:"modechange"
-                state "strong", label:'strong', action:"setModeAuto", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#db5764", nextState:"modechange"
+                state "auto", label:'auto', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#73C1EC", nextState:"modechange"
+                state "silent", label:'silent', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#6eca8f", nextState:"modechange"
+                state "favorite", label:'favorite', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#ff9eb2", nextState:"modechange"
+                state "low", label:'low', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#FFDE61", nextState:"modechange"
+                state "medium", label:'medium', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#f9b959", nextState:"modechange"
+                state "high", label:'high', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#ff9eb2", nextState:"modechange"
+                state "strong", label:'strong', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfNzQg/MDAxNTIyMTMyNzMxMjEy.i1IvtTLdQ-Y3yHOyI0cwM0QKo8SobVo5vo0-zu72ZZkg.m7o9vNcIoiQBozog9FUXnE3w9O8U0kHeNxDeuWOfaWIg.PNG.shin4299/MiAirPurifier2S_on_tile.png?type=w1", backgroundColor:"#db5764", nextState:"modechange"
                 
                 state "turningOn", label:'${name}', action:"switch.off", icon:"http://blogfiles.naver.net/MjAxODAzMjdfMTk4/MDAxNTIyMTMyNzMxMjEz.BdXDvyyncHtsRwYxAHHWI4zCZaGxYkKAcCbrRYvRtEcg.HHz2i2rn7IdfCFJd-5heHMCllb0TJgXAq8dHtdM1beEg.PNG.shin4299/MiAirPurifier2S_off_tile.png?type=w1", backgroundColor:"#00a0dc", nextState:"turningOff"
                 state "modechange", label:'${name}', icon:"st.quirky.spotter.quirky-spotter-motion", backgroundColor:"#C4BBB5"
@@ -157,7 +156,7 @@ metadata {
             	[value: 500, color: "#970203"]
             ]
         }
-		valueTile("aqi", "device.airQualityLevel", decoration: "flat") {
+		valueTile("aqi", "device.airQuality", decoration: "flat") {
         	state "default", label:'${currentValue}', unit:"㎍/㎥", backgroundColors:[
 				[value: -1, color: "#bcbcbc"],
 				[value: 0, color: "#bcbcbc"],
@@ -303,7 +302,7 @@ metadata {
 
 def updated() {
     if(model == "MiAirPurifier"){
-		sendEvent(name:"airQualityLevel", value: "N/A" )
+		sendEvent(name:"airQuality", value: "N/A" )
 		sendEvent(name:"mode3", value: "notab" )
 		sendEvent(name:"temperature", value: "N/A" )
 		sendEvent(name:"humidity", value: "N/A" )
@@ -317,7 +316,7 @@ def updated() {
 		sendEvent(name:"mode5", value: "notab" )
 		sendEvent(name:"mode6", value: "notab" )
 		sendEvent(name:"mode7", value: "notab" )
-		sendEvent(name:"airQualityLevel", value: 20 )
+		sendEvent(name:"airQuality", value: 20 )
 		sendEvent(name:"mode3", value: "default" )
 		sendEvent(name:"temperature", value: 20 )
 		sendEvent(name:"humidity", value: 40 )
@@ -405,7 +404,7 @@ def setStatus(params){
     	break;
     case "average_aqi":
     
-    	sendEvent(name:"aqi", value: params.data  + "㎍/㎥")
+    	sendEvent(name:"airQuality", value: params.data  + "㎍/㎥")
     	break;
     }
     
@@ -426,9 +425,12 @@ def refresh(){
     sendCommand(options, callback)
 }
 
-def setLevel(level){
+def setFanSpeed(level){
 	def speed = Math.round(level/625*100)    
 	log.debug "setSpeed >> ${state.id}, speed=" + speed
+    if(model == "MiAirPurifier"){
+    }
+    else {
     def body = [
         "id": state.id,
         "cmd": "speed",
@@ -437,8 +439,8 @@ def setLevel(level){
     def options = makeCommand(body)
     sendCommand(options, null)
 	sendEvent(name: "level", value: speed)
+	}
 }
-
 def setModeAuto(){
 	log.debug "setModeAuto >> ${state.id}"
     def body = [

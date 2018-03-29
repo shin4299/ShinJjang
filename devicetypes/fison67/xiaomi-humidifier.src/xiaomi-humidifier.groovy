@@ -285,7 +285,7 @@ def setStatus(params){
 		def para = "${params.data}"
 		String data = para
 		def stf = Float.parseFloat(data)
-		def water = Math.round(stf)    
+		def water = Math.round(stf/12*10)    
         sendEvent(name:"water", value: water )
     	break;
     case "buzzer":
