@@ -383,7 +383,7 @@ def setStatus(params){
 		String data = para
 		def stf = Float.parseFloat(data)
 		def speed = Math.round(stf*625/100)    
-        sendEvent(name:"level", value: speed)
+        sendEvent(name:"fanSpeed", value: speed)
     	break;
     case "led":
         sendEvent(name:"ledBrightness", value: (params.data == "true" ? "bright" : "off"))
