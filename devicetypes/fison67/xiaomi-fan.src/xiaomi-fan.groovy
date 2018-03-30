@@ -42,6 +42,7 @@ metadata {
         attribute "buzzer", "string"
         attribute "anglelevel", "string"
         attribute "ledBrightness", "string"
+        attribute "speedlevel", "string"
         attribute "fanspeedstep", "enum", ["low", "medium", "high", "strong"]        
         attribute "setangle", "enum", ["off", "on", "30", "60", "90", "120"]        
         attribute "settimer", "enum", ["off", "15", "30", "60", "90", "120"]        
@@ -72,6 +73,8 @@ metadata {
         command "setFanSpeed2"
         command "setFanSpeed3"
         command "setFanSpeed4"
+        command "tempUp"
+        command "tempDown"
         command "setFanNatural"
         command "setAngleLevel"
         command "setAngleOn"
@@ -97,19 +100,24 @@ metadata {
 	tiles {
 		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfNjIg/MDAxNTIyMzIzNDI2NjQ2.cPAScBLV_hQaqFRkRqjImmaqyFmY7FY23A23k-t8RZ4g.ORO7eIOdaPHIJwR3tMXLLvU741B6NrncFi2a29ZDWbwg.PNG.shin4299/Fan_tile_on.png?type=w580", backgroundColor:"#73C1EC", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfNjkg/MDAxNTIyMzIzNDI2NjQ4.b5E7CPu8ljgF_eHdHFDmK7wLHQG6iymo2DErBeN2u3Ug.61d9mZ5QYaP-oUoIPnXaHA_rocGnrRxBArjSbjctQGwg.PNG.shin4299/Fan_tile_off.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfNjIg/MDAxNTIyMzIzNDI2NjQ2.cPAScBLV_hQaqFRkRqjImmaqyFmY7FY23A23k-t8RZ4g.ORO7eIOdaPHIJwR3tMXLLvU741B6NrncFi2a29ZDWbwg.PNG.shin4299/Fan_tile_on.png?type=w580", backgroundColor:"#73C1EC", nextState:"turningOff"
+                attributeState "off", label:'\n${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfNjkg/MDAxNTIyMzIzNDI2NjQ4.b5E7CPu8ljgF_eHdHFDmK7wLHQG6iymo2DErBeN2u3Ug.61d9mZ5QYaP-oUoIPnXaHA_rocGnrRxBArjSbjctQGwg.PNG.shin4299/Fan_tile_off.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfNjkg/MDAxNTIyMzIzNDI2NjQ4.b5E7CPu8ljgF_eHdHFDmK7wLHQG6iymo2DErBeN2u3Ug.61d9mZ5QYaP-oUoIPnXaHA_rocGnrRxBArjSbjctQGwg.PNG.shin4299/Fan_tile_off.png?type=w580", backgroundColor:"#73C1EC", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfNjIg/MDAxNTIyMzIzNDI2NjQ2.cPAScBLV_hQaqFRkRqjImmaqyFmY7FY23A23k-t8RZ4g.ORO7eIOdaPHIJwR3tMXLLvU741B6NrncFi2a29ZDWbwg.PNG.shin4299/Fan_tile_on.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfNjkg/MDAxNTIyMzIzNDI2NjQ4.b5E7CPu8ljgF_eHdHFDmK7wLHQG6iymo2DErBeN2u3Ug.61d9mZ5QYaP-oUoIPnXaHA_rocGnrRxBArjSbjctQGwg.PNG.shin4299/Fan_tile_off.png?type=w580", backgroundColor:"#73C1EC", nextState:"turningOff"
+                attributeState "turningOff", label:'\n${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfNjIg/MDAxNTIyMzIzNDI2NjQ2.cPAScBLV_hQaqFRkRqjImmaqyFmY7FY23A23k-t8RZ4g.ORO7eIOdaPHIJwR3tMXLLvU741B6NrncFi2a29ZDWbwg.PNG.shin4299/Fan_tile_on.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
+		    tileAttribute("device.speedlevel", key: "VALUE_CONTROL") {
+	        attributeState("VALUE_UP", action: "tempUp")
+    	    attributeState("VALUE_DOWN", action: "tempDown")
+    		}
             
-            tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'${currentValue}')
-            }
             tileAttribute ("device.fanSpeed", key: "SLIDER_CONTROL") {
                 attributeState "level", action:"FanSpeed.setFanSpeed"
             }            
+            
+            tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
+   			attributeState("default", label:'${currentValue}')
+          }
 		}
         standardTile("switch2", "device.switch", inactiveLabel: false, width: 2, height: 2) {
             state "on", label:'ON', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfMTcw/MDAxNTIyMzIzNDI2NjQ3.-DR_CT7fGBUGj65di_Ku0jLCvA4oSgWbFSivfsbA26og.ajX0-he2ip3P3kI_0OqhYwSzKblR8zzIeEa4QtJfSHcg.PNG.shin4299/Fan_main_on.png?type=w580", backgroundColor:"#73C1EC", nextState:"turningOff"
@@ -278,6 +286,11 @@ def setStatus(params){
     	break;        
     case "speedLevel":
         sendEvent(name:"fanSpeed", value: params.data)
+		def para = params.data
+		String data = para
+		def stf = Float.parseFloat(data)
+		def tem = Math.round((stf+12)/25)        
+        sendEvent(name:"speedlevel", value: tem)
     	break;        
     case "naturalLevel":
 		def para = params.data
@@ -285,6 +298,10 @@ def setStatus(params){
         sendEvent(name:"fanmode", value: "general")
         }
         else {
+		String data = para
+		def stf = Float.parseFloat(data)
+		def tem = Math.round((stf+12)/25)        
+        sendEvent(name:"speedlevel", value: tem)        
         sendEvent(name:"fanmode", value: "natural")
         sendEvent(name:"fanSpeed", value: para)
         }
@@ -367,6 +384,27 @@ def setFanSpeed(speed){
     	sendCommand(options, null)
 	}
 }    
+def tempUp(){
+	def currentSpeed = device.currentState("speedlevel")?.value
+    if(currentSpeed == "1"){
+    setFanSpeed2()
+    } else if (currentSpeed == "2"){
+    setFanSpeed3()
+    } else if (currentSpeed == "3"){
+    setFanSpeed4()
+    } else {}
+}
+
+def tempDown(){
+	def currentSpeed = device.currentState("speedlevel")?.value
+    if(currentSpeed == "2"){
+    setFanSpeed1()
+    } else if (currentSpeed == "3"){
+    setFanSpeed2()
+    } else if (currentSpeed == "4"){
+    setFanSpeed3()
+    } else {}
+}
 
 def setFanSpeed1(){
 	log.debug "setFanstep1 >> ${state.id}"

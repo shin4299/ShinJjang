@@ -370,7 +370,11 @@ def setStatus(params){
 		def st = data.replace("C","");
 		def stf = Float.parseFloat(st)
 		def tem = Math.round(stf*10)/10
+	    if(model == "MiAirPurifier"){
+    	}
+    	else {
         sendEvent(name:"temperature", value: tem +"°" )
+        }
     	break;
     case "buzzer":
         sendEvent(name:"buzzer", value: (params.data == "true" ? "on" : "off"))
