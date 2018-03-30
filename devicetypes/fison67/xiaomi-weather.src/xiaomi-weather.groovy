@@ -154,6 +154,9 @@ metadata {
         valueTile("lastcheckin", "device.lastCheckin", inactiveLabel: false, decoration:"flat", width: 4, height: 1) {
         state "lastcheckin", label:'Last Event:\n ${currentValue}'
         }
+        valueTile("lastcheckin", "device.lastCheckin", inactiveLabel: false, decoration:"flat", width: 4, height: 1) {
+        state "lastcheckin", label:'Last Event:\n ${currentValue}'
+        }
 
 
         main("temperature2")
@@ -174,7 +177,20 @@ def setInfo(String app_url, String id) {
 
 def setStatus(params){
     log.debug "${params.key} : ${params.data}"
- 
+ //    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+//    sendEvent(name: "lastCheckin", value: now)
+//    def now = formatDate()
+	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+    def nowDate = new Date(now).getTime()
+
+	// Any report - temp, humidity, pressure, & battery - results in a lastCheckin event and update to Last Checkin tile
+	// However, only a non-parseable report results in lastCheckin being displayed in events log
+    sendEvent(name: "lastCheckin", value: now, displayed: false)
+    sendEvent(name: "lastCheckinDate", value: nowDate, displayed: false)
+
+	// Check if the min/max temp and min/max humidity should be reset
+    checkNewDay(now)
+    
  	switch(params.key){
     case "relativeHumidity":
 		def para = "${params.data}"
@@ -201,20 +217,7 @@ def setStatus(params){
     	sendEvent(name:"battery", value: params.data )
     	break;		
     }
-    
-//    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-//    sendEvent(name: "lastCheckin", value: now)
-    def now = formatDate()    
-    def nowDate = new Date(now).getTime()
-
-	// Any report - temp, humidity, pressure, & battery - results in a lastCheckin event and update to Last Checkin tile
-	// However, only a non-parseable report results in lastCheckin being displayed in events log
-    sendEvent(name: "lastCheckin", value: now, displayed: false)
-    sendEvent(name: "lastCheckinDate", value: nowDate, displayed: false)
-
-	// Check if the min/max temp and min/max humidity should be reset
-    checkNewDay(now)
-    }
+}
 
 
 def updated() {}
