@@ -153,7 +153,10 @@ def addDevice(){
 
         if(params.type == "zhimi.airpurifier.m1" || params.type == "zhimi.airpurifier.v1" || params.type == "zhimi.airpurifier.v2" || params.type ==  "zhimi.airpurifier.v3" || params.type ==  "zhimi.airpurifier.v6" || params.type ==  "zhimi.airpurifier.ma2"){
             dth = "Xiaomi Air Purifier";
-            name = "Xiaomi Air Purifier";
+            name = "Xiaomi Air Purifier";	
+        }else if(params.type == "zhimi.fan.v3"){
+        	dth = "Xiaomi Fan";
+            name = "Xiaomi Fan";
         }else if(params.type == "zhimi.airmonitor.v1"){
         	dth = "Xiaomi Air Monitor";
             name = "Xiaomi Air Monitor";
