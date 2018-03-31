@@ -43,7 +43,6 @@ metadata {
         attribute "anglelevel", "string"
         attribute "ledBrightness", "string"
         attribute "speedlevel", "string"
-        attribute "processTimer", "number"
         attribute "fanspeedstep", "enum", ["low", "medium", "high", "strong"]        
         attribute "setangle", "enum", ["off", "on", "30", "60", "90", "120"]        
         attribute "settimer", "enum", ["off", "15", "30", "60", "90", "120"]        
@@ -84,7 +83,6 @@ metadata {
         command "setAngle60"
         command "setAngle90"
         command "setAngle120"
-        command "setdirectionfault"
         command "setMoveLeft"
         command "setMoveRight"
         command "settimeroff"
@@ -137,8 +135,8 @@ metadata {
         valueTile("rotation_label", "", decoration: "flat") {
             state "default", label:'Rotation'
         }
-        valueTile("speed_label", "", decoration: "flat", width: 2, height: 1) {
-            state "default", label:'Set Timer'
+        valueTile("speed_label", "", decoration: "flat", width: 4, height: 1) {
+            state "default", label:'Fan Speed Control'
         }
         valueTile("temperature", "device.temperature") {
             state("val", label:'${currentValue}', defaultState: true, 
@@ -151,12 +149,7 @@ metadata {
         valueTile("anglelevel", "device.anglelevel") {
             state("val", label:'${currentValue}', defaultState: true, 
             )
-        }
-		controlTile("timerset", "device.level", "slider", height: 1,
-             width: 1, range:"(1..120)") {
-	    state "level", action:"switch level.setLevel"
-		}
-        
+        }   
         standardTile("speed1", "device.fanspeedstep") {
 			state "default", label: "Low", action: "setFanSpeed1", icon:"st.quirky.spotter.quirky-spotter-luminance-dark", backgroundColor:"#FFDE61"
 		}
@@ -196,14 +189,10 @@ metadata {
 			state "default", label: "120°", action: "setAngle120", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfMjIw/MDAxNTIyMzIzNjE4NjIx.t6DneqY6JyAZAicutP3NtV9Vf0wWGNAXWnVDIxnL_0gg.-5LlfL2aVTqW3ziuAXWOHFQ6C436d5-XZc_NVHxgS9Mg.PNG.shin4299/Fan_120.png?type=w580", backgroundColor:"#b1d6de"
 		}
         standardTile("headl", "device.setdirection") {
-			state "off", label: "Left", action: "setMoveLeft", icon:"st.thermostat.thermostat-left", backgroundColor:"#d897be"
-			state "on", label: "Left", action: "setdirectionfault", icon:"st.thermostat.thermostat-left", backgroundColor:"#bcbabc", nextState:"on1"
-			state "on1", label: "Left", action: "setdirectionfault", icon:"st.thermostat.thermostat-left", backgroundColor:"#bcbabc", nextState:"on"
+			state "default", label: "Left", action: "setMoveLeft", icon:"st.thermostat.thermostat-left", backgroundColor:"#bda1b0"
 		}
         standardTile("headr", "device.setdirection") {
-			state "off", label: "Right", action: "setMoveRight", icon:"st.thermostat.thermostat-right", backgroundColor:"#d897be"
-			state "on", label: "Right", action: "setdirectionfault", icon:"st.thermostat.thermostat-right", backgroundColor:"#bcbabc", nextState:"on1"
-			state "on1", label: "Right", action: "setdirectionfault", icon:"st.thermostat.thermostat-right", backgroundColor:"#bcbabc", nextState:"on"
+			state "default", label: "Right", action: "setMoveRight", icon:"st.thermostat.thermostat-right", backgroundColor:"#bda1b0"
 		}
         standardTile("mode", "device.fanmode") {
             state "general", label:'general', action:"naturalOn", icon:"st.Appliances.appliances11", backgroundColor:"#73C1EC", nextState:"natural"
@@ -223,11 +212,11 @@ metadata {
         }
         
         standardTile("buzzer", "device.buzzer") {
-            state "on", label:'Sound', action:"buzzerOff", icon: "st.custom.sonos.unmuted", backgroundColor:"#f9b959", nextState:"turningOff"
+            state "on", label:'Sound', action:"buzzerOff", icon: "st.custom.sonos.unmuted", backgroundColor:"#73C1EC", nextState:"turningOff"
             state "off", label:'Mute', action:"buzzerOn", icon: "st.custom.sonos.muted", backgroundColor:"#d1cdd2", nextState:"turningOn"
              
         	state "turningOn", label:'....', action:"buzzerOff", icon: "st.custom.sonos.muted", backgroundColor:"#d1cdd2", nextState:"turningOff"
-            state "turningOff", label:'....', action:"buzzerOn", icon: "st.custom.sonos.unmuted", backgroundColor:"#f9b959", nextState:"turningOn"
+            state "turningOff", label:'....', action:"buzzerOn", icon: "st.custom.sonos.unmuted", backgroundColor:"#73C1EC", nextState:"turningOn"
         }
         
         standardTile("ledBrightness", "device.ledBrightness") {
@@ -236,7 +225,7 @@ metadata {
             state "off", label: 'Off', action: "setBright", icon: "st.illuminance.illuminance.dark", backgroundColor: "#d6c6c9", nextState:"bright"
         } 
         standardTile("tiemr0", "device.settimer") {
-			state "default", label: "OFF", action: "settimeroff", icon:"st.Health & Wellness.health7", backgroundColor:"#c7bbc9"
+			state "default", label: "OFF", action: "settimeroff", icon:"st.Health & Wellness.health7", backgroundColor:"#c3d6d4"
 		}
         standardTile("tiemr1", "device.settimer") {
 			state "default", label: "15", action: "settimer15", icon:"st.Health & Wellness.health7", backgroundColor:"#d5eeec"
@@ -264,12 +253,12 @@ metadata {
 
 
    	main (["switch2"])
-	details(["switch", "mode_label", "rotation_label",  "buzzer_label", "led_label", "speed_label", 
-    "mode", "angle", "buzzer", "ledBrightness", "tiemr0", "timerset", /*"speed1", "speed2", "speed3", "speed4", */
+	details(["switch", "mode_label", "rotation_label", "speed_label", 
+    "mode", "angle", "speed1", "speed2", "speed3", "speed4", 
     "head_label", "angle_label",  
-     "headl", "headr", "angle1", "angle2", "angle3", "angle4"
-    /*"buzzer_label", "led_label", "timer_label", "tiemr0", "tiemr1", "tiemr2", 
-    "buzzer", "ledBrightness", "tiemr3", "tiemr4", "tiemr5", "leftTime"*/
+     "headl", "headr", "angle1", "angle2", "angle3", "angle4",
+    "buzzer_label", "led_label", "timer_label", "tiemr0", "tiemr1", "tiemr2", 
+    "buzzer", "ledBrightness", "tiemr3", "tiemr4", "tiemr5", "leftTime"
     ])
 
 	}
@@ -326,14 +315,12 @@ def setStatus(params){
     	break;        
     case "angleEnable":
         sendEvent(name:"setangle", value: params.data)
-        sendEvent(name:"setdirection", value: params.data)
     	break;        
         
     case "fanNatural":
         sendEvent(name:"fanSpeed", value: params.data)
     	break;        
     case "power":
-    	state.power = (params.data == "true" ? "on" : "off")
     	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
     	break;
     case "buzzer":
@@ -392,7 +379,7 @@ def processTimer(second){
 		state.timerCount = second;
     	runIn(30, timter)
     }else{
-    	state.timerCount = second
+    	state.timerCount = state.timerCount.toInteger() + (second)
     }
     log.debug "Time >> ${state.timerCount}"
     updateTimer()
@@ -405,11 +392,6 @@ def settimeroff() {
 	state.timerCount = 0
 	updateTimer()
 }
-def setLevel(level) { 
-	log.debug "Timer ${level}Min >> ${state.timerCount}"
-    processTimer(level * 60)
-}
-
 def settimer15() { 
 	log.debug "Timer 15Min >> ${state.timerCount}"
     processTimer(15 * 60)
@@ -530,8 +512,7 @@ def tempDown(){
 
 def setFanSpeed1(){
 	log.debug "setFanstep1 >> ${state.id}"
-	def currentState = device.currentValue("fanmode")
-        sendEvent(name:"speedlevel", value: 1)
+	def currentState = device.currentValue("fanmode")    
     if(currentState =="natural"){
     	def body = [
         	"id": state.id,
@@ -549,13 +530,11 @@ def setFanSpeed1(){
     	]
     	def options = makeCommand(body)
     	sendCommand(options, null)
-        
 	}
 }
 
 def setFanSpeed2(){
 	log.debug "setFanstep2 >> ${state.id}"
-        sendEvent(name:"speedlevel", value: 2)
 	def currentState = device.currentValue("fanmode")    
     if(currentState =="natural"){
     	def body = [
@@ -580,7 +559,6 @@ def setFanSpeed2(){
 def setFanSpeed3(){
 	log.debug "setFanstep3 >> ${state.id}"
 	def currentState = device.currentValue("fanmode")    
-        sendEvent(name:"speedlevel", value: 3)
     if(currentState =="natural"){
     	def body = [
         	"id": state.id,
@@ -604,7 +582,6 @@ def setFanSpeed3(){
 def setFanSpeed4(){
 	log.debug "setFanstep4 >> ${state.id}"
 	def currentState = device.currentValue("fanmode")    
-        sendEvent(name:"speedlevel", value: 4)
     if(currentState =="natural"){
     	def body = [
         	"id": state.id,
@@ -816,8 +793,6 @@ def off(){
 }
 
 def updated() {
-}
-def setdirectionfault() {
 }
 
 def sendCommand(options, _callback){
