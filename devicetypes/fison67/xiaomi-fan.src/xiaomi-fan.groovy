@@ -754,7 +754,8 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 		def jsonObj = new JsonSlurper().parseText(msg.body)
         log.debug jsonObj
 	state.currenthumi = jsonObj.properties.relativeHumidity
-	state.currenttemp = jsonObj.properties.temperature.value
+	int temp = jsonObj.properties.temperature.value
+	state.currenttemp = temp
 	state.currentangle = jsonObj.properties.angleLevel
 	state.acPower = (jsonObj.properties.acPower == "on" ? "☈: " : "✕: ") 
 	state.batteryLe = jsonObj.state.batteryLevel
@@ -773,8 +774,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 }
 
 def multiatt(){
-	int temp = state.currenttemp
-    	sendEvent(name:"lastCheckin", value: " 온도: " + temp + "° 습도: " + state.currenthumi + "% 회전: " + state.currentangle + "°")
+    	sendEvent(name:"lastCheckin", value: " 온도: " + state.currenttemp + "° 습도: " + state.currenthumi + "% 회전: " + state.currentangle + "°")
 	sendEvent(name:"battery", value: state.acPower + state.batteryLe + "%" )
 }
 def sendCommand(options, _callback){
