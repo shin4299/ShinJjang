@@ -303,7 +303,7 @@ def setStatus(params){
 		String data = para
 		def st = data.replace("C","");
 		def stf = Float.parseFloat(st)
-		def tem = Math.round(stf)
+		int tem = Math.round(stf)
 	state.currenttemp = tem
 //        sendEvent(name:"temperature", value: tem)
 //    	sendEvent(name:"lastCheckin", value: " 온도:" + tem + "° 습도:" + currenthumi + " 회전:" + currentangle + "°")// (" + now + ")")        
@@ -867,7 +867,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 	state.currenthumi = jsonObj.properties.relativeHumidity
 	state.currenttemp = jsonObj.properties.temperature.value
 	state.currentangle = jsonObj.properties.angleLevel
-	state.acPower = jsonObj.properties.acPower
+	state.acPower = (jsonObj.properties.acPower == "on" ? "☈: " : "✕: ") 
 	state.batteryLe = jsonObj.state.batteryLevel
         sendEvent(name:"setangle", value: jsonObj.properties.angleEnable)
         sendEvent(name:"setdirection", value: jsonObj.properties.angleEnable)
@@ -884,7 +884,8 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 }
 
 def multiatt(){
-    	sendEvent(name:"lastCheckin", value: " 온도: " + state.currenttemp + "° 습도: " + state.currenthumi + " 회전: " + state.currentangle + "°")
+	int temp = state.currenttemp
+    	sendEvent(name:"lastCheckin", value: " 온도: " + temp + "° 습도: " + state.currenthumi + " 회전: " + state.currentangle + "°")
 	sendEvent(name:"battery", value: state.acPower + state.batteryLe + "%" )
 }
 def sendCommand(options, _callback){
