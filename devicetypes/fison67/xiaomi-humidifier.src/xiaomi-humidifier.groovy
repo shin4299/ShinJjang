@@ -230,8 +230,8 @@ metadata {
         	)
         }
         standardTile("dry", "device.dry") {
-            state "on", label: 'ON', icon: "st.vents.vent-open",  backgroundColor: "#FFD16C"
-            state "off", label: 'OFF', icon: "st.vents.vent", backgroundColor: "#c1baaa"
+            state "on", label: 'ON', action: "setDryOn", icon: "st.vents.vent-open",  backgroundColor: "#FFD16C"
+            state "off", label: 'OFF', action: "setDryOff", icon: "st.vents.vent", backgroundColor: "#c1baaa"
         }
         valueTile("checkin", "device.lastCheckin", width: 2, height: 1) {
             state("default", label:'${currentValue}', defaultState: true
@@ -311,7 +311,7 @@ def setStatus(params){
 		def hour = Math.round(stf/3600)
 		int leftday = Math.floor(stf/3600/24)
 		int lefthour = hour - leftday*24
-        sendEvent(name:"use_time", value: leftday + "days\n" + lefthour + "hours" )
+        sendEvent(name:"use_time", value: leftday + "d\n" + lefthour + "h" )
     	break;
     case "ledBrightness":
         sendEvent(name:"ledBrightness", value: params.data)
