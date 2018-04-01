@@ -121,7 +121,7 @@ metadata {
    			attributeState("default", label:'${currentValue}                      ')
           }
             tileAttribute("device.battery", key: "SECONDARY_CONTROL") {
-   			attributeState("default", label:'                                            AC-${currentValue}')
+   			attributeState("default", label:'                                               AC${currentValue}')
           }
 		}
         standardTile("switch2", "device.switch", inactiveLabel: false, width: 2, height: 2) {
