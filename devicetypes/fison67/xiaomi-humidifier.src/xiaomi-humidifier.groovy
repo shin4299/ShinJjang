@@ -210,6 +210,9 @@ metadata {
         valueTile("time_label", "", decoration: "flat") {
             state "default", label:'사용 \n시간'
         }        
+        valueTile("update_label", "", decoration: "flat") {
+            state "default", label:'last \nupdate'
+        }        
         standardTile("buzzer", "device.buzzer") {
             state "on", label:'Sound', action:"buzzerOff", icon: "st.custom.sonos.unmuted", backgroundColor:"#BAA7BC", nextState:"turningOff"
             state "off", label:'Mute', action:"buzzerOn", icon: "st.custom.sonos.muted", backgroundColor:"#d1cdd2", nextState:"turningOn"
@@ -222,18 +225,26 @@ metadata {
             state "dim", label: 'Dim', action: "setBrightOff", icon: "st.illuminance.illuminance.light", backgroundColor: "#ffc2cd", nextState:"off"
             state "off", label: 'Off', action: "setBright", icon: "st.illuminance.illuminance.dark", backgroundColor: "#d6c6c9", nextState:"bright"
         }         
-        valueTile("use_time", "device.use_time") {
-            state("val", label:'${currentValue}D', defaultState: true
+        valueTile("use_time", "device.use_time", width: 3, height: 1) {
+            state("val", label:'${currentValue}', defaultState: true
         	)
         }
         standardTile("dry", "device.dry", width: 2, height: 2, canChangeIcon: true) {
             state "dry", label: 'Dry',  backgroundColor: "#00a0dc"
             state "noDry", label: 'No Dry', backgroundColor: "#ffffff"
         }
+        valueTile("checkin", "device.lastCheckin", width: 3, height: 1) {
+            state("default", label:'Updated: ${currentValue}', defaultState: true
+        	)
+        }
+		
+//            tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
+//    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
+		
    	main (["modem"])
 	details(["mode", "switch", "auto_label", "silent_label", "medium_label", "high_label", "mode1", "mode2", "mode3", "mode4", 
-    		 "temp_label", "humi_label", "water_label", "buzzer_label", 
-             "led_label", "time_label", "temperature", "humidity", "water", "buzzer", "ledBrightness", "use_time"])
+    		 "buzzer_label", "led_label", "time_label", "use_time", 
+                 "buzzer", "ledBrightness", "update_label", "checkin"])
 
 
 	}
@@ -300,7 +311,7 @@ def setStatus(params){
 		def hour = Math.round(stf/3600)
 		def leftday = Math.floor(stf/3600/24)
 		def lefthour = hour - leftday*24
-        sendEvent(name:"use_time", value: leftday + "days\n" + lefthour + "hours" )
+        sendEvent(name:"use_time", value: leftday + "days " + lefthour + "hours" )
     	break;
     case "ledBrightness":
         sendEvent(name:"ledBrightness", value: params.data)
