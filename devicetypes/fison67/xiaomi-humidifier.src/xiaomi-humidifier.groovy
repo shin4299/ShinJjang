@@ -225,7 +225,7 @@ metadata {
             state "dim", label: 'Dim', action: "setBrightOff", icon: "st.illuminance.illuminance.light", backgroundColor: "#ffc2cd", nextState:"off"
             state "off", label: 'Off', action: "setBright", icon: "st.illuminance.illuminance.dark", backgroundColor: "#d6c6c9", nextState:"bright"
         }         
-        valueTile("use_time", "device.use_time", width: 1, height: 1) {
+        valueTile("use_time", "device.use_time", width: 2, height: 1) {
             state("val", label:'${currentValue}', defaultState: true
         	)
         }
@@ -243,8 +243,8 @@ metadata {
 		
    	main (["modem"])
 	details(["mode", "switch", "auto_label", "silent_label", "medium_label", "high_label", "mode1", "mode2", "mode3", "mode4", 
-    		 "buzzer_label", "led_label", "dry_label", "time_label", "use_time", "refresh",
-                 "buzzer", "ledBrightness", "dry", "update_label", "checkin"])
+    		 "buzzer_label", "led_label", "dry_label", "time_label", "use_time",
+                 "buzzer", "ledBrightness", "dry",  "refresh", "checkin"])
 
 
 	}
