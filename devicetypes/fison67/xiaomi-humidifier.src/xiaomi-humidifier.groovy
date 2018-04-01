@@ -297,8 +297,10 @@ def setStatus(params){
 		def para = "${params.data}"
 		String data = para
 		def stf = Float.parseFloat(data)
-		def time = Math.round(stf/3600/24)
-        sendEvent(name:"use_time", value: time )
+		def hour = Math.round(stf/3600)
+		def leftday = Math.floor(stf/3600/24)
+		def lefthour = hour - (day*24)
+        sendEvent(name:"use_time", value: leftday + "days\n" + lefthour + "hours" )
     	break;
     case "ledBrightness":
         sendEvent(name:"ledBrightness", value: params.data)
