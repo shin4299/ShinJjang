@@ -32,7 +32,7 @@ import groovy.json.JsonSlurper
 metadata {
 	definition (name: "Xiaomi Humidifier", namespace: "fison67", author: "fison67") {
         capability "Switch"						//"on", "off"
-        capability "Switch Level"						//"on", "off"
+        capability "Switch Level"
         capability "Temperature Measurement"
         capability "Relative Humidity Measurement"
 		capability "Refresh"
@@ -43,13 +43,10 @@ metadata {
         attribute "ledBrightness", "enum", ["off", "dim", "bright"]
         attribute "water", "string"
         attribute "use_time", "string"
-        attribute "dry", "string"
+        attribute "dry", "enum", ["on", "off"]
         
         attribute "lastCheckin", "Date"
          
-        command "on"
-        command "off"
-        
         command "setModeOn"
         command "setModeAuto"
         command "setModeSilent"
@@ -160,8 +157,8 @@ metadata {
             state "default", label:'물양'
         }
 
-        valueTile("temperature", "device.temperature") {
-            state("val", label:'${currentValue}°', defaultState: true, 
+/*        valueTile("temperature", "device.temperature") {
+           state("val", label:'${currentValue}°', defaultState: true, 
             	backgroundColors:[
                     [value: 5, color: "#153591"],
                     [value: 10, color: "#1e9cbb"],
@@ -199,7 +196,7 @@ metadata {
                     [value: 100, color: "#2c499c"],
                 ]
         	)
-        }
+        }*/
         
         valueTile("buzzer_label", "", decoration: "flat") {
             state "default", label:'부저음'
@@ -209,6 +206,9 @@ metadata {
         }        
         valueTile("time_label", "", decoration: "flat") {
             state "default", label:'사용 \n시간'
+        }        
+        valueTile("dry_label", "", decoration: "flat") {
+            state "default", label:'건조 \n모드'
         }        
         valueTile("update_label", "", decoration: "flat") {
             state "default", label:'last \nupdate'
@@ -225,15 +225,15 @@ metadata {
             state "dim", label: 'Dim', action: "setBrightOff", icon: "st.illuminance.illuminance.light", backgroundColor: "#ffc2cd", nextState:"off"
             state "off", label: 'Off', action: "setBright", icon: "st.illuminance.illuminance.dark", backgroundColor: "#d6c6c9", nextState:"bright"
         }         
-        valueTile("use_time", "device.use_time", width: 2, height: 1) {
+        valueTile("use_time", "device.use_time", width: 1, height: 1) {
             state("val", label:'${currentValue}', defaultState: true
         	)
         }
-        standardTile("dry", "device.dry", width: 2, height: 2, canChangeIcon: true) {
-            state "dry", label: 'Dry',  backgroundColor: "#00a0dc"
-            state "noDry", label: 'No Dry', backgroundColor: "#ffffff"
+        standardTile("dry", "device.dry") {
+            state "on", label: 'ON', icon: "st.vents.vent-open",  backgroundColor: "#FFD16C"
+            state "off", label: 'OFF', icon: "st.vents.vent", backgroundColor: "#c1baaa"
         }
-        valueTile("checkin", "device.lastCheckin", width: 3, height: 1) {
+        valueTile("checkin", "device.lastCheckin", width: 2, height: 1) {
             state("default", label:'${currentValue}', defaultState: true
         	)
         }
@@ -243,8 +243,8 @@ metadata {
 		
    	main (["modem"])
 	details(["mode", "switch", "auto_label", "silent_label", "medium_label", "high_label", "mode1", "mode2", "mode3", "mode4", 
-    		 "buzzer_label", "led_label", "time_label", "use_time", "refresh",
-                 "buzzer", "ledBrightness", "update_label", "checkin"])
+    		 "buzzer_label", "led_label", "dry_label", "time_label", "use_time", "refresh",
+                 "buzzer", "ledBrightness", "dry", "update_label", "checkin"])
 
 
 	}
@@ -311,7 +311,7 @@ def setStatus(params){
 		def hour = Math.round(stf/3600)
 		int leftday = Math.floor(stf/3600/24)
 		int lefthour = hour - leftday*24
-        sendEvent(name:"use_time", value: leftday + "days " + lefthour + "hours" )
+        sendEvent(name:"use_time", value: leftday + "days\n" + lefthour + "hours" )
     	break;
     case "ledBrightness":
         sendEvent(name:"ledBrightness", value: params.data)
@@ -334,8 +334,9 @@ def setStatus(params){
         break;
     }
     
-    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-    sendEvent(name: "lastCheckin", value: now)
+    def nowT = new Date().format("HH:mm:ss", location.timeZone)
+    def nowD = new Date().format("yyyy-MM-dd", location.timeZone)
+    sendEvent(name: "lastCheckin", value: nowD + "\n" + nowT)
 }
 
 def refresh(){
@@ -531,8 +532,9 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness)
         sendEvent(name:"level", value: jsonObj.properties.targetHumidity)
 	    
-        def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-        sendEvent(name: "lastCheckin", value: now)
+    def nowT = new Date().format("HH:mm:ss", location.timeZone)
+    def nowD = new Date().format("yyyy-MM-dd", location.timeZone)
+    sendEvent(name: "lastCheckin", value: nowD + "\n" + nowT)
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
     }
