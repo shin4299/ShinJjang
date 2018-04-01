@@ -234,12 +234,9 @@ metadata {
             state "noDry", label: 'No Dry', backgroundColor: "#ffffff"
         }
         valueTile("checkin", "device.lastCheckin", width: 3, height: 1) {
-            state("default", label:'Updated: ${currentValue}', defaultState: true
+            state("default", label:'${currentValue}', defaultState: true
         	)
         }
-		
-//            tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-//    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
 		
    	main (["modem"])
 	details(["mode", "switch", "auto_label", "silent_label", "medium_label", "high_label", "mode1", "mode2", "mode3", "mode4", 
