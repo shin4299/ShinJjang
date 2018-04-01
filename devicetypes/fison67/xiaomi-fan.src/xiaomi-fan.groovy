@@ -303,7 +303,7 @@ def setStatus(params){
 		String data = para
 		def st = data.replace("C","");
 		def stf = Float.parseFloat(st)
-		def tem = Math.round(stf*10)/10
+		def tem = Math.round(stf)
 	state.currenttemp = tem
 //        sendEvent(name:"temperature", value: tem)
 //    	sendEvent(name:"lastCheckin", value: " 온도:" + tem + "° 습도:" + currenthumi + " 회전:" + currentangle + "°")// (" + now + ")")        
@@ -873,7 +873,9 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         sendEvent(name:"setdirection", value: jsonObj.properties.angleEnable)
         sendEvent(name:"switch", value: jsonObj.properties.power == true ? "on" : "off")
         sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
-        sendEvent(name:"ledBrightness", value: jsonObj.properties.ledBrightness)
+        if(jsonObj.properties.ledBrightness != null && jsonObj.properties.ledBrightness != ""){
+        	sendEvent(name:"ledBrightness", value: jsonObj.properties.ledBrightness)
+        }
 	    
         def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
         sendEvent(name: "lastCheckin", value: now)
