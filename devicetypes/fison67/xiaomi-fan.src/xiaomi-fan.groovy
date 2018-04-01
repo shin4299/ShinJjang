@@ -334,8 +334,15 @@ def setStatus(params){
     	break;        
     case "acPower":
     	state.acPower = (params.data == "on" ? "on" : "off")
+	if(params.data == "on"){
+	   sendEvent(name:"battery", value: "☈ : " + state.battery + "%" )
+	} else {
+	   sendEvent(name:"battery", value: "✕ : " + state.battery + "%" )
+	}
+	
     	break;        
     case "batteryLevel":
+	state.batteryLe = params.data	
 	if(state.acPower == "on"){
 	   sendEvent(name:"battery", value: "☈ : " + params.data + "%" )
 	} else {
