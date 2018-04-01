@@ -167,58 +167,58 @@ metadata {
 	    state "default", label:'습도'
         }		
         valueTile("1l", "device.1l") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("1t", "device.1t") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("1h", "device.1h") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("2l", "device.2l") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("2t", "device.2t") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("2h", "device.2h") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("3l", "device.3l") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("3t", "device.3t") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("3h", "device.3h") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("4l", "device.4l") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("4t", "device.4t") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("4h", "device.4h") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("5l", "device.5l") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("5t", "device.5t") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("5h", "device.5h") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("6l", "device.6l") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("6t", "device.6t") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
         valueTile("6h", "device.6h") {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}', defaultState: true
         }		
 //        valueTile("lastcheckin", "device.lastCheckin", inactiveLabel: false, decoration:"flat", width: 4, height: 1) {
 //        state "lastcheckin", label:'Last Event:\n ${currentValue}'
