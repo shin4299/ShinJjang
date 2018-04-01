@@ -176,7 +176,7 @@ metadata {
             state "turningOff", label:'turningOff', action:"setAngleOn", icon:"st.motion.motion.inactive", backgroundColor:"#b2cc68", nextState:"turningOn"
         }
         
-        valueTile("angle_label", "", decoration: "flat", width: 4, height: 1) {
+        valueTile("angle_label", "", decoration: "flat", width: 3, height: 1) {
             state "default", label:'Control Angle'
         }
         valueTile("head_label", "", decoration: "flat", width: 2, height: 1) {
@@ -210,7 +210,9 @@ metadata {
              
             state "change", label:'....', action:"naturalOn", backgroundColor:"#d6c6c9"
         }
-
+        valueTile("refresh", "device.refresh", decoration: "flat") {
+            state "default", label:'', action:"refresh", icon:"st.secondary.refresh-icon"
+        }        
         valueTile("led_label", "", decoration: "flat") {
             state "default", label:'LED'
         }
@@ -265,7 +267,7 @@ metadata {
    	main (["switch2"])
 	details(["switch", "mode_label", "rotation_label",  "buzzer_label", "led_label", "speed_label", 
     "mode", "angle", "buzzer", "ledBrightness", "tiemr0", "timerset", /*"speed1", "speed2", "speed3", "speed4", */
-    "head_label", "angle_label",  
+    "head_label", "angle_label", "refresh",
      "headl", "headr", "angle1", "angle2", "angle3", "angle4"
     /*"buzzer_label", "led_label", "timer_label", "tiemr0", "tiemr1", "tiemr2", 
     "buzzer", "ledBrightness", "tiemr3", "tiemr4", "tiemr5", "leftTime"*/
