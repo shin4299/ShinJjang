@@ -247,9 +247,9 @@ def setInfo(String app_url, String id) {
 def setStatus(params){
     log.debug "${params.key} : ${params.data}"
     def now = new Date().format("HH:mm:ss", location.timeZone)
-	state.currenttemp = device.currentState('temperature')?.value
-	state.currenthumi = device.currentState('humidity')?.value
-	state.currentangle = device.currentState('anglelevel')?.value
+//	state.currenttemp = device.currentState('temperature')?.value
+//	state.currenthumi = device.currentState('humidity')?.value
+//	state.currentangle = device.currentState('anglelevel')?.value
     
  	switch(params.key){
     case "temperature":
