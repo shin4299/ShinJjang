@@ -869,13 +869,11 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 	state.currentangle = jsonObj.properties.angleLevel
 	state.acPower = jsonObj.properties.acPower
 	state.batteryLe = jsonObj.state.batteryLevel
-        sendEvent(name:"setangle", value: jsonObj.properties.angleEnable)ledBrightness
+        sendEvent(name:"setangle", value: jsonObj.properties.angleEnable)
         sendEvent(name:"setdirection", value: jsonObj.properties.angleEnable)
         sendEvent(name:"switch", value: jsonObj.properties.power == true ? "on" : "off")
         sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
-        if(jsonObj.properties.ledBrightness != null && jsonObj.properties.ledBrightness != ""){
-        	sendEvent(name:"ledBrightness", value: jsonObj.properties.ledBrightness)
-        }
+        sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness)
 	    
         def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
         sendEvent(name: "lastCheckin", value: now)
