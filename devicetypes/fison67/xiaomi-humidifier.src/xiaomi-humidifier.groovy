@@ -32,6 +32,7 @@ import groovy.json.JsonSlurper
 metadata {
 	definition (name: "Xiaomi Humidifier", namespace: "fison67", author: "fison67") {
         capability "Switch"						//"on", "off"
+        capability "Switch Level"						//"on", "off"
         capability "Temperature Measurement"
         capability "Relative Humidity Measurement"
 		capability "Refresh"
@@ -57,6 +58,8 @@ metadata {
         
         command "buzzerOn"
         command "buzzerOff"
+        command "setDryOn"
+        command "setDryOff"
         
         command "setBright"
         command "setBrightDim"
@@ -79,9 +82,24 @@ metadata {
                 attributeState "modechange", label:'\n${name}', icon:"st.quirky.spotter.quirky-spotter-motion", backgroundColor:"#C4BBB5"
                 attributeState "turningOn", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTQ2/MDAxNTIyMTUxNzIxMTk3.xeCR1k4pk0vDOozb43Lfo6g2fMC1a_VJFUpTQ071XRUg.dyhFTAUaCwWPUYc4hPUdGiuUI5yeRJ4QpP3kX802AlIg.PNG.shin4299/Humi_tile_off.png?type=w580", backgroundColor:"#C4BBB5", nextState:"off"
 			}
-            tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
-            }
+			tileAttribute("device.humidity", key: "SECONDARY_CONTROL") {
+        		attributeState("humidity", label:'${currentValue}', unit:"%", defaultState: true)
+    		}            
+			tileAttribute("device.temperature", key: "SECONDARY_CONTROL") {
+        		attributeState("temperature", label:'         온도 ${currentValue}°', unit:"°", defaultState: true)
+    		}            
+			tileAttribute("device.water", key: "SECONDARY_CONTROL") {
+        		attributeState("water", label:'                             물양 ${currentValue}%', unit:"%", defaultState: true)
+    		}            
+			tileAttribute("device.target", key: "SECONDARY_CONTROL") {
+        		attributeState("target", label:'                                                              목표습도:', defaultState: true)
+    		}            
+		    tileAttribute ("device.level", key: "SLIDER_CONTROL", range:"(30..80)") {
+        		attributeState "level", action:"switch level.setLevel"
+		    }
+//            tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
+//    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
+//            }
 		}
         
 		multiAttributeTile(name:"modem", type: "generic", width: 6, height: 4){
@@ -205,7 +223,7 @@ metadata {
             state "off", label: 'Off', action: "setBright", icon: "st.illuminance.illuminance.dark", backgroundColor: "#d6c6c9", nextState:"bright"
         }         
         valueTile("use_time", "device.use_time") {
-            state("val", label:'${currentValue}', defaultState: true
+            state("val", label:'${currentValue}D', defaultState: true
         	)
         }
         standardTile("dry", "device.dry", width: 2, height: 2, canChangeIcon: true) {
@@ -275,11 +293,18 @@ def setStatus(params){
 		def tem = Math.round(stf*10)/10
         sendEvent(name:"temperature", value: tem )
     	break;
+    case "useTime":
+		def para = "${params.data}"
+		String data = para
+		def stf = Float.parseFloat(data)
+		def time = Math.round(stf/3600/24)
+        sendEvent(name:"use_time", value: time )
+    	break;
     case "ledBrightness":
         sendEvent(name:"ledBrightness", value: params.data)
     	break;        
-    case "limit_hum":
-        sendEvent(name:"limit_hum", value: params.data)
+    case "targetHumidity":
+        sendEvent(name:"level", value: params.data)
     	break;
     case "depth":
 		def para = "${params.data}"
@@ -292,12 +317,24 @@ def setStatus(params){
     	sendEvent(name:"buzzer", value: (params.data == "true" ? "on" : "off") )
         break;
     case "dry":
-    	sendEvent(name:"dry", value: (params.data == "" ? "noDry" : "dry") )
+    	sendEvent(name:"dry", value: params.data )
         break;
     }
     
     def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
     sendEvent(name: "lastCheckin", value: now)
+}
+
+def setLevel(level){
+	log.debug "setLevel >> ${state.id}"
+	def setHumi = Math.round(level/10)*10
+    def body = [
+        "id": state.id,
+        "cmd": "targetHumidity",
+        "data": setHumi
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
 }
 
 def setBright(){
@@ -401,7 +438,7 @@ def buzzerOff(){
 }
 
 def on(){
-	log.debug "Off >> ${state.id}"
+	log.debug "ON >> ${state.id}"
     def body = [
         "id": state.id,
         "cmd": "power",
@@ -421,6 +458,29 @@ def off(){
     def options = makeCommand(body)
     sendCommand(options, null)
 }
+
+def setDryOn(){
+	log.debug "Dry ON >> ${state.id}"
+    def body = [
+        "id": state.id,
+        "cmd": "dry",
+        "data": "on"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+}
+
+def setDryOff(){
+	log.debug "Dry Off >> ${state.id}"
+	def body = [
+        "id": state.id,
+        "cmd": "dry",
+        "data": "off"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+}
+
 
 
 def updated() {

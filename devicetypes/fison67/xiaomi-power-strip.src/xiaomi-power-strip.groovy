@@ -31,18 +31,18 @@ import groovy.json.JsonSlurper
 
 metadata {
 	definition (name: "Xiaomi Power Strip", namespace: "fison67", author: "fison67") {
-        capability "Switch"						
-         
-        attribute "status", "string"
-        attribute "switch", "string"
-        attribute "mode", "string"
+		capability "Actuator"
+		capability "Switch"
+		capability "Power Meter"
+		capability "Energy Meter"
+		capability "Configuration"
+		capability "Refresh"
+		capability "Sensor"
+		capability "Outlet"
         
+        attribute "Volt", "string"
+        attribute "temp", "string"
         attribute "lastCheckin", "Date"
-        
-        command "localOn"
-        command "localOff"
-        command "on"
-        command "off"
         
         command "setModeGreen"
         command "setModeNormal"
@@ -51,18 +51,27 @@ metadata {
 	simulator { }
 
 	tiles(scale: 2) {
-		multiAttributeTile(name:"status", type: "generic", width: 6, height: 4, canChangeIcon: true){
-			tileAttribute ("device.status", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"localOff", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"localOn", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
+			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
+                attributeState "on", label:'${name}', action:"switch.off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"localOff", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"localOn", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
+		}
+        valueTile("powerMeter", "device.powerMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
+        	state "powerMeter", label: '현재전력\n${currentValue}', action: "power", defaultState: true
+		}
+        valueTile("powerVolt", "device.powerVolt", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
+        	state "volt", label: '현재전압\n${currentValue}', action: "volt", defaultState: true
+		}        
+        valueTile("energyMeter", "device.energyMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
+        	state "energyMeter", label: '누적전력\n${currentValue}', action: "energy", defaultState: true
 		}
         
         standardTile("mode", "device.mode", width: 2, height: 2, canChangeIcon: true) {
@@ -91,13 +100,43 @@ def setStatus(params){
     	sendEvent(name:"mode", value: params.data )
     	break;
     case "power":
-    	sendEvent(name:"status", value: (params.data == "true" ? "on" : "off"))
     	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
+    	break;
+    case "powerLoad":
+    	sendEvent(name:"powerMeter", value: params.data)
+    	break;
+    case "loadVoltage":
+    	sendEvent(name:"powerVolt", value: params.data)
+    	break;
+    case "powerConsumed":
+    	sendEvent(name:"energyMeter", value: params.data)
     	break;
     }
     
     def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
     sendEvent(name: "lastCheckin", value: now)
+}
+
+def on(){
+	log.debug "Off >> ${state.id}"
+    def body = [
+        "id": state.id,
+        "cmd": "power",
+        "data": "on"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+}
+
+def off(){
+    log.debug "Off >> ${state.id}"
+	def body = [
+        "id": state.id,
+        "cmd": "power",
+        "data": "off"
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
 }
 
 def setModeGreen(){
@@ -122,35 +161,6 @@ def setModeNormal(){
     sendCommand(options, null)
 }
 
-def localOn(){
-	log.debug "Off >> ${state.id}"
-    def body = [
-        "id": state.id,
-        "cmd": "power",
-        "data": "on"
-    ]
-    def options = makeCommand(body)
-    sendCommand(options, null)
-}
-
-def localOff(){
-	log.debug "Off >> ${state.id}"
-	def body = [
-        "id": state.id,
-        "cmd": "power",
-        "data": "off"
-    ]
-    def options = makeCommand(body)
-    sendCommand(options, null)
-}
-
-def on(){
-	localOn()
-}
-
-def off(){
-	localOff()
-}
 
 def callback(physicalgraph.device.HubResponse hubResponse){
 	def msg

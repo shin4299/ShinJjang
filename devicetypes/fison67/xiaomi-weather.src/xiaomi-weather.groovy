@@ -154,9 +154,6 @@ metadata {
         valueTile("lastcheckin", "device.lastCheckin", inactiveLabel: false, decoration:"flat", width: 4, height: 1) {
         state "lastcheckin", label:'Last Event:\n ${currentValue}'
         }
-        valueTile("lastcheckin", "device.lastCheckin", inactiveLabel: false, decoration:"flat", width: 4, height: 1) {
-        state "lastcheckin", label:'Last Event:\n ${currentValue}'
-        }
 
 
         main("temperature2")
@@ -181,15 +178,12 @@ def setStatus(params){
 //    sendEvent(name: "lastCheckin", value: now)
 //    def now = formatDate()
 	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-    def nowDate = new Date(now).getTime()
 
 	// Any report - temp, humidity, pressure, & battery - results in a lastCheckin event and update to Last Checkin tile
 	// However, only a non-parseable report results in lastCheckin being displayed in events log
     sendEvent(name: "lastCheckin", value: now, displayed: false)
-    sendEvent(name: "lastCheckinDate", value: nowDate, displayed: false)
 
 	// Check if the min/max temp and min/max humidity should be reset
-    checkNewDay(now)
     
  	switch(params.key){
     case "relativeHumidity":
@@ -222,12 +216,15 @@ def setStatus(params){
 
 def updated() {}
 
-def checkNewDay(now) {
-	def oldDay = ((device.currentValue("currentDay")) == null) ? "32" : (device.currentValue("currentDay"))
-	def newDay = new Date(now).format("dd")
-	if (newDay != oldDay) {
-		resetMinMax()
-		sendEvent(name: "currentDay", value: newDay, displayed: false)
+def checkNewDay() {
+	def now = new Date().format("yyyy-MM-dd", location.timeZone)
+	if(state.prvDate == null){
+		state.prvDate = now
+	}else{
+		if(state.prvDate != now){
+			state.prvDate = now
+			resetMinMax()            
+		}
 	}
 }
 

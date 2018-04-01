@@ -60,23 +60,28 @@ metadata {
                 attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
+            tileAttribute("device.powerMeter", key: "SECONDARY_CONTROL") {
+    			attributeState("default", label:'사용전력: ${currentValue}\n ',icon: "st.Health & Wellness.health9")
+            }
+            tileAttribute("device.energyMeter", key: "SECONDARY_CONTROL") {
+    			attributeState("default", label:'                                 전력량: ${currentValue}KWh\n ',icon: "st.Health & Wellness.health9")
+            }
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
+    			attributeState("default", label:'\nUpdated: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
         valueTile("powerMeter", "device.powerMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
         	state "powerMeter", label: '현재전력\n${currentValue}', action: "power", defaultState: true
 		}
-        valueTile("powerVolt", "device.powerVolt", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
-        	state "volt", label: '현재전압\n${currentValue}', action: "volt", defaultState: true
-		}        
+//        valueTile("powerVolt", "device.powerVolt", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
+//        	state "volt", label: '현재전압\n${currentValue}', action: "volt", defaultState: true
+//		}        
         valueTile("energyMeter", "device.energyMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
         	state "energyMeter", label: '누적전력\n${currentValue}', action: "energy", defaultState: true
 		}
+   	main (["switch"])
+	details(["switch"])
         
-//        valueTile("powerLoad", "device.powerLoad", width: 2, height: 2) {
-//            state("val", label:'${currentValue}', defaultState: true, backgroundColor:"#00a0dc")
-//        }
 	}
 }
 
@@ -105,7 +110,12 @@ def setStatus(params){
     	sendEvent(name:"powerVolt", value: params.data)
     	break;
     case "powerConsumed":
-    	sendEvent(name:"energyMeter", value: params.data)
+		def para = "${params.data}"
+		String data = para
+		def st = data.replace("J","");
+		def stf = Float.parseFloat(st)
+		def powerc = Math.round(stf)/1000
+    	sendEvent(name:"energyMeter", value: powerc)
     	break;
     }
     
