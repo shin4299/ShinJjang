@@ -289,25 +289,40 @@ def setInfo(String app_url, String id) {
 def setStatus(params){
     log.debug "${params.key} : ${params.data}"
     def now = new Date().format("HH:mm:ss", location.timeZone)
-	def currenttemp = device.currentState('temperature')?.value
-	def currenthumi = device.currentState('humidity')?.value
-	def currentangle = device.currentState('anglelevel')?.value
+//	def currenttemp = device.currentState('temperature')?.value
+//	def currenthumi = device.currentState('humidity')?.value
+//	def currentangle = device.currentState('anglelevel')?.value
+	state.currenttemp = device.currentState('temperature')?.value
+	state.currenthumi = device.currentState('humidity')?.value
+	state.currentangle = device.currentState('anglelevel')?.value
     
  	switch(params.key){
+    case "temperature":
+		def para = "${params.data}"
+		String data = para
+		def st = data.replace("C","");
+		def stf = Float.parseFloat(st)
+		def tem = Math.round(stf*10)/10
+	state.currenttemp = tem
+//        sendEvent(name:"temperature", value: tem)
+//    	sendEvent(name:"lastCheckin", value: " 온도:" + tem + "° 습도:" + currenthumi + " 회전:" + currentangle + "°")// (" + now + ")")        
+    	break;
     case "relativeHumidity":
-    	sendEvent(name:"humidity", value: params.data + "%")
-    	sendEvent(name:"lastCheckin", value: " 온도: " + currenttemp + "° 습도: " + params.data + " 회전: " + currentangle + "°")// (" + now + ")")
+	state.currenthumi = params.data
+//    	sendEvent(name:"humidity", value: params.data + "%")
+//    	sendEvent(name:"lastCheckin", value: " 온도: " + currenttemp + "° 습도: " + params.data + " 회전: " + currentangle + "°")// (" + now + ")")
     	break;
     case "angleLevel":
-        sendEvent(name:"anglelevel", value: params.data)
-    	sendEvent(name:"lastCheckin", value: " 온도: " + currenttemp + "° 습도: " + currenthumi + " 회전: " + params.data + "°")// (" + now + ")")
+	state.currentangle = params.data
+//        sendEvent(name:"anglelevel", value: params.data)
+//    	sendEvent(name:"lastCheckin", value: " 온도: " + currenttemp + "° 습도: " + currenthumi + " 회전: " + params.data + "°")// (" + now + ")")
     	break;        
     case "speedLevel":
         sendEvent(name:"fanSpeed", value: params.data)
 		def para = params.data
 		String data = para
 		def stf = Float.parseFloat(data)
-		def tem = Math.round((stf+12)/25)        
+		int tem = Math.round((stf+12)/25)        
         sendEvent(name:"speedlevel", value: tem)
     	break;        
     case "naturalLevel":
@@ -356,18 +371,21 @@ def setStatus(params){
     case "buzzer":
     	sendEvent(name:"buzzer", value: (params.data == "true" ? "on" : "off"))
     	break;
-    case "temperature":
-		def para = "${params.data}"
-		String data = para
-		def st = data.replace("C","");
-		def stf = Float.parseFloat(st)
-		def tem = Math.round(stf)
-        sendEvent(name:"temperature", value: tem)
-    	sendEvent(name:"lastCheckin", value: " 온도:" + tem + "° 습도:" + currenthumi + " 회전:" + currentangle + "°")// (" + now + ")")        
-    	break;
     }
 }
 //----------------------------
+def refresh(){
+	log.debug "Refresh"
+    def options = [
+     	"method": "GET",
+        "path": "/devices/get/${state.id}",
+        "headers": [
+        	"HOST": state.app_url,
+            "Content-Type": "application/json"
+        ]
+    ]
+    sendCommand(options, callback)
+}
 
 def msToTime(duration) {
     def seconds = (duration%60).intValue()
@@ -836,6 +854,49 @@ def updated() {
 }
 def setdirectionfault() {
 }
+
+def callback(physicalgraph.device.HubResponse hubResponse){
+	def msg
+    try {
+        msg = parseLanMessage(hubResponse.description)
+		def jsonObj = new JsonSlurper().parseText(msg.body)
+        log.debug jsonObj
+	state.currenthumi = jsonObj.properties.relativeHumidity
+	state.currenttemp = jsonObj.properties.temperature.value
+	state.currentangle = jsonObj.properties.angleLevel
+	state.acPower = jsonObj.properties.acPower
+	state.batteryLe = jsonObj.state.batteryLevel
+        sendEvent(name:"setangle", value: jsonObj.properties.angleEnable)
+        sendEvent(name:"setdirection", value: jsonObj.properties.angleEnable)
+        sendEvent(name:"switch", value: jsonObj.properties.power == true ? "on" : "off")
+        sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
+	    
+    	sendEvent(name:"humidity", value: jsonObj.properties.relativeHumidity + "%" )
+    	sendEvent(name:"temperature", value: jsonObj.properties.temperature.value  )
+        
+        if(jsonObj.properties.aqi != null && jsonObj.properties.aqi != ""){
+        	sendEvent(name:"pm25_value", value: jsonObj.properties.aqi)
+        }
+        if(jsonObj.properties.averageAqi != null && jsonObj.properties.averageAqi != ""){
+        	sendEvent(name:"airQualityLevel", value: jsonObj.properties.averageAqi)
+        }
+        if(jsonObj.state.filterLifeRemaining != null && jsonObj.state.filterLifeRemaining != ""){
+    		sendEvent(name:"filter1_life", value: jsonObj.state.filterLifeRemaining )
+        }
+        if(jsonObj.state.filterHoursUsed != null && jsonObj.state.filterHoursUsed != ""){
+    		sendEvent(name:"f1_hour_used", value: Math.round(jsonObj.state.filterHoursUsed/24) )
+        }
+        if(jsonObj.properties.ledBrightness != null && jsonObj.properties.ledBrightness != ""){
+        	sendEvent(name:"ledBrightness", value: jsonObj.properties.ledBrightness)
+        }
+        def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+        sendEvent(name: "lastCheckin", value: now)
+
+    } catch (e) {
+        log.error "Exception caught while parsing data: "+e;
+    }
+}
+
 
 def sendCommand(options, _callback){
 	def myhubAction = new physicalgraph.device.HubAction(options, null, [callback: _callback])
