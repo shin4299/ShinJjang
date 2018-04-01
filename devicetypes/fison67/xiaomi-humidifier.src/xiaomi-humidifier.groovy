@@ -144,59 +144,6 @@ metadata {
         standardTile("mode4", "device.mode") {
 			state "default", label: "High", action: "setModeHigh", icon:"st.quirky.spotter.quirky-spotter-luminance-bright", backgroundColor:"#ff9eb2"
 		}
-
-
-
-        valueTile("temp_label", "", decoration: "flat") {
-            state "default", label:'온도'
-        }
-        valueTile("humi_label", "", decoration: "flat") {
-            state "default", label:'습도'
-        }
-        valueTile("water_label", "", decoration: "flat") {
-            state "default", label:'물양'
-        }
-
-/*        valueTile("temperature", "device.temperature") {
-           state("val", label:'${currentValue}°', defaultState: true, 
-            	backgroundColors:[
-                    [value: 5, color: "#153591"],
-                    [value: 10, color: "#1e9cbb"],
-                    [value: 20, color: "#90d2a7"],
-                    [value: 30, color: "#44b621"],
-                    [value: 40, color: "#f1d801"],
-                    [value: 70, color: "#d04e00"],
-                    [value: 90, color: "#bc2323"]
-                ]
-            )
-        }
-        
-        valueTile("humidity", "device.humidity") {
-            state("val", label:'${currentValue}', defaultState: true, 
-            	backgroundColors:[
-                    [value: 10, color: "#153591"],
-                    [value: 30, color: "#1e9cbb"],
-                    [value: 40, color: "#90d2a7"],
-                    [value: 50, color: "#44b621"],
-                    [value: 60, color: "#f1d801"],
-                    [value: 80, color: "#d04e00"],
-                    [value: 90, color: "#bc2323"]
-                ]
-            )
-        }
-        
-        valueTile("water", "device.water") {
-            state("val", label:'${currentValue}%', defaultState: true, 
-            	backgroundColors:[
-                    [value: 20, color: "#b3888c"],
-                    [value: 20, color: "#d0d6e9"],
-                    [value: 40, color: "#b8c2de"],
-                    [value: 60, color: "#8a9ac8"],
-                    [value: 80, color: "#5b71b2"],
-                    [value: 100, color: "#2c499c"],
-                ]
-        	)
-        }*/
         
         valueTile("buzzer_label", "", decoration: "flat") {
             state "default", label:'부저음'
