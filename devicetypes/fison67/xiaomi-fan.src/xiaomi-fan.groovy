@@ -58,8 +58,7 @@ metadata {
         
         attribute "lastCheckin", "Date"
          
-        command "on"
-        command "off"
+        command "multiatt"
         command "generalOn"
         command "naturalOn"
         
@@ -348,21 +347,20 @@ def setStatus(params){
         sendEvent(name:"fanSpeed", value: params.data)
     	break;        
     case "acPower":
-    	state.acPower = (params.data == "on" ? "on" : "off")
-	if(params.data == "on"){
-	   sendEvent(name:"battery", value: "☈ : " + state.battery + "%" )
-	} else {
-	   sendEvent(name:"battery", value: "✕ : " + state.battery + "%" )
-	}
-	
+    	state.acPower = (params.data == "on" ? "☈: " : "✕: ")
+//	if(params.data == "on"){
+//	   sendEvent(name:"battery", value: "☈: " + state.batteryLe + "%" )//
+//	} else {
+//	   sendEvent(name:"battery", value: "✕: " + state.batteryLe + "%" )
+//	}	
     	break;        
     case "batteryLevel":
 	state.batteryLe = params.data	
-	if(state.acPower == "on"){
-	   sendEvent(name:"battery", value: "☈ : " + params.data + "%" )
-	} else {
-	   sendEvent(name:"battery", value: "✕ : " + params.data + "%" )
-	}
+//	if(state.acPower == "on"){
+//	   sendEvent(name:"battery", value: "☈ : " + params.data + "%" )
+//	} else {
+//	   sendEvent(name:"battery", value: "✕ : " + params.data + "%" )
+//	}
     	break;
     case "power":
     	state.power = (params.data == "true" ? "on" : "off")
@@ -370,6 +368,9 @@ def setStatus(params){
     	break;
     case "buzzer":
     	sendEvent(name:"buzzer", value: (params.data == "true" ? "on" : "off"))
+    	break;
+    case "ledBrightness":
+    	sendEvent(name:"ledBrightness", value: params.data )
     	break;
     }
 }
@@ -866,38 +867,24 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 	state.currentangle = jsonObj.properties.angleLevel
 	state.acPower = jsonObj.properties.acPower
 	state.batteryLe = jsonObj.state.batteryLevel
-        sendEvent(name:"setangle", value: jsonObj.properties.angleEnable)
+        sendEvent(name:"setangle", value: jsonObj.properties.angleEnable)ledBrightness
         sendEvent(name:"setdirection", value: jsonObj.properties.angleEnable)
         sendEvent(name:"switch", value: jsonObj.properties.power == true ? "on" : "off")
         sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
+        sendEvent(name:"ledBrightness", value: jsonObj.properties.ledBrightness)
 	    
-    	sendEvent(name:"humidity", value: jsonObj.properties.relativeHumidity + "%" )
-    	sendEvent(name:"temperature", value: jsonObj.properties.temperature.value  )
-        
-        if(jsonObj.properties.aqi != null && jsonObj.properties.aqi != ""){
-        	sendEvent(name:"pm25_value", value: jsonObj.properties.aqi)
-        }
-        if(jsonObj.properties.averageAqi != null && jsonObj.properties.averageAqi != ""){
-        	sendEvent(name:"airQualityLevel", value: jsonObj.properties.averageAqi)
-        }
-        if(jsonObj.state.filterLifeRemaining != null && jsonObj.state.filterLifeRemaining != ""){
-    		sendEvent(name:"filter1_life", value: jsonObj.state.filterLifeRemaining )
-        }
-        if(jsonObj.state.filterHoursUsed != null && jsonObj.state.filterHoursUsed != ""){
-    		sendEvent(name:"f1_hour_used", value: Math.round(jsonObj.state.filterHoursUsed/24) )
-        }
-        if(jsonObj.properties.ledBrightness != null && jsonObj.properties.ledBrightness != ""){
-        	sendEvent(name:"ledBrightness", value: jsonObj.properties.ledBrightness)
-        }
         def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
         sendEvent(name: "lastCheckin", value: now)
-
+	multiatt()
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
     }
 }
 
-
+def multiatt(){
+    	sendEvent(name:"lastCheckin", value: " 온도: " + state.currenttemp + "° 습도: " + state.currenthumi + " 회전: " + state.currentangle + "°")
+	sendEvent(name:"battery", value: state.acPower + state.batteryLe + "%" )
+}
 def sendCommand(options, _callback){
 	def myhubAction = new physicalgraph.device.HubAction(options, null, [callback: _callback])
     sendHubCommand(myhubAction)
