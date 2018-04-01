@@ -225,7 +225,7 @@ metadata {
             state "dim", label: 'Dim', action: "setBrightOff", icon: "st.illuminance.illuminance.light", backgroundColor: "#ffc2cd", nextState:"off"
             state "off", label: 'Off', action: "setBright", icon: "st.illuminance.illuminance.dark", backgroundColor: "#d6c6c9", nextState:"bright"
         }         
-        valueTile("use_time", "device.use_time", width: 3, height: 1) {
+        valueTile("use_time", "device.use_time", width: 2, height: 1) {
             state("val", label:'${currentValue}', defaultState: true
         	)
         }
@@ -237,10 +237,13 @@ metadata {
             state("default", label:'${currentValue}', defaultState: true
         	)
         }
+        valueTile("refresh", "device.refresh", decoration: "flat") {
+            state "default", label:'', action:"refresh", icon:"st.secondary.refresh"
+        }        
 		
    	main (["modem"])
 	details(["mode", "switch", "auto_label", "silent_label", "medium_label", "high_label", "mode1", "mode2", "mode3", "mode4", 
-    		 "buzzer_label", "led_label", "time_label", "use_time", 
+    		 "buzzer_label", "led_label", "time_label", "use_time", "refresh",
                  "buzzer", "ledBrightness", "update_label", "checkin"])
 
 
@@ -333,6 +336,19 @@ def setStatus(params){
     
     def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
     sendEvent(name: "lastCheckin", value: now)
+}
+
+def refresh(){
+	log.debug "Refresh"
+    def options = [
+     	"method": "GET",
+        "path": "/devices/get/${state.id}",
+        "headers": [
+        	"HOST": state.app_url,
+            "Content-Type": "application/json"
+        ]
+    ]
+    sendCommand(options, callback)
 }
 
 def setLevel(level){
@@ -495,6 +511,33 @@ def setDryOff(){
 
 def updated() {
 }
+
+def callback(physicalgraph.device.HubResponse hubResponse){
+	def msg
+    try {
+        msg = parseLanMessage(hubResponse.description)
+		def jsonObj = new JsonSlurper().parseText(msg.body)
+        log.debug jsonObj
+	if(jsonObj.properties.power == true){
+		sendEvent(name:"mode", value: jsonObj.state.mode)
+		sendEvent(name:"switch", value: "on" )
+	} else {
+		sendEvent(name:"switch", value: "off" )
+	}
+        sendEvent(name:"temperature", value: jsonObj.properties.temperature.value)
+        sendEvent(name:"relativeHumidity", value: jsonObj.properties.relativeHumidity)
+        sendEvent(name:"water", value: Math.round(jsonObj.properties.depth/12*10))
+        sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
+        sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness)
+        sendEvent(name:"level", value: jsonObj.properties.targetHumidity)
+	    
+        def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+        sendEvent(name: "lastCheckin", value: now)
+    } catch (e) {
+        log.error "Exception caught while parsing data: "+e;
+    }
+}
+
 
 def sendCommand(options, _callback){
 	def myhubAction = new physicalgraph.device.HubAction(options, null, [callback: _callback])
