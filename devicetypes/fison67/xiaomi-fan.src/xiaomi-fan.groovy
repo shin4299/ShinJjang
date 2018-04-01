@@ -120,7 +120,7 @@ metadata {
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
    			attributeState("default", label:'${currentValue}                      ')
           }
-            tileAttribute("device.leftTime", key: "SECONDARY_CONTROL") {
+            tileAttribute("device.battery", key: "SECONDARY_CONTROL") {
    			attributeState("default", label:'                                            RT${currentValue}')
           }
 		}
@@ -332,6 +332,16 @@ def setStatus(params){
     case "fanNatural":
         sendEvent(name:"fanSpeed", value: params.data)
     	break;        
+    case "acPower":
+    	state.acPower = (params.data == "on" ? "on" : "off")
+    	break;        
+    case "batteryLevel":
+	if(state.acPower == "on"){
+	   sendEvent(name:"battery", value: "☈ : " + params.data + "%" )
+	} else {
+	   sendEvent(name:"battery", value: "✕ : " + params.data + "%" )
+	}
+    	break;
     case "power":
     	state.power = (params.data == "true" ? "on" : "off")
     	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
