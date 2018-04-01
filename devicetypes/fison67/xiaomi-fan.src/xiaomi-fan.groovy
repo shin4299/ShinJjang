@@ -137,8 +137,8 @@ metadata {
         valueTile("rotation_label", "", decoration: "flat") {
             state "default", label:'Rotation'
         }
-        valueTile("speed_label", "", decoration: "flat", width: 2, height: 1) {
-            state "default", label:'Set Timer'
+        valueTile("speed_label", "device.leftTime", decoration: "flat", width: 2, height: 1) {
+            state "default", label:'Set Timer\n${currentValue}'
         }
         valueTile("temperature", "device.temperature") {
             state("val", label:'${currentValue}', defaultState: true, 
@@ -219,7 +219,7 @@ metadata {
             state "default", label:'Buzzer'
         }        
         valueTile("timer_label", "", decoration: "flat", width: 1, height: 2) {
-            state "default", label:'Set Timer'
+            state "default", label:'Set Timer\n${currentValue}'
         }
         
         standardTile("buzzer", "device.buzzer") {
@@ -238,7 +238,7 @@ metadata {
         standardTile("tiemr0", "device.settimer") {
 			state "default", label: "OFF", action: "settimeroff", icon:"st.Health & Wellness.health7", backgroundColor:"#c7bbc9"
 		}
-        standardTile("tiemr1", "device.settimer") {
+/*        standardTile("tiemr1", "device.settimer") {
 			state "default", label: "15", action: "settimer15", icon:"st.Health & Wellness.health7", backgroundColor:"#d5eeec"
 			state "t15", label: "15", action: "settimer15", icon:"st.Health & Wellness.health7", backgroundColor:"#db5764"
 		}
@@ -260,7 +260,7 @@ metadata {
 		}
         valueTile("leftTime", "device.leftTime", decoration: "flat", width: 4, height: 2) {
             state "default", label:'${currentValue}'
-        }
+        }*/
 
 
    	main (["switch2"])
