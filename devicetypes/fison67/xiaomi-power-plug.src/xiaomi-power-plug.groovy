@@ -32,55 +32,58 @@ import groovy.json.JsonSlurper
 
 metadata {
 	definition (name: "Xiaomi Power Plug", namespace: "fison67", author: "fison67") {
-	capability "Actuator"
-	capability "Switch"
-	capability "Power Meter"
-	capability "Energy Meter"
-	capability "Configuration"
-	capability "Refresh"
-	capability "Sensor"
-	capability "Outlet"
+        capability "Actuator"
+        capability "Switch"
+        capability "Power Meter"
+        capability "Energy Meter"
+        capability "Configuration"
+        capability "Refresh"
+        capability "Sensor"
+        capability "Outlet"
         
         attribute "Volt", "string"
         attribute "temp", "string"
         attribute "lastCheckin", "Date"
-        
         
 	}
 
 	simulator { }
 
 	tiles(scale: 2) {
-		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
+		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"switch.off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNTUg/MDAxNTIyNjcwODg1MTU2.KfRiLw6Uei1mX7djpXxo0jtKlsAWLOyz04yVtEU9yZsg.3A6PUr6aM1nn2mIaD4Rt7ws_bDZi9dKlzVJJLUoiLSAg.PNG.shin4299/plug_main_on.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTcy/MDAxNTIyNjcwODg0OTI5.Y6YSf8yKOH56h1RsLl0MbgFyHqqGw-E-XXQ6wG_g950g.vr4pyhi92iDk-u6pisNPGdGeTkJxaidmPe5y1rW-cAEg.PNG.shin4299/plug_main_off.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNTUg/MDAxNTIyNjcwODg1MTU2.KfRiLw6Uei1mX7djpXxo0jtKlsAWLOyz04yVtEU9yZsg.3A6PUr6aM1nn2mIaD4Rt7ws_bDZi9dKlzVJJLUoiLSAg.PNG.shin4299/plug_main_on.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTcy/MDAxNTIyNjcwODg0OTI5.Y6YSf8yKOH56h1RsLl0MbgFyHqqGw-E-XXQ6wG_g950g.vr4pyhi92iDk-u6pisNPGdGeTkJxaidmPe5y1rW-cAEg.PNG.shin4299/plug_main_off.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
             tileAttribute("device.powerMeter", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'사용전력: ${currentValue}\n ',icon: "st.Health & Wellness.health9")
+    			attributeState("default", label:'Meter: ${currentValue}\n ',icon: "st.Health & Wellness.health9")
             }
             tileAttribute("device.energyMeter", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'                                 전력량: ${currentValue}KWh\n ',icon: "st.Health & Wellness.health9")
+    			attributeState("default", label:'                                 Energy: ${currentValue}KWh\n ',icon: "st.Health & Wellness.health9")
             }
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'\nUpdated: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
         valueTile("powerMeter", "device.powerMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
-        	state "powerMeter", label: '현재전력\n${currentValue}', action: "power", defaultState: true
+        	state "powerMeter", label: 'Meter\n${currentValue}', action: "power", defaultState: true
 		}
 //        valueTile("powerVolt", "device.powerVolt", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
 //        	state "volt", label: '현재전압\n${currentValue}', action: "volt", defaultState: true
 //		}        
         valueTile("energyMeter", "device.energyMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
-        	state "energyMeter", label: '누적전력\n${currentValue}', action: "energy", defaultState: true
-		}
-   	main (["switch"])
-	details(["switch"])
+        	state "energyMeter", label: 'Energy\n${currentValue}KWh', action: "energy", defaultState: true
+        }
+        
+        standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
+        }
+        main (["switch"])
+        details(["switch", "powerMeter", "energyMeter", "refresh"])
         
 	}
 }
@@ -119,8 +122,7 @@ def setStatus(params){
     	break;
     }
     
-    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-    sendEvent(name: "lastCheckin", value: now)
+    updateLastTime()
 }
 
 def on(){
@@ -145,12 +147,36 @@ def off(){
     sendCommand(options, null)
 }
 
+def updateLastTime(){
+	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+    sendEvent(name: "lastCheckin", value: now)
+}
+
+def refresh(){
+	log.debug "Refresh"
+    def options = [
+     	"method": "GET",
+        "path": "/devices/get/${state.id}",
+        "headers": [
+        	"HOST": state.app_url,
+            "Content-Type": "application/json"
+        ]
+    ]
+    sendCommand(options, callback)
+}
+
 def callback(physicalgraph.device.HubResponse hubResponse){
 	def msg
     try {
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
-        setStatus(jsonObj.state)
+
+        sendEvent(name:"powerMeter", value: jsonObj.properties.powerLoad.value)
+        sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
+        sendEvent(name:"energyMeter", value: jsonObj.properties.powerConsumed.value/1000)
+        
+        
+        updateLastTime()
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
     }
