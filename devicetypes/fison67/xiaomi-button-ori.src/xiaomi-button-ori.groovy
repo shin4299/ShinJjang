@@ -43,6 +43,7 @@ metadata {
         command "click"
         command "double_click"
         command "long_click_release"
+        command "refresh"
          
 	}
 
@@ -53,7 +54,7 @@ metadata {
 	tiles(scale: 2) {
 		multiAttributeTile(name:"button", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.button", key: "PRIMARY_CONTROL") {
-                attributeState "click", label:'Button', icon:"https://postfiles.pstatic.net/MjAxODAzMjZfMTgy/MDAxNTIyMDcxODMyMTg3.s40C48yVLnj2nOl-Sr0LY2bYxdt_rNwFOSJq9o73O3Mg.oXX9SiyljddBqz4lrLOP46Za-TkT7rp6qk00wETFrZAg.PNG.fuls/mi_button_36036098.png?type=w773", backgroundColor:"#cd1b11"                
+                attributeState "click", label:'Button', icon:"http://postfiles1.naver.net/MjAxODA0MDJfMjQ3/MDAxNTIyNjcwOTc1OTA0.g_GeJwDzpJhau4j0OOi2LzKoT8Qtnlq4sHnGVBnQYHwg.DpHVKVGEZfmefd-tfuz4VnAg5vknwkfA7XDo-_Cow88g.PNG.shin4299/buttonOr_main.png?type=w3", backgroundColor:"#cd1b11"                
 			}
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
@@ -70,7 +71,11 @@ metadata {
             state "default", label:"Button#3_Core \n long_click", action:"long_click_release"
         }
         valueTile("battery", "device.battery", width: 2, height: 2) {
-            state "val", label:'${currentValue}', defaultState: true
+            state "val", label:'${currentValue}%', defaultState: true
+        }
+        
+        standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
         }
 	}
 }
@@ -96,30 +101,39 @@ def setStatus(params){
  	switch(params.key){
     case "action":
     	if(params.data == "click") {
-        buttonEvent(1, "pushed")
-        }
-        else if(params.data == "double_click") {
-        buttonEvent(2, "pushed")
-        }
-        else if(params.data == "long_click_press") {
-        buttonEvent(3, "pushed")
+        	buttonEvent(1, "pushed")
+        } else if(params.data == "double_click") {
+        	buttonEvent(2, "pushed")
+        } else if(params.data == "long_click_press") {
+        	buttonEvent(3, "pushed")
         }
         else if(params.data == "long_click_release") {
-        def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-        sendEvent(name: "lastCheckin", value: now)
+        } else { 
         }
-        else { }
     	break;
     case "batteryLevel":
-    	sendEvent(name:"battery", value: params.data + "%" )
-        def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-        sendEvent(name: "lastCheckin", value: now)
+    	sendEvent(name:"battery", value: params.data)
     	break;
     }
+    
+    updateLastTime()
 }
 
 def buttonEvent(Integer button, String action) {
     sendEvent(name: "button", value: action, data: [buttonNumber: button], descriptionText: "$device.displayName button $button was $action", isStateChange: true)
+}
+
+def refresh(){
+	log.debug "Refresh"
+    def options = [
+     	"method": "GET",
+        "path": "/devices/get/${state.id}",
+        "headers": [
+        	"HOST": state.app_url,
+            "Content-Type": "application/json"
+        ]
+    ]
+    sendCommand(options, callback)
 }
 
 def callback(physicalgraph.device.HubResponse hubResponse){
@@ -127,13 +141,20 @@ def callback(physicalgraph.device.HubResponse hubResponse){
     try {
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
-        setStatus(jsonObj.state)
+      
+      	sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
+      	updateLastTime()
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
     }
 }
 
 def updated() {
+}
+
+def updateLastTime(){
+	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+    sendEvent(name: "lastCheckin", value: now)
 }
 
 def sendCommand(options, _callback){
