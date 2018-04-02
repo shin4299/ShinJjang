@@ -492,7 +492,7 @@ def setModeMedium(){
 }
 
 def setModeHigh(){
-    log.debug "setModeSilent >> ${state.id}"
+    log.debug "setModeHigh >> ${state.id}"
     def body = [
         "id": state.id,
         "cmd": "mode",
@@ -503,7 +503,7 @@ def setModeHigh(){
 }
 
 def setModeStrong(){
-	log.debug "setModeIdle >> ${state.id}"
+	log.debug "setModeStrong >> ${state.id}"
     def body = [
         "id": state.id,
         "cmd": "mode",
@@ -605,7 +605,7 @@ def setBrightDim(){
 }
 
 def setBrightOff(){
-	log.debug "setDim >> ${state.id}"
+	log.debug "setBrightOff >> ${state.id}"
     def body = [
         "id": state.id,
         "cmd": "ledBrightness",
@@ -616,7 +616,7 @@ def setBrightOff(){
 }
 
 def on(){
-	log.debug "Off >> ${state.id}"
+	log.debug "On >> ${state.id}"
     def body = [
         "id": state.id,
         "cmd": "power",
@@ -674,8 +674,13 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         		sendEvent(name:"airQuality", value: jsonObj.properties.averageAqi)
         	}
         }
-        sendEvent(name:"switch", value: jsonObj.properties.power == true ? "on" : "off")
-        sendEvent(name:"mode", value: jsonObj.properties.mode)
+		if(jsonObj.properties.power == true){
+			sendEvent(name:"mode", value: jsonObj.state.mode)
+			sendEvent(name:"switch", value: "on" )
+		} else {
+			sendEvent(name:"mode", value: "off" )
+			sendEvent(name:"switch", value: "off" )
+		}
         sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
         
         if(jsonObj.state.filterLifeRemaining != null && jsonObj.state.filterLifeRemaining != ""){
