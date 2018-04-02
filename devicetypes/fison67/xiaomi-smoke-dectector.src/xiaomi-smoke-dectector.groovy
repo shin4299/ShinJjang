@@ -48,8 +48,8 @@ metadata {
 	tiles {
 		multiAttributeTile(name:"smoke", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.smoke", key: "PRIMARY_CONTROL") {
-               	attributeState "clear", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTg0/MDAxNTIyNjcwOTc2ODE1.2rSncv314VWU8irUYinoIi9JLQ3muxYJOVv0zNi_hpsg.ti_b998of00LFlzxjoNnD6Y2zAhq-I2Np7KvWXRaEHMg.PNG.shin4299/gas_main_off.png?type=w3" , backgroundColor:"#ffffff"
-            	attributeState "detected", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTI3/MDAxNTIyNjcwOTc2OTQ3.BhACHbETMGGIUQohpJx2USQ_QwLmvOtHMkTe5tTQBzgg.2BXHQDUXhu0f5GCsZ5IFwBvdDJY0DTXmPvs4YjVD6K4g.PNG.shin4299/gas_main_on.png?type=w3" , backgroundColor:"#e86d13"
+               	attributeState "clear", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjQ1/MDAxNTIyNjcwOTc3Nzc1.0VHSMcddBSlQwbUJ9XSWcg7sa6NZ-8ljmi4CY2kRt1Mg.k0Yfm71SLHBj2PhJP8jjysHG1brChnS8762CyJju000g.PNG.shin4299/smoke_main_off.png?type=w3" , backgroundColor:"#ffffff"
+            	attributeState "detected", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTkx/MDAxNTIyNjcwOTc3OTEz.yE02Rca33SFCkHoIG-8OZycz1izfsMJk_jnCft-BMc4g.D4n0ku_kWUwowtxySM6YOLhd6-5KrSQYl90rT0-n58gg.PNG.shin4299/smoke_main_on.png?type=w3" , backgroundColor:"#e86d13"
 			}
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
