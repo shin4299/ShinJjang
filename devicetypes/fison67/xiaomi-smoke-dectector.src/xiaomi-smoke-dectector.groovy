@@ -48,8 +48,8 @@ metadata {
 	tiles {
 		multiAttributeTile(name:"smoke", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.smoke", key: "PRIMARY_CONTROL") {
-               	attributeState "clear", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODAzMjZfMTkz/MDAxNTIyMDQzNDE0MzIx.Z7WbNCehVcAmt3mM5jdadJkR-TMqI200UzKfmjYjCwYg.dnE5kkFzbJ6cXAbbSJu5SwCUcv4x-cxM0UD3RQVcVAQg.PNG.fuls/Fire_Alarm_75.png?type=w773" , backgroundColor:"#ffffff"
-            	attributeState "detected", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODAzMjZfMTkz/MDAxNTIyMDQzNDE0MzIx.Z7WbNCehVcAmt3mM5jdadJkR-TMqI200UzKfmjYjCwYg.dnE5kkFzbJ6cXAbbSJu5SwCUcv4x-cxM0UD3RQVcVAQg.PNG.fuls/Fire_Alarm_75.png?type=w773" , backgroundColor:"#e86d13"
+               	attributeState "clear", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTg0/MDAxNTIyNjcwOTc2ODE1.2rSncv314VWU8irUYinoIi9JLQ3muxYJOVv0zNi_hpsg.ti_b998of00LFlzxjoNnD6Y2zAhq-I2Np7KvWXRaEHMg.PNG.shin4299/gas_main_off.png?type=w3" , backgroundColor:"#ffffff"
+            	attributeState "detected", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTI3/MDAxNTIyNjcwOTc2OTQ3.BhACHbETMGGIUQohpJx2USQ_QwLmvOtHMkTe5tTQBzgg.2BXHQDUXhu0f5GCsZ5IFwBvdDJY0DTXmPvs4YjVD6K4g.PNG.shin4299/gas_main_on.png?type=w3" , backgroundColor:"#e86d13"
 			}
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
@@ -66,7 +66,11 @@ metadata {
         }
         
         valueTile("battery", "device.battery", width: 2, height: 2) {
-            state "val", label:'${currentValue}', defaultState: true
+            state "val", label:'${currentValue}%', defaultState: true
+        }
+        
+        standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
         }
 	}
 }
@@ -92,11 +96,15 @@ def setStatus(params){
     	sendEvent(name:"density", value: params.data)
     	break;
     case "batteryLevel":
-    	sendEvent(name:"battery", value: params.data + "%")
+    	sendEvent(name:"battery", value: params.data)
     	break;
     }
     
-    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+    updateLastTime()
+}
+
+def updateLastTime(){
+	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
     sendEvent(name: "lastCheckin", value: now)
 }
 
@@ -105,7 +113,11 @@ def callback(physicalgraph.device.HubResponse hubResponse){
     try {
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
-        setStatus(jsonObj.state)
+        
+        sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
+        sendEvent(name:"density", value: jsonObj.properties.density)
+        
+        updateLastTime()
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
     }
@@ -115,6 +127,16 @@ def updated() {
 }
 
 def refresh(){
+	log.debug "Refresh"
+    def options = [
+     	"method": "GET",
+        "path": "/devices/get/${state.id}",
+        "headers": [
+        	"HOST": state.app_url,
+            "Content-Type": "application/json"
+        ]
+    ]
+    sendCommand(options, callback)
 }
 
 def sendCommand(options, _callback){
