@@ -47,7 +47,7 @@ metadata {
 	simulator { }
 
 	tiles {
-		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
+		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
                 attributeState "on", label:'${name}', action:"off", icon:"http://postfiles11.naver.net/MjAxODA0MDJfNzEg/MDAxNTIyNjcwODgzNDMy.gQ9ebEInEePLIPq2X0CrHRORPktdXqKEgKYid5ziXRcg.zZ_5pLqlGdjOl8U4u6DqOTlw-FVlxwyPrzNMSNX5axQg.PNG.shin4299/ceilinglight_tile_on.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
                 attributeState "off", label:'${name}', action:"on", icon:"http://postfiles4.naver.net/MjAxODA0MDJfMjg2/MDAxNTIyNjcwODgzMjc4.zVguk8EhV__yamYSG9j21VDxB0TdDyFMM3DJ_h_QVdAg.D7ZIhOABgQ9Mosi3VYq_NG4Tp3mkWzhTG1RW-DjWnm0g.PNG.shin4299/ceilinglight_tile_off.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
