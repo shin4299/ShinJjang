@@ -66,7 +66,7 @@ metadata {
                 
                 state "turningOn", label:'${name}', action:"off", icon:"http://postfiles7.naver.net/MjAxODA0MDJfMjc0/MDAxNTIyNjcwODgyODc5.E6Q9geVbLPxJJ8EFopCzvWRgFVOSvQNZwf52ypZgJmMg.pDNVSHWK9WOwjVhXsrNLZc1RW3jfIT9yB21OgCUHAVIg.PNG.shin4299/ceilinglight_main_off.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
                 state "turningOff", label:'${name}', action:"on", icon:"http://postfiles3.naver.net/MjAxODA0MDJfMTYg/MDAxNTIyNjcwODgzMTQw.lWo8f6HJS-sRwzAVlYadM1ZSLjbt2Ck7AxIzvMyejTwg.MujTFyozBZpuVfAWYv70fL6D5Nlsx-7CTcktMj303SMg.PNG.shin4299/ceilinglight_main_on.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
-        
+	}
         standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
             state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
         }
