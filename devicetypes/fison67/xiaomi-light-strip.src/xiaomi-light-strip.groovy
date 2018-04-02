@@ -66,11 +66,11 @@ metadata {
 	tiles(scale: 2) {
 		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfNjgg/MDAxNTIyMTUzOTg0NzMx.YZwxpTpbz-9oqHVDLhcLyOcdWvn6TE0RPdpB_D7kWzwg.97WcX3XnDGPr5kATUZhhGRYJ1IO1MNV2pbDvg8DXruog.PNG.shin4299/Yeelight_tile_on.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'\n${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTA0/MDAxNTIyMTUzOTg0NzIz.62-IbE4S7wAOxe3hufTJctU8mlQmrIUQztDaSTnf3kog.sxe2rqceUxFEPqrfYZ_DLkjxM5IPSotCqhErG87DI0Mg.PNG.shin4299/Yeelight_tile_off.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjcx/MDAxNTIyNjcwODg2MDU1._pGoPgVCcXCjJMXfVCgnIk06IHeyVM_qRnCfUo14J8Eg.2yivBQIJ-L7vKrunjG3JEeKgh3x4Edm5trSLF-xUqicg.PNG.shin4299/strip_tile_on.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'\n${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjk0/MDAxNTIyNjcwODg1OTMx.n6G1A3XFe4doZyui91enS6AMUMsQNSHPdSpkoYS_gvsg.POSBaBK39h4En1qEDyuEo7jbAYNATYDWWEKiwWJiAi4g.PNG.shin4299/strip_tile_off.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTA0/MDAxNTIyMTUzOTg0NzIz.62-IbE4S7wAOxe3hufTJctU8mlQmrIUQztDaSTnf3kog.sxe2rqceUxFEPqrfYZ_DLkjxM5IPSotCqhErG87DI0Mg.PNG.shin4299/Yeelight_tile_off.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'\n${name}', action:"switch.ofn", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfNjgg/MDAxNTIyMTUzOTg0NzMx.YZwxpTpbz-9oqHVDLhcLyOcdWvn6TE0RPdpB_D7kWzwg.97WcX3XnDGPr5kATUZhhGRYJ1IO1MNV2pbDvg8DXruog.PNG.shin4299/Yeelight_tile_on.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjk0/MDAxNTIyNjcwODg1OTMx.n6G1A3XFe4doZyui91enS6AMUMsQNSHPdSpkoYS_gvsg.POSBaBK39h4En1qEDyuEo7jbAYNATYDWWEKiwWJiAi4g.PNG.shin4299/strip_tile_off.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'\n${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjcx/MDAxNTIyNjcwODg2MDU1._pGoPgVCcXCjJMXfVCgnIk06IHeyVM_qRnCfUo14J8Eg.2yivBQIJ-L7vKrunjG3JEeKgh3x4Edm5trSLF-xUqicg.PNG.shin4299/strip_tile_on.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
@@ -86,11 +86,11 @@ metadata {
 		}
 		multiAttributeTile(name:"switch2", type: "lighting"){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'ON', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjY3/MDAxNTIyMTUzOTg0NzMx.eymIqPh2CSLBt1h5rgVRyqZWaBgm-AXOiRe3crmav1Ug.4ZSrZUCtOjWYraxmPAWV9RoLe0Rnnw1XRB54a5gNLs0g.PNG.shin4299/Yeelight_main_on.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'OFF', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfODQg/MDAxNTIyMTUzOTg0NzIw.61z5mx6FESuZ_PGX9lLn4SE62-DwhdwvZKLuoxwRQQYg.iyatTTFzMSQ8X_BAxMTqsd9mp2QSmArqO5jAKhkctUEg.PNG.shin4299/Yeelight_main_off.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'ON', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTU5/MDAxNTIyNjcwODg1Nzkw.IyMt_rjlBb58EZcCnzwGDEOnDxhVCZp6HYYI3QEWTG0g.RQSDWDrcLCowG_OU2_Z0uIqjIZNuH7mPoWLq5gIf4G0g.PNG.shin4299/strip_main_on.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'OFF', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjgy/MDAxNTIyNjcwODg1NjM4.uhaE4TpPzavjNsGK77KQb22ezNBNs48YTz71jyksbxEg.4McvI0chsVuq-hoUozV38UMV4yo6n5qkvNv8G_Ddk0Mg.PNG.shin4299/strip_main_off.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfODQg/MDAxNTIyMTUzOTg0NzIw.61z5mx6FESuZ_PGX9lLn4SE62-DwhdwvZKLuoxwRQQYg.iyatTTFzMSQ8X_BAxMTqsd9mp2QSmArqO5jAKhkctUEg.PNG.shin4299/Yeelight_main_off.png?type=w580", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"switch.ofn", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMjY3/MDAxNTIyMTUzOTg0NzMx.eymIqPh2CSLBt1h5rgVRyqZWaBgm-AXOiRe3crmav1Ug.4ZSrZUCtOjWYraxmPAWV9RoLe0Rnnw1XRB54a5gNLs0g.PNG.shin4299/Yeelight_main_on.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjgy/MDAxNTIyNjcwODg1NjM4.uhaE4TpPzavjNsGK77KQb22ezNBNs48YTz71jyksbxEg.4McvI0chsVuq-hoUozV38UMV4yo6n5qkvNv8G_Ddk0Mg.PNG.shin4299/strip_main_off.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"switch.ofn", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTU5/MDAxNTIyNjcwODg1Nzkw.IyMt_rjlBb58EZcCnzwGDEOnDxhVCZp6HYYI3QEWTG0g.RQSDWDrcLCowG_OU2_Z0uIqjIZNuH7mPoWLq5gIf4G0g.PNG.shin4299/strip_main_on.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
 
 			}
         }
