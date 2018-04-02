@@ -31,53 +31,59 @@ import groovy.json.JsonSlurper
 
 metadata {
 	definition (name: "Xiaomi Power Strip", namespace: "fison67", author: "fison67") {
-		capability "Actuator"
-		capability "Switch"
-		capability "Power Meter"
-		capability "Energy Meter"
-		capability "Configuration"
-		capability "Refresh"
-		capability "Sensor"
-		capability "Outlet"
+        capability "Actuator"
+        capability "Switch"
+        capability "Power Meter"
+        capability "Energy Meter"
+        capability "Configuration"
+        capability "Refresh"
+        capability "Sensor"
+        capability "Outlet"
         
         attribute "Volt", "string"
         attribute "temp", "string"
         attribute "lastCheckin", "Date"
         
-        command "setModeGreen"
-        command "setModeNormal"
 	}
 
 	simulator { }
 
 	tiles(scale: 2) {
-		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
+		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"switch.off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTIz/MDAxNTIyNjcwODg2NDU4.YFzjMm5241sq8gebQ43cVk0BHe6ZGyzQltaOl6r-5cQg.ELNWg-YHD4VNfX0HvjO6NRSwHvH2VLnNs1OsQd-mC1kg.PNG.shin4299/tap_main_on.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjM5/MDAxNTIyNjcwODg2MjYw.cLth3MyXtofONl8yw-xQSEObfw4kd2VONYmR0xlos_wg.DWQ3z6Di7gAp4pKPXQrZXlMGlbXcrupzPCxUEAzoJZIg.PNG.shin4299/tap_main_off.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjM5/MDAxNTIyNjcwODg2MjYw.cLth3MyXtofONl8yw-xQSEObfw4kd2VONYmR0xlos_wg.DWQ3z6Di7gAp4pKPXQrZXlMGlbXcrupzPCxUEAzoJZIg.PNG.shin4299/tap_main_off.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTIz/MDAxNTIyNjcwODg2NDU4.YFzjMm5241sq8gebQ43cVk0BHe6ZGyzQltaOl6r-5cQg.ELNWg-YHD4VNfX0HvjO6NRSwHvH2VLnNs1OsQd-mC1kg.PNG.shin4299/tap_main_on.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
+            tileAttribute("device.powerMeter", key: "SECONDARY_CONTROL") {
+    			attributeState("default", label:'Meter: ${currentValue}\n ',icon: "st.Health & Wellness.health9")
+            }
+            tileAttribute("device.energyMeter", key: "SECONDARY_CONTROL") {
+    			attributeState("default", label:'                                 Energy: ${currentValue}KWh\n ',icon: "st.Health & Wellness.health9")
+            }
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
+    			attributeState("default", label:'\nUpdated: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
         valueTile("powerMeter", "device.powerMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
-        	state "powerMeter", label: '현재전력\n${currentValue}', action: "power", defaultState: true
+        	state "powerMeter", label: 'Meter\n${currentValue}', action: "power", defaultState: true
 		}
-        valueTile("powerVolt", "device.powerVolt", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
-        	state "volt", label: '현재전압\n${currentValue}', action: "volt", defaultState: true
-		}        
+//        valueTile("powerVolt", "device.powerVolt", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
+//        	state "volt", label: '현재전압\n${currentValue}', action: "volt", defaultState: true
+//		}        
         valueTile("energyMeter", "device.energyMeter", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
-        	state "energyMeter", label: '누적전력\n${currentValue}', action: "energy", defaultState: true
-		}
-        
-        standardTile("mode", "device.mode", width: 2, height: 2, canChangeIcon: true) {
-            state "normal", label: 'Normal', action: "setModeGreen", icon: "st.switches.switch.on", backgroundColor: "#00a0dc", nextState:"green"
-            state "green", label: 'Green', action: "setModeNormal", icon: "st.switches.switch.on", backgroundColor: "#00a0dc", nextState:"normal"
+        	state "energyMeter", label: 'Energy\n${currentValue}KWh', action: "energy", defaultState: true
         }
+        
+        standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
+        }
+        main (["switch"])
+        details(["switch", "powerMeter", "energyMeter", "refresh"])
+        
 	}
 }
 
@@ -96,9 +102,6 @@ def setStatus(params){
     log.debug "${params.key} >> ${params.data}"
  
  	switch(params.key){
-    case "mode":
-    	sendEvent(name:"mode", value: params.data )
-    	break;
     case "power":
     	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
     	break;
@@ -109,12 +112,16 @@ def setStatus(params){
     	sendEvent(name:"powerVolt", value: params.data)
     	break;
     case "powerConsumed":
-    	sendEvent(name:"energyMeter", value: params.data)
+		def para = "${params.data}"
+		String data = para
+		def st = data.replace("J","");
+		def stf = Float.parseFloat(st)
+		def powerc = Math.round(stf)/1000
+    	sendEvent(name:"energyMeter", value: powerc)
     	break;
     }
     
-    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-    sendEvent(name: "lastCheckin", value: now)
+    updateLastTime()
 }
 
 def on(){
@@ -139,35 +146,36 @@ def off(){
     sendCommand(options, null)
 }
 
-def setModeGreen(){
-	log.debug "setModeGreen >> ${state.id}"
-    def body = [
-        "id": state.id,
-        "cmd": "mode",
-        "data": "green"
-    ]
-    def options = makeCommand(body)
-    sendCommand(options, null)
+def updateLastTime(){
+	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+    sendEvent(name: "lastCheckin", value: now)
 }
 
-def setModeNormal(){
-	log.debug "setModeNormal >> ${state.id}"
-    def body = [
-        "id": state.id,
-        "cmd": "mode",
-        "data": "normal"
+def refresh(){
+	log.debug "Refresh"
+    def options = [
+     	"method": "GET",
+        "path": "/devices/get/${state.id}",
+        "headers": [
+        	"HOST": state.app_url,
+            "Content-Type": "application/json"
+        ]
     ]
-    def options = makeCommand(body)
-    sendCommand(options, null)
+    sendCommand(options, callback)
 }
-
 
 def callback(physicalgraph.device.HubResponse hubResponse){
 	def msg
     try {
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
-        setStatus(jsonObj.state)
+
+        sendEvent(name:"powerMeter", value: jsonObj.properties.powerLoad.value)
+        sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
+        sendEvent(name:"energyMeter", value: jsonObj.properties.powerConsumed.value/1000)
+        
+        
+        updateLastTime()
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
     }
