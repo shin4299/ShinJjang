@@ -401,7 +401,7 @@ def refresh(){
 	log.debug "Refresh"
     def options = [
      	"method": "GET",
-        "path": "/get?id=${state.id}",
+        "path": "/devices/get/${state.id}",
         "headers": [
         	"HOST": state.app_url,
             "Content-Type": "application/json"
@@ -409,7 +409,6 @@ def refresh(){
     ]
     sendCommand(options, callback)
 }
-
 def setFanSpeed(level){
 	def speed = Math.round(level/625*100)    
 	log.debug "setSpeed >> ${state.id}, speed=" + speed
@@ -650,6 +649,10 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 		sendEvent(name:"mode3", value: "notab" )
 		sendEvent(name:"temperature", value: "N/A" )
 		sendEvent(name:"humidity", value: "N/A" )
+		sendEvent(name:"mode4", value: "default" )
+		sendEvent(name:"mode5", value: "default" )
+		sendEvent(name:"mode6", value: "default" )
+		sendEvent(name:"mode7", value: "default" )    
 	        if(jsonObj.properties.aqi != null && jsonObj.properties.aqi != ""){
         		sendEvent(name:"fineDustLevel", value: jsonObj.properties.aqi)
         	}
@@ -662,8 +665,8 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 		sendEvent(name:"mode5", value: "notab" )
 		sendEvent(name:"mode6", value: "notab" )
 		sendEvent(name:"mode7", value: "notab" )
-	    	sendEvent(name:"humidity", value: jsonObj.properties.relativeHumidity + "%" )
-    		sendEvent(name:"temperature", value: jsonObj.properties.temperature.value  )
+	    sendEvent(name:"humidity", value: jsonObj.properties.relativeHumidity + "%" )
+    	sendEvent(name:"temperature", value: jsonObj.properties.temperature.value  )
 	        if(jsonObj.properties.aqi != null && jsonObj.properties.aqi != ""){
         		sendEvent(name:"fineDustLevel", value: jsonObj.properties.aqi)
         	}
