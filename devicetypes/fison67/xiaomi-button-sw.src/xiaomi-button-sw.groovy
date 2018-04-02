@@ -45,6 +45,7 @@ metadata {
         command "btn1-click"
         command "btn1-double_click"
         command "both_click"
+        command "refresh"
 	}
 
 
@@ -54,7 +55,7 @@ metadata {
 	tiles(scale: 2) {
 		multiAttributeTile(name:"button", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.button", key: "PRIMARY_CONTROL") {
-                attributeState "click", label:'Button', icon:"https://postfiles.pstatic.net/MjAxODAzMjZfMjUg/MDAxNTIyMDUwNzAxMzE5.BOvAVxIARs8ZaBm1s7b3xV0Dd1bGL54gt1u4-3tpmGQg.IK0oAC0J-piM8UG-PWAsK6gCtsUg_gAW4KaUGTHzpW0g.PNG.fuls/wall_outlet2_20020098.png?type=w773", backgroundColor:"#cd1b11"
+                attributeState "click", label:'Button', icon:"http://postfiles9.naver.net/MjAxODA0MDJfOSAg/MDAxNTIyNjcwOTc2MTcx.Eq3RLdNXT6nbshuDgjG4qbfMjCob8eTjYv6fltmg7Zcg.1W8CkaPojCBp07iCYi5JYkJl5YTWxQL5aDG-TQ0XF_kg.PNG.shin4299/buttonSW_main.png?type=w3", backgroundColor:"#cd1b11"
 			}
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
@@ -72,7 +73,11 @@ metadata {
         }
 
         valueTile("battery", "device.battery", width: 2, height: 2) {
-            state "val", label:'${currentValue}', defaultState: true
+            state "val", label:'${currentValue}%', defaultState: true
+        }
+        
+        standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
         }
 	}
 }
@@ -99,29 +104,41 @@ def setStatus(params){
  	switch(params.key){
     case "action":
     	if(params.data == "btn0-click") {
-        buttonEvent(1, "pushed")
-        }
-        else if(params.data == "btn1-click") {
-        buttonEvent(2, "pushed")
-        }
-        else if(params.data == "both_click") {
-        buttonEvent(3, "pushed")
-        }
-        else {
-	    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-    	sendEvent(name: "lastCheckin", value: now)
+        	buttonEvent(1, "pushed")
+        } else if(params.data == "btn1-click") {
+       	 	buttonEvent(2, "pushed")
+        } else if(params.data == "both_click") {
+        	buttonEvent(3, "pushed")
+        } else {
         }
     	break;
     case "batteryLevel":
-    	sendEvent(name:"battery", value: params.data + "%" )
-	    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-    	sendEvent(name: "lastCheckin", value: now)
+    	sendEvent(name:"battery", value: params.data)
     	break;
     }
+    updateLastTime()
  }
 
 def buttonEvent(Integer button, String action) {
     sendEvent(name: "button", value: action, data: [buttonNumber: button], descriptionText: "$device.displayName button $button was $action", isStateChange: true)
+}
+
+def updateLastTime(){
+	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+    sendEvent(name: "lastCheckin", value: now)
+}
+
+def refresh(){
+	log.debug "Refresh"
+    def options = [
+     	"method": "GET",
+        "path": "/devices/get/${state.id}",
+        "headers": [
+        	"HOST": state.app_url,
+            "Content-Type": "application/json"
+        ]
+    ]
+    sendCommand(options, callback)
 }
 
 def callback(physicalgraph.device.HubResponse hubResponse){
@@ -129,7 +146,9 @@ def callback(physicalgraph.device.HubResponse hubResponse){
     try {
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
-        setStatus(jsonObj.state)
+
+        sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
+        updateLastTime()
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
     }
