@@ -347,7 +347,7 @@ def setBrightDim(){
 }
 
 def setBrightOff(){
-	log.debug "setDim >> ${state.id}"
+	log.debug "setBrightOff >> ${state.id}"
     def body = [
         "id": state.id,
         "cmd": "ledBrightness",
@@ -359,7 +359,7 @@ def setBrightOff(){
 
 
 def setModeAuto(){
-    log.debug "setModeSilent >> ${state.id}"
+    log.debug "setModeAuto >> ${state.id}"
     def body = [
         "id": state.id,
         "cmd": "mode",
