@@ -57,6 +57,7 @@ metadata {
         command "buzzerOff"
         command "setDryOn"
         command "setDryOff"
+        command "dummy"
         
         command "setBright"
         command "setBrightDim"
@@ -65,6 +66,9 @@ metadata {
 
 
 	simulator {
+	}
+	preferences {
+		input name:"model", type:"enum", title:"Select Model", options:["Humidifier1", "Humidifier2"], description:"Select Your Humidifier Model(Humidifier 1: N/A Water Depth and Dry Mode, Humidifier 2: N/A LED Brightness Control and Target Humidity)"
 	}
 
 	tiles(scale: 2) {
@@ -171,6 +175,10 @@ metadata {
             state "bright", label: 'Bright', action: "setBrightDim", icon: "st.illuminance.illuminance.bright", backgroundColor: "#ff93ac", nextState:"dim"
             state "dim", label: 'Dim', action: "setBrightOff", icon: "st.illuminance.illuminance.light", backgroundColor: "#ffc2cd", nextState:"off"
             state "off", label: 'Off', action: "setBright", icon: "st.illuminance.illuminance.dark", backgroundColor: "#d6c6c9", nextState:"bright"
+            
+            state "bright2", label: 'Bright', action: "dummy", icon: "st.illuminance.illuminance.bright", backgroundColor: "#ff93ac", nextState:"bright2"
+            state "dim2", label: 'Dim', action: "dummy", icon: "st.illuminance.illuminance.light", backgroundColor: "#ffc2cd", nextState:"dim2"
+            state "off2", label: 'Off', action: "dummy", icon: "st.illuminance.illuminance.dark", backgroundColor: "#d6c6c9", nextState:"off2"
         }         
         valueTile("use_time", "device.use_time", width: 2, height: 1) {
             state("val", label:'${currentValue}', defaultState: true
@@ -179,6 +187,7 @@ metadata {
         standardTile("dry", "device.dry") {
             state "on", label: 'ON', action: "setDryOff", icon: "st.vents.vent-open",  backgroundColor: "#FFD16C"
             state "off", label: 'OFF', action: "setDryOn", icon: "st.vents.vent", backgroundColor: "#c1baaa"
+            state "dummy", label: 'N/A', action: "dummy", icon: "st.presence.house.secured", backgroundColor: "#d1cdd2", nextState:"dummy"
         }
         valueTile("checkin", "device.lastCheckin", width: 2, height: 1) {
             state("default", label:'${currentValue}', defaultState: true
@@ -261,7 +270,11 @@ def setStatus(params){
         sendEvent(name:"use_time", value: leftday + "d " + lefthour + "h" )
     	break;
     case "ledBrightness":
+    	if(model == "Humidifier1"){
         sendEvent(name:"ledBrightness", value: params.data)
+        } else {
+        sendEvent(name:"ledBrightness", value: params.data+"2")
+        }
     	break;        
     case "targetHumidity":
         sendEvent(name:"level", value: params.data)
@@ -458,6 +471,7 @@ def setDryOff(){
 
 
 def updated() {
+    refresh()
 }
 
 def callback(physicalgraph.device.HubResponse hubResponse){
@@ -466,17 +480,24 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
         log.debug jsonObj
-	if(jsonObj.properties.power == true){
-		sendEvent(name:"mode", value: jsonObj.state.mode)
-		sendEvent(name:"switch", value: "on" )
-	} else {
-		sendEvent(name:"switch", value: "off" )
-	}
+		if(jsonObj.properties.power == true){
+			sendEvent(name:"mode", value: jsonObj.state.mode)
+			sendEvent(name:"switch", value: "on" )
+		} else {
+			sendEvent(name:"switch", value: "off" )
+		}
+    	if(model == "Humidifier1") {
+       		sendEvent(name:"water", value: "N/A" )
+			sendEvent(name:"dry", value: "dummy" )
+        	sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness)
+        } else {
+        	sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness + "2")
+	    	sendEvent(name:"dry", value: jsonObj.state.dry )
+	        sendEvent(name:"water", value: Math.round(jsonObj.properties.depth/12*10))
+        }    
         sendEvent(name:"temperature", value: jsonObj.properties.temperature.value)
         sendEvent(name:"relativeHumidity", value: jsonObj.properties.relativeHumidity)
-        sendEvent(name:"water", value: Math.round(jsonObj.properties.depth/12*10))
         sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
-        sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness)
         sendEvent(name:"level", value: jsonObj.properties.targetHumidity)
 	    
     def nowT = new Date().format("HH:mm:ss", location.timeZone)
