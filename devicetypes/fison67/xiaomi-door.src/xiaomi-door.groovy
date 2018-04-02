@@ -49,8 +49,8 @@ metadata {
 	tiles {
 		multiAttributeTile(name:"door", type: "generic", width: 6, height: 4){
 			tileAttribute ("device.door", key: "PRIMARY_CONTROL") {
-               	attributeState "open", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjMy/MDAxNTIyNjcwOTc2NjM2.R5x6BKKwhctu3BhrXFsx6xXfQ4MaKzUd4Eoze9iWq00g.lBYew5V5fVf70EojdLnoDMRqrycdSHl1Th5Dl1ZWnBkg.PNG.shin4299/door_on.png?type=w3", backgroundColor:"#e86d13"
-            	attributeState "closed", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTI3/MDAxNTIyNjcwOTc2NDgy.WVcwn0G7-BnyFTkk4pUxZ44j-810YDbVb81-A-52D1gg.X_0ijEFzbyu8IeYXU_fr0mVtS4v_4JbZncfmoFCPH5cg.PNG.shin4299/door_off.png?type=w3", backgroundColor:"#00a0dc"
+               	attributeState "open", label:'\n${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjMy/MDAxNTIyNjcwOTc2NjM2.R5x6BKKwhctu3BhrXFsx6xXfQ4MaKzUd4Eoze9iWq00g.lBYew5V5fVf70EojdLnoDMRqrycdSHl1Th5Dl1ZWnBkg.PNG.shin4299/door_on.png?type=w3", backgroundColor:"#e86d13"
+            	attributeState "closed", label:'\n${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTI3/MDAxNTIyNjcwOTc2NDgy.WVcwn0G7-BnyFTkk4pUxZ44j-810YDbVb81-A-52D1gg.X_0ijEFzbyu8IeYXU_fr0mVtS4v_4JbZncfmoFCPH5cg.PNG.shin4299/door_off.png?type=w3", backgroundColor:"#00a0dc"
 			}
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
