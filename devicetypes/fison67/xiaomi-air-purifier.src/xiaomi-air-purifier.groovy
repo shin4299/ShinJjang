@@ -141,10 +141,10 @@ metadata {
             state "default", label:'AQI \n㎍/㎥'
         }        
         valueTile("temp_label", "", decoration: "flat") {
-            state "default", label:'온도'
+            state "default", label:'temperature'
         }
         valueTile("humi_label", "", decoration: "flat") {
-            state "default", label:'습도'
+            state "default", label:'humidity'
         }
 		valueTile("pm25_value", "device.fineDustLevel", decoration: "flat") {
         	state "default", label:'${currentValue}', unit:"㎍/㎥", backgroundColors:[
