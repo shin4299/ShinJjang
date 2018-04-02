@@ -79,7 +79,7 @@ metadata {
 	tiles(scale: 2) {
         multiAttributeTile(name:"temperature", type:"generic", width:6, height:4) {
             tileAttribute("device.temperature", key: "PRIMARY_CONTROL") {
-                attributeState("temperature", label:'${currentValue}°', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNzkg/MDAxNTIyNjcwOTc4NTIy.9VGDZZ4ieBY5jCJ0tvO8L5HFKbkvnms3ymk62HL4rzMg.HYTGtieTVMLE421M8lF8WE1THRgdyFfb1GG39OhtrU4g.PNG.shin4299/temp.png?type=w3",
+                attributeState("temperature", label:'${currentValue}°',
                     backgroundColors:[
                         // Fahrenheit color set
                         [value: 0, color: "#153591"],
@@ -108,7 +108,7 @@ metadata {
                 ) }
         }        
         valueTile("temperature2", "device.temperature", inactiveLabel: false) {
-            state "temperature", label:'${currentValue}°', icon:"st.Weather.weather2",
+            state "temperature", label:'${currentValue}°', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNzkg/MDAxNTIyNjcwOTc4NTIy.9VGDZZ4ieBY5jCJ0tvO8L5HFKbkvnms3ymk62HL4rzMg.HYTGtieTVMLE421M8lF8WE1THRgdyFfb1GG39OhtrU4g.PNG.shin4299/temp.png?type=w3",
             backgroundColors:[
                 // Fahrenheit color set
                 [value: 0, color: "#153591"],
