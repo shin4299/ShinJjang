@@ -218,8 +218,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
         log.debug jsonObj
-        def color = jsonObj.properties.color.values
-        def colors = color.split(",")
+        def colors = jsonObj.properties.color.values
         String hex = String.format("#%02x%02x%02x", colors[0].toInteger(), colors[1].toInteger(), colors[2].toInteger());  
     	sendEvent(name:"color", value: hex )
         sendEvent(name:"level", value: jsonObj.properties.brightness)
@@ -231,6 +230,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         log.error "Exception caught while parsing data: "+e;
     }
 }
+
 
 
 def sendCommand(options, _callback){
