@@ -227,7 +227,6 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 	    
         def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
         sendEvent(name: "lastCheckin", value: now)
-	multiatt()
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
     }
