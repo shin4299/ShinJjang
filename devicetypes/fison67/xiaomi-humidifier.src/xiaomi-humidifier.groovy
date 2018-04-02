@@ -82,6 +82,14 @@ metadata {
                 
                 attributeState "modechange", label:'\n${name}', icon:"st.quirky.spotter.quirky-spotter-motion", backgroundColor:"#C4BBB5"
                 attributeState "turningOn", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTQ2/MDAxNTIyMTUxNzIxMTk3.xeCR1k4pk0vDOozb43Lfo6g2fMC1a_VJFUpTQ071XRUg.dyhFTAUaCwWPUYc4hPUdGiuUI5yeRJ4QpP3kX802AlIg.PNG.shin4299/Humi_tile_off.png?type=w580", backgroundColor:"#C4BBB5", nextState:"off"
+
+                attributeState "off1", label:'\nOFF', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNzYg/MDAxNTIyNjcwODg0MTI2.STxrAj6ogps95LmvuOjB0BMA85vmV7nSQkoZh-8tJY0g.lJrICUhnvXTE7HoJC1GR7gzwJxrxfDqyXd7NF59h0psg.PNG.shin4299/Humi1_main_off.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn1"
+                attributeState "auto1", label:'\nAuto Mode', action:"setModeSilent", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjE0/MDAxNTIyNjcwODgzOTY3.xc9NXAkOenPbwUR2bf0vvO7P-RdA5vcjzNw7_Vu-CHgg.ggBUsFmbIRItbDqU6xoj_lxlr_jJpjFcVyxSomZAi1gg.PNG.shin4299/Humi1_main_auto.png?type=w3", backgroundColor:"#73C1EC", nextState:"modechange"
+                attributeState "silent1", label:'\nSilent Mode', action:"setModeMedium", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjUg/MDAxNTIyNjcwODgzNTQ2.9lTumWoRhiheYDV3v6EQamiC0ZFldzA5_0YfjzFm-gIg.lTYpe6wUUeEuPBwTzogwTM1sRX43POOIF7jKjCAV92Yg.PNG.shin4299/Humi1_main_1.png?type=w3", backgroundColor:"#6eca8f", nextState:"modechange"
+                attributeState "medium1", label:'\nMedium Mode', action:"setModeHigh", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTI4/MDAxNTIyNjcwODgzNjgy.PPQVgYG3pUKSCPYtX7quyWlju10JYSXMlIC0g1v0NoYg.7Dv1AoIGQmVRoID5ek8DualZuy-q2C--6gt6aTINZncg.PNG.shin4299/Humi1_main_2.png?type=w3", backgroundColor:"#FFDE61", nextState:"modechange"
+                attributeState "high1", label:'\nHigh Mode', action:"setModeAuto", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjQ2/MDAxNTIyNjcwODgzODM4.5obz2ySIyMlI1c_AjC0dfYiLKwYGHS_RFwnUNr5kmt4g.OjvrT0NKffJis6ff4n37PEzsR5b89Ya_OazNRFUkdmIg.PNG.shin4299/Humi1_main_3.png?type=w3", backgroundColor:"#ff9eb2", nextState:"modechange"
+                
+                attributeState "turningOn1", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNzYg/MDAxNTIyNjcwODg0MTI2.STxrAj6ogps95LmvuOjB0BMA85vmV7nSQkoZh-8tJY0g.lJrICUhnvXTE7HoJC1GR7gzwJxrxfDqyXd7NF59h0psg.PNG.shin4299/Humi1_main_off.png?type=w3", backgroundColor:"#C4BBB5", nextState:"off1"
 			}
 			tileAttribute("device.humidity", key: "SECONDARY_CONTROL") {
         		attributeState("humidity", label:'${currentValue}', unit:"%", defaultState: true)
@@ -113,6 +121,14 @@ metadata {
                 
                 attributeState "modechange", label:'${name}', icon:"st.quirky.spotter.quirky-spotter-motion", backgroundColor:"#C4BBB5"
                 attributeState "turningOn", label:'${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjdfMTI5/MDAxNTIyMTUxNzIxMTE0.jV8vnwjhiMGM3cMj0AOAkpXxMn67VHVSCOI0Oifaw_gg.caD0We4bMaw4zDle-ZElMaJ5J7X9XtgJK8r273B441cg.PNG.shin4299/Humi_main_off.png?type=w580", backgroundColor:"#C4BBB5", nextState:"off"
+
+                attributeState "off1", label:'OFF', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNzYg/MDAxNTIyNjcwODg0MTI2.STxrAj6ogps95LmvuOjB0BMA85vmV7nSQkoZh-8tJY0g.lJrICUhnvXTE7HoJC1GR7gzwJxrxfDqyXd7NF59h0psg.PNG.shin4299/Humi1_main_off.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn1"
+                attributeState "auto1", label:'Auto Mode', action:"setModeSilent", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjE0/MDAxNTIyNjcwODgzOTY3.xc9NXAkOenPbwUR2bf0vvO7P-RdA5vcjzNw7_Vu-CHgg.ggBUsFmbIRItbDqU6xoj_lxlr_jJpjFcVyxSomZAi1gg.PNG.shin4299/Humi1_main_auto.png?type=w3", backgroundColor:"#73C1EC", nextState:"modechange"
+                attributeState "silent1", label:'Silent Mode', action:"setModeMedium", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjUg/MDAxNTIyNjcwODgzNTQ2.9lTumWoRhiheYDV3v6EQamiC0ZFldzA5_0YfjzFm-gIg.lTYpe6wUUeEuPBwTzogwTM1sRX43POOIF7jKjCAV92Yg.PNG.shin4299/Humi1_main_1.png?type=w3", backgroundColor:"#6eca8f", nextState:"modechange"
+                attributeState "medium1", label:'Medium Mode', action:"setModeHigh", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTI4/MDAxNTIyNjcwODgzNjgy.PPQVgYG3pUKSCPYtX7quyWlju10JYSXMlIC0g1v0NoYg.7Dv1AoIGQmVRoID5ek8DualZuy-q2C--6gt6aTINZncg.PNG.shin4299/Humi1_main_2.png?type=w3", backgroundColor:"#FFDE61", nextState:"modechange"
+                attributeState "high1", label:'High Mode', action:"setModeAuto", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjQ2/MDAxNTIyNjcwODgzODM4.5obz2ySIyMlI1c_AjC0dfYiLKwYGHS_RFwnUNr5kmt4g.OjvrT0NKffJis6ff4n37PEzsR5b89Ya_OazNRFUkdmIg.PNG.shin4299/Humi1_main_3.png?type=w3", backgroundColor:"#ff9eb2", nextState:"modechange"
+                
+                attributeState "turningOn1", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNzYg/MDAxNTIyNjcwODg0MTI2.STxrAj6ogps95LmvuOjB0BMA85vmV7nSQkoZh-8tJY0g.lJrICUhnvXTE7HoJC1GR7gzwJxrxfDqyXd7NF59h0psg.PNG.shin4299/Humi1_main_off.png?type=w3", backgroundColor:"#C4BBB5", nextState:"off1"				
 			}
 		}
         
@@ -225,30 +241,24 @@ def setStatus(params){
     	sendEvent(name:"humidity", value: params.data + "%")
     	break;
     case "mode":
-    	if(params.data == "auto") {
-    	sendEvent(name:"mode", value: "auto" )
-        }
-//        else if(params.data == "idle") {
-//    	sendEvent(name:"mode", value: "auto" )
-//        }
-        else if(params.data == "silent") {
-    	sendEvent(name:"mode", value: "silent" )
-        }
-        else if(params.data == "medium") {
-    	sendEvent(name:"mode", value: "medium" )
-        }
-        else if(params.data == "high") {
-    	sendEvent(name:"mode", value: "high" )
-        }
-        else { }
+    	if(model == "Humidifier1") {
+    	sendEvent(name:"mode", value: params.data + "1" )
+        } else { 
+    	sendEvent(name:"mode", value: params.data )
+	}
     	break;
     case "power":
     	if(params.data == "true") {
     	sendEvent(name:"switch", value:"on")
         }
         else if(params.data == "false") {
-    	sendEvent(name:"mode", value: "off")
-    	sendEvent(name:"switch", value:"off")
+    		if(model == "Humidifier1") {
+    		sendEvent(name:"mode", value: "off1")
+	    	sendEvent(name:"switch", value:"off")
+        	} else { 
+    		sendEvent(name:"mode", value: "off")
+	    	sendEvent(name:"switch", value:"off")
+		}
         }
         else { }
     	break;
@@ -480,6 +490,18 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
         log.debug jsonObj
+    	if(model == "Humidifier1") {
+		if(jsonObj.properties.power == true){
+			sendEvent(name:"mode", value: jsonObj.state.mode + "1")
+			sendEvent(name:"switch", value: "on" )
+		} else {
+			sendEvent(name:"mode", value: "off1" )
+			sendEvent(name:"switch", value: "off" )
+		}		
+       		sendEvent(name:"water", value: "N/A" )
+		sendEvent(name:"dry", value: "dummy" )
+        	sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness)
+        } else {
 		if(jsonObj.properties.power == true){
 			sendEvent(name:"mode", value: jsonObj.state.mode)
 			sendEvent(name:"switch", value: "on" )
@@ -487,11 +509,6 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 			sendEvent(name:"mode", value: "off" )
 			sendEvent(name:"switch", value: "off" )
 		}
-    	if(model == "Humidifier1") {
-       		sendEvent(name:"water", value: "N/A" )
-			sendEvent(name:"dry", value: "dummy" )
-        	sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness)
-        } else {
         	sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness + "2")
 	    	sendEvent(name:"dry", value: jsonObj.state.dry )
 	        sendEvent(name:"water", value: Math.round(jsonObj.properties.depth/12*10))
