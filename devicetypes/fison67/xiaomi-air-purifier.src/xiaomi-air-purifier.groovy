@@ -227,11 +227,11 @@ metadata {
             state "default", label:'Buzzer \nMode'
         }
         valueTile("usage_label", "", decoration: "flat") {
-            state "default", label:'Usage \nTime'
+            state "default", label:'Filter\nLife'
         }
-        valueTile("remain_label", "", decoration: "flat") {
-            state "default", label:'Remaining \nTime'
-        }
+        valueTile("refresh", "device.refresh", decoration: "flat") {
+            state "default", label:'', action:"refresh", icon:"st.secondary.refresh"
+        }        
         
         standardTile("mode1", "device.mode1") {
 			state "default", label: "Auto", action: "setModeAuto", icon:"st.unknown.zwave.static-controller", backgroundColor:"#73C1EC"
@@ -279,11 +279,11 @@ metadata {
         }         
 
         valueTile("f1_hour_used", "device.f1_hour_used", width: 2, height: 1) {
-            state("val", label:'${currentValue} days', defaultState: true, backgroundColor:"#bcbcbc")
+            state("val", label:'Usage ${currentValue}d', defaultState: true, backgroundColor:"#bcbcbc")
         }
         
         valueTile("filter1_life", "device.filter1_life", width: 2, height: 1) {
-            state("val", label:'${currentValue} days', defaultState: true, backgroundColor:"#bcbcbc")
+            state("val", label:'Remain ${currentValue}d', defaultState: true, backgroundColor:"#bcbcbc")
         }
 
 
@@ -294,7 +294,7 @@ metadata {
     "auto_label", "silent_label", "favorit_label", "low_label", "medium_label", "high_label", 
     "mode1", "mode2", "mode3", "mode4", "mode5", "mode6", 
     "strong_label", "led_label", "buzzer_label", "usage_label", "f1_hour_used", 
-    "mode7", "buzzer", "ledBrightness", "remain_label", "filter1_life"
+    "mode7", "buzzer", "ledBrightness", "refresh", "filter1_life"
     ])
         
 	}
