@@ -33,6 +33,7 @@ metadata {
 	definition (name: "Xiaomi Door", namespace: "fison67", author: "fison67") {
         capability "Sensor"
         capability "Contact Sensor"
+        capability "Battery"
          
         attribute "door", "string"
         attribute "battery", "string"
@@ -47,8 +48,8 @@ metadata {
 	}
 
 	tiles {
-		multiAttributeTile(name:"door", type: "generic", width: 6, height: 4){
-			tileAttribute ("device.door", key: "PRIMARY_CONTROL") {
+		multiAttributeTile(name:"contact", type: "generic", width: 6, height: 4){
+			tileAttribute ("device.contact", key: "PRIMARY_CONTROL") {
                	attributeState "open", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjMy/MDAxNTIyNjcwOTc2NjM2.R5x6BKKwhctu3BhrXFsx6xXfQ4MaKzUd4Eoze9iWq00g.lBYew5V5fVf70EojdLnoDMRqrycdSHl1Th5Dl1ZWnBkg.PNG.shin4299/door_on.png?type=w3", backgroundColor:"#e86d13"
             	attributeState "closed", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTI3/MDAxNTIyNjcwOTc2NDgy.WVcwn0G7-BnyFTkk4pUxZ44j-810YDbVb81-A-52D1gg.X_0ijEFzbyu8IeYXU_fr0mVtS4v_4JbZncfmoFCPH5cg.PNG.shin4299/door_off.png?type=w3", backgroundColor:"#00a0dc"
 			}
@@ -82,7 +83,7 @@ def setStatus(params){
 	log.debug "${params.key} : ${params.data}"
  	switch(params.key){
     case "contact":
-    	sendEvent(name:"door", value: (params.data == "true" ? "closed" : "open") )
+    	sendEvent(name:"contact", value: (params.data == "true" ? "closed" : "open") )
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data)
