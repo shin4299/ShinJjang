@@ -484,6 +484,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 			sendEvent(name:"mode", value: jsonObj.state.mode)
 			sendEvent(name:"switch", value: "on" )
 		} else {
+			sendEvent(name:"mode", value: "off" )
 			sendEvent(name:"switch", value: "off" )
 		}
     	if(model == "Humidifier1") {
