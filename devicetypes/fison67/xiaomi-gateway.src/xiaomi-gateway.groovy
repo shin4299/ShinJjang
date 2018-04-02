@@ -89,13 +89,13 @@ metadata {
 	}
 
 	tiles {
-		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: true){
+		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'${name}', action:"off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTY1/MDAxNTIyNjcxMDY1MDQz.t5428V2Zx71yNZ9-nvoMqFpaNao870xJTMKMmN1kjswg.LTBQMiU_1_snfSUTMzsyCFL-qOJRXfocN9FV2jVkjYcg.PNG.shin4299/gate_on_tile.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'${name}', action:"on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNTcg/MDAxNTIyNjcxMDY0ODU2.gOuuXjBqKH7-ZkvK4ASa-sPrtKkSbxEach7FO8W0mFsg.CGEhP10hiJVUx5bFNLBpOkYcPMUAsx01L4DYiT94o38g.PNG.shin4299/gate_off_tile.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTY1/MDAxNTIyNjcxMDY1MDQz.t5428V2Zx71yNZ9-nvoMqFpaNao870xJTMKMmN1kjswg.LTBQMiU_1_snfSUTMzsyCFL-qOJRXfocN9FV2jVkjYcg.PNG.shin4299/gate_on_tile.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNTcg/MDAxNTIyNjcxMDY0ODU2.gOuuXjBqKH7-ZkvK4ASa-sPrtKkSbxEach7FO8W0mFsg.CGEhP10hiJVUx5bFNLBpOkYcPMUAsx01L4DYiT94o38g.PNG.shin4299/gate_off_tile.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
@@ -109,6 +109,13 @@ metadata {
                 attributeState "color", action:"setColor"
             }
 		}
+        standardTile("switch2", "device.switch", width: 2, height: 2) {
+                state "on", label:'${name}', action:"off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjEx/MDAxNTIyNjcwOTc3NTky.XWlh8N9oCU5I_sUR0kT6QHhVXxC1UeO9aaxSX76AdHkg.5UtFpmh0PFpI6wbX1WHkIXz_vAcLaZ2Enq5EokhmziIg.PNG.shin4299/gate_on.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
+                state "off", label:'${name}', action:"on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjY0/MDAxNTIyNjcwOTc3NDYw._aZN7_DPVUw-LfSc7sZV9opySZubbB7RaJHKnsWVec0g.usT1LTnRYQ1ogDlG9aXMT5vE5fpxXWxKUcR9__ccYPEg.PNG.shin4299/gate_off.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
+                
+                state "turningOn", label:'${name}', action:"off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjY0/MDAxNTIyNjcwOTc3NDYw._aZN7_DPVUw-LfSc7sZV9opySZubbB7RaJHKnsWVec0g.usT1LTnRYQ1ogDlG9aXMT5vE5fpxXWxKUcR9__ccYPEg.PNG.shin4299/gate_off.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
+                state "turningOff", label:'${name}', action:"on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjEx/MDAxNTIyNjcwOTc3NTky.XWlh8N9oCU5I_sUR0kT6QHhVXxC1UeO9aaxSX76AdHkg.5UtFpmh0PFpI6wbX1WHkIXz_vAcLaZ2Enq5EokhmziIg.PNG.shin4299/gate_on.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
+	}
         
         valueTile("illuminance", "device.illuminance", width: 2, height: 2) {
             state "val", label:'${currentValue}lx', defaultState: true,
@@ -218,6 +225,14 @@ metadata {
         standardTile("alarm25", "device.alarm25", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
             state "default", label:"", action:"alarmCustom", icon:"st.Entertainment.entertainment3"
         }
+   	main (["switch2"])
+	details(["switch", "illuminance", "stopMusic", "refresh", 
+		 "alarm1", "alarm2", "alarm3", "alarm4", "alarm5", "alarm6", 
+		 "alarm7", "alarm8", "alarm9", "alarm10", "alarm11", "alarm12", 
+		 "alarm13", "alarm14", "alarm15", "alarm16", "alarm17", "alarm18", 
+		 "alarm19", "alarm20", "alarm21", "alarm22", "alarm23", "alarm24", 
+		"alarm25"])
+		
 	}
 }
 
