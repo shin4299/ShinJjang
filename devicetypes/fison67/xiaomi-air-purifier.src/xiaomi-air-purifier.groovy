@@ -301,26 +301,7 @@ metadata {
 }
 
 def updated() {
-    if(model == "MiAirPurifier"){
-		sendEvent(name:"airQuality", value: "N/A" )
-		sendEvent(name:"mode3", value: "notab" )
-		sendEvent(name:"temperature", value: "N/A" )
-		sendEvent(name:"humidity", value: "N/A" )
-		sendEvent(name:"mode4", value: "default" )
-		sendEvent(name:"mode5", value: "default" )
-		sendEvent(name:"mode6", value: "default" )
-		sendEvent(name:"mode7", value: "default" )
-        }
-     else {
-		sendEvent(name:"mode4", value: "notab" )
-		sendEvent(name:"mode5", value: "notab" )
-		sendEvent(name:"mode6", value: "notab" )
-		sendEvent(name:"mode7", value: "notab" )
-		sendEvent(name:"airQuality", value: 20 )
-		sendEvent(name:"mode3", value: "default" )
-		sendEvent(name:"temperature", value: 20 )
-		sendEvent(name:"humidity", value: 40 )
-        }
+	refresh()
 }
 
 
@@ -663,7 +644,49 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
         log.debug jsonObj
-//        setStatus(jsonObj.state)
+        
+    if(model == "MiAirPurifier"){
+		sendEvent(name:"airQuality", value: "N/A" )
+		sendEvent(name:"mode3", value: "notab" )
+		sendEvent(name:"temperature", value: "N/A" )
+		sendEvent(name:"humidity", value: "N/A" )
+	        if(jsonObj.properties.aqi != null && jsonObj.properties.aqi != ""){
+        		sendEvent(name:"fineDustLevel", value: jsonObj.properties.aqi)
+        	}
+	        if(jsonObj.properties.pm25 != null && jsonObj.properties.pm25 != ""){
+        		sendEvent(name:"fineDustLevel", value: jsonObj.properties.aqi)
+        	}
+        }
+     else {
+		sendEvent(name:"mode4", value: "notab" )
+		sendEvent(name:"mode5", value: "notab" )
+		sendEvent(name:"mode6", value: "notab" )
+		sendEvent(name:"mode7", value: "notab" )
+	    	sendEvent(name:"humidity", value: jsonObj.properties.relativeHumidity + "%" )
+    		sendEvent(name:"temperature", value: jsonObj.properties.temperature.value  )
+	        if(jsonObj.properties.aqi != null && jsonObj.properties.aqi != ""){
+        		sendEvent(name:"fineDustLevel", value: jsonObj.properties.aqi)
+        	}
+        	if(jsonObj.properties.averageAqi != null && jsonObj.properties.averageAqi != ""){
+        		sendEvent(name:"airQuality", value: jsonObj.properties.averageAqi)
+        	}
+        }
+        sendEvent(name:"switch", value: jsonObj.properties.power == true ? "on" : "off")
+        sendEvent(name:"mode", value: jsonObj.properties.mode)
+        sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
+        
+        if(jsonObj.state.filterLifeRemaining != null && jsonObj.state.filterLifeRemaining != ""){
+    		sendEvent(name:"filter1_life", value: jsonObj.state.filterLifeRemaining )
+        }
+        if(jsonObj.state.filterHoursUsed != null && jsonObj.state.filterHoursUsed != ""){
+    		sendEvent(name:"f1_hour_used", value: Math.round(jsonObj.state.filterHoursUsed/24) )
+        }
+        if(jsonObj.properties.ledBrightness != null && jsonObj.properties.ledBrightness != ""){
+        	sendEvent(name:"ledBrightness", value: jsonObj.properties.ledBrightness)
+        }
+        def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+        sendEvent(name: "lastCheckin", value: now)
+
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
     }
