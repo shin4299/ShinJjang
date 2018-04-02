@@ -221,10 +221,10 @@ metadata {
             state "default", label:'Strong \nMode'
         }
         valueTile("led_label", "", decoration: "flat") {
-            state "default", label:'Brightness \nMode'
+            state "default", label:'LED\nBrightness'
         }
         valueTile("buzzer_label", "", decoration: "flat") {
-            state "default", label:'Buzzer \nMode'
+            state "default", label:'Buzzer'
         }
         valueTile("usage_label", "", decoration: "flat") {
             state "default", label:'Filter\nLife'
@@ -293,7 +293,7 @@ metadata {
     "pm25_value", "aqi", "temperature", "humidity", 
     "auto_label", "silent_label", "favorit_label", "low_label", "medium_label", "high_label", 
     "mode1", "mode2", "mode3", "mode4", "mode5", "mode6", 
-    "strong_label", "led_label", "buzzer_label", "usage_label", "f1_hour_used", 
+    "strong_label", "buzzer_label", "led_label", "usage_label", "f1_hour_used", 
     "mode7", "buzzer", "ledBrightness", "refresh", "filter1_life"
     ])
         
