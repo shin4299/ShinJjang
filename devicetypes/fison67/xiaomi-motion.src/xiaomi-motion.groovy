@@ -35,9 +35,11 @@ metadata {
         capability "Illuminance Measurement"
         capability "Configuration"
         capability "Sensor"
+        capability "Refresh"
          
         attribute "battery", "string"
-        
+        attribute "lastMotion", "Date"
+
         attribute "lastCheckin", "Date"
 	command "reset"	
          
@@ -47,7 +49,7 @@ metadata {
 	simulator {
 	}
 	preferences {
-		input "motionReset", "number", title: "모션 활성 시간 설정 /n 단위는 초이며 기본 설정시간은 120초 입니다.", description: "", value:120, displayDuringSetup: true
+		input "motionReset", "number", title: "Motion Reset Time", description: "", value:120, displayDuringSetup: true
 	}
 
 
@@ -57,8 +59,11 @@ metadata {
 				attributeState "active", label:'motion', icon:"https://postfiles.pstatic.net/MjAxODAzMjNfMjc4/MDAxNTIxNzM3NjEwOTA4.AVNFyqM4bd-a1VMujIbLN9MVBYFb75X0jROHPuG9pKkg.U6TX1CZoDPe-8odhwyt1YYSrS37jddX3EldEMxd56k0g.PNG.fuls/Motion_active_75.png?type=w773", backgroundColor:"#00a0dc"
 				attributeState "inactive", label:'no motion', icon:"https://postfiles.pstatic.net/MjAxODAzMjNfMjcy/MDAxNTIxNzM3NjEwOTA4.q1xS4KkstlJxdvxeTeS-cPZ44Bppv766hjez9tb5vZ4g.ap9JW3w27LXOUH_z2cPFXX6LUmL-fY4CRa7M6XxWWx0g.PNG.fuls/Motion_inactive_75.png?type=w773", backgroundColor:"#ffffff"
 			}
+            tileAttribute("device.battery", key: "SECONDARY_CONTROL") {
+    			attributeState("default", label:'Battery: ${currentValue}%\n')
+            }		
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'Last Update: ${currentValue}',icon: "st.Health & Wellness.health9")
+    			attributeState("default", label:'\nLast Update: ${currentValue}')
             }
 		}
         
@@ -75,14 +80,19 @@ metadata {
                 ]
         }
         
-        valueTile("battery", "device.battery", width: 2, height: 2) {
-            state "val", label:'${currentValue}', defaultState: true
-        }
                 standardTile("reset", "device.reset", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
             state "default", action:"reset", label: "Reset Motion", icon:"st.motion.motion.active"
         }
 
-
+		standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
+        }
+        valueTile("lastMotion_label", "", decoration: "flat") {
+            state "default", label:'Last\nMotion'
+        }
+        valueTile("lastMotion", "device.lastMotion", decoration: "flat", width: 3, height: 1) {
+            state "default", label:'${currentValue}'
+        }		
 	}
 }
 
@@ -98,24 +108,25 @@ def setInfo(String app_url, String id) {
 }
 
 def setStatus(params){
+	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
  	switch(params.key){
     case "motion":
-        sendEvent(name:"motion", value: (params.data == "true" ? "active" : null) )
+        sendEvent(name:"motion", value: (params.data == "true" ? "active" : "inactive") )
         if (settings.motionReset == null || settings.motionReset == "" ) settings.motionReset = 120
         if (params.data == "true") runIn(settings.motionReset, stopMotion)
+	if (params.data == "true") sendEvent(name: "lastMotion", value: now)	
+
 		
     	break;
     case "batteryLevel":
-    	sendEvent(name:"battery", value: params.data + "%")
+    	sendEvent(name:"battery", value: params.data)
     	break;
     case "illuminance":
-    	log.debug "illuminance >> ${params.data}"
     	sendEvent(name:"illuminance", value: params.data )
     	break;
     }
     
-    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-    sendEvent(name: "lastCheckin", value: now)
+    updateLastTime()
 }
 
 def callback(physicalgraph.device.HubResponse hubResponse){
@@ -123,13 +134,28 @@ def callback(physicalgraph.device.HubResponse hubResponse){
     try {
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
-        setStatus(jsonObj.state)
+        log.debug jsonObj
+        
+        sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
+        sendEvent(name:"motion", value: jsonObj.properties.motion == true ? "active" : "inactive")
+        
+        if(jsonObj.properties.illuminance != null && jsonObj.properties.illuminance != ""){
+        	sendEvent(name:"illuminance", value: jsonObj.properties.illuminance.value + jsonObj.properties.illuminance.unit)
+        }
+      
+        updateLastTime()
+
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
     }
 }
 
 def updated() {
+}
+
+def updateLastTime(){
+	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+    sendEvent(name: "lastCheckin", value: now)
 }
 
 def stopMotion() {
@@ -156,4 +182,17 @@ def makeCommand(body){
         "body":body
     ]
     return options
+}
+
+def refresh(){
+	log.debug "Refresh"
+    def options = [
+     	"method": "GET",
+        "path": "/devices/get/${state.id}",
+        "headers": [
+        	"HOST": state.app_url,
+            "Content-Type": "application/json"
+        ]
+    ]
+    sendCommand(options, callback)
 }
