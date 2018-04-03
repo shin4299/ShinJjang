@@ -37,10 +37,7 @@ metadata {
         capability "Battery"
 	capability "Refresh"
                
-        attribute "lastCheckin", "Date"
-        attribute "lastOpen", "Date"
-        attribute "lastClosed", "Date"
-         
+       
         attribute "status", "string"
         
         attribute "lastCheckin", "Date"
