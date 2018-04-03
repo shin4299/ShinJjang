@@ -521,12 +521,12 @@ def setLanguage(language){
 	state.language = language
 	state.wdep = LANGUAGE_MAP["wDep"][language]
 	state.temp = LANGUAGE_MAP["temp"][language]
-	state.tarH = LANGUAGE_MAP["tarH"][language]
+//	state.tarH = LANGUAGE_MAP["tarH"][language]
 	
         sendEvent(name:"buzzer_label", value: LANGUAGE_MAP["buz"][language] )
         sendEvent(name:"time_label", value: LANGUAGE_MAP["utime"][language] )
         sendEvent(name:"dry_label", value: LANGUAGE_MAP["dry"][language] )
-//    sendEvent(name:"humi_label", value: LANGUAGE_MAP["humidity"][language] )
+	sendEvent(name:"target", value: LANGUAGE_MAP["tarH"][language] )
 }
 
 def callback(physicalgraph.device.HubResponse hubResponse){
