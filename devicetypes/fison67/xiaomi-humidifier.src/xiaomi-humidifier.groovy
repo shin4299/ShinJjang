@@ -126,7 +126,7 @@ metadata {
         		attributeState("humidity", label:'${currentValue}', unit:"%", defaultState: true)
     		}            
 			tileAttribute("device.temperature", key: "SECONDARY_CONTROL") {
-				attributeState("temperature", label:'          ${currentValue}°', unit:"°", defaultState: true)
+				attributeState("temperature", label:'         ${currentValue}°', unit:"°", defaultState: true)
     		}            
 			tileAttribute("device.water", key: "SECONDARY_CONTROL") {
         		attributeState("water", label:'                                ${currentValue}%', unit:"%", defaultState: true)
