@@ -40,6 +40,18 @@ LANGUAGE_MAP = [
         "Korean": "목표습도",
         "English": "Target"
     ],
+    "buz": [
+        "Korean": "부저음",
+        "English": "Buzzer"
+    ],
+    "dry": [
+        "Korean": "건조\n모드",
+        "English": "Dry\nMode"
+    ],
+    "utime": [
+        "Korean": "사용\n시간",
+        "English": "Usage\nTime"
+    ],
     "wDep": [
         "Korean": "물양",
         "English": "WD"
@@ -117,10 +129,10 @@ metadata {
 				attributeState("temperature", label:'          ${currentValue}°', unit:"°", defaultState: true)
     		}            
 			tileAttribute("device.water", key: "SECONDARY_CONTROL") {
-        		attributeState("water", label:'                             물양 ${currentValue}%', unit:"%", defaultState: true)
+        		attributeState("water", label:'                                ${currentValue}%', unit:"%", defaultState: true)
     		}            
 			tileAttribute("device.target", key: "SECONDARY_CONTROL") {
-        		attributeState("target", label:'                                                              목표습도:', defaultState: true)
+        		attributeState("target", label:'                                                              ${currentValue}:', defaultState: true)
     		}            
 		    tileAttribute ("device.level", key: "SLIDER_CONTROL", range:"(30..80)") {
         		attributeState "level", action:"switch level.setLevel"
@@ -185,16 +197,16 @@ metadata {
 		}
         
         valueTile("buzzer_label", "", decoration: "flat") {
-            state "default", label:'부저음'
+            state "default", label: state.buz
         }        
         valueTile("led_label", "", decoration: "flat") {
             state "default", label:'LED'
         }        
         valueTile("time_label", "", decoration: "flat") {
-            state "default", label:'사용 \n시간'
+            state "default", label: state.utime
         }        
         valueTile("dry_label", "", decoration: "flat") {
-            state "default", label:'건조 \n모드'
+            state "default", label: state.dry
         }        
         valueTile("update_label", "", decoration: "flat") {
             state "default", label:'last \nupdate'
@@ -287,7 +299,7 @@ def setStatus(params){
 		def st = data.replace("C","");
 		def stf = Float.parseFloat(st)
 		def tem = Math.round(stf*10)/10
-        sendEvent(name:"temperature", value: state.temp + tem )
+        sendEvent(name:"temperature", value: state.temp + " " + tem )
     	break;
     case "useTime":
 		def para = "${params.data}"
@@ -313,7 +325,7 @@ def setStatus(params){
 		String data = para
 		def stf = Float.parseFloat(data)
 		def water = Math.round(stf/12*10)    
-        sendEvent(name:"water", value: water )
+        sendEvent(name:"water", value: state.wdep + " " + water )
     	break;
     case "buzzer":
     	sendEvent(name:"buzzer", value: (params.data == "true" ? "on" : "off") )
@@ -510,6 +522,10 @@ def setLanguage(language){
 	state.wdep = LANGUAGE_MAP["wDep"][language]
 	state.temp = LANGUAGE_MAP["temp"][language]
 	state.tarH = LANGUAGE_MAP["tarH"][language]
+	state.buz = LANGUAGE_MAP["buz"][language]
+	state.utime = LANGUAGE_MAP["utime"][language]
+	state.dry = LANGUAGE_MAP["dry"][language]
+	
     
 //    sendEvent(name:"temp_label", value: LANGUAGE_MAP["temperature"][language] )
 //    sendEvent(name:"humi_label", value: LANGUAGE_MAP["humidity"][language] )
@@ -542,9 +558,9 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 		}
         	sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness + "2")
 	    	sendEvent(name:"dry", value: jsonObj.state.dry )
-	        sendEvent(name:"water", value: Math.round(jsonObj.properties.depth/12*10))
+	        sendEvent(name:"water", value: state.wdep + " " + Math.round(jsonObj.properties.depth/12*10))
         }    
-        sendEvent(name:"temperature", value: state.temp + jsonObj.properties.temperature.value)
+        sendEvent(name:"temperature", value: state.temp + " " + jsonObj.properties.temperature.value)
         sendEvent(name:"relativeHumidity", value: jsonObj.properties.relativeHumidity)
         sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
         sendEvent(name:"level", value: jsonObj.properties.targetHumidity)
