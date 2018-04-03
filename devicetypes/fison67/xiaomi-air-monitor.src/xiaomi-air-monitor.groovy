@@ -55,21 +55,27 @@ metadata {
 	}
 
 	tiles {
-		multiAttributeTile(name:"switch", type: "generic", width: 6, height: 4, canChangeIcon: true){
-			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
-                
-                attributeState "turningOn", label:'${name}', action:"off", icon:"st.switches.light.on", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"on", icon:"st.switches.light.off", backgroundColor:"#ffffff", nextState:"turningOn"
+		multiAttributeTile(name:"fineDustLevel", type: "generic", width: 6, height: 4){
+			tileAttribute ("device.fineDustLevel", key: "PRIMARY_CONTROL") {
+                attributeState "default", label:'${currentValue}㎍/㎥', unit:"㎍/㎥", backgroundColors:[
+			[value: -1, color: "#C4BBB5"],
+            		[value: 0, color: "#7EC6EE"],
+            		[value: 15, color: "#51B2E8"],
+            		[value: 50, color: "#e5c757"],
+            		[value: 75, color: "#E40000"],
+            		[value: 500, color: "#970203"]
+            		]
 			}
             
+            tileAttribute("device.battery", key: "SECONDARY_CONTROL") {
+    			attributeState("default", label:'Battery: ${currentValue}%\n')
+            }		
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
+    			attributeState("default", label:'\nLast Update: ${currentValue}')
             }
 		}
 		valueTile("pm25", "device.fineDustLevel", decoration: "flat", width: 2, height: 2) {
-        	state "default", label:'${currentValue}㎍/㎥', unit:"㎍/㎥", backgroundColors:[
+        	state "default", label:'${currentValue}㎍/㎥', icon:"http://postfiles9.naver.net/MjAxODA0MDNfMjkw/MDAxNTIyNzI3NjY0Mzk0.yVQdGxRJMGFrGQLVzb-OUThZptHXIBmTaMEZO3LoipAg.v0Rw0_zvHr7wBk-VeH5KQxNry_zUOz4aXUn6I1QQ9xkg.PNG.shin4299/pm25_on.png?type=w3", unit:"㎍/㎥", backgroundColors:[
 			[value: -1, color: "#C4BBB5"],
             		[value: 0, color: "#7EC6EE"],
             		[value: 15, color: "#51B2E8"],
@@ -79,6 +85,13 @@ metadata {
             ]
         }
         
+        standardTile("switch", "device.switch", inactiveLabel: false, width: 2, height: 2) {
+            state "on", label:'ON', action:"switch.off", icon:"st.Appliances.appliances17", backgroundColor:"#00a0dc", nextState:"turningOff"
+            state "off", label:'OFF', action:"switch.on", icon:"st.Appliances.appliances17", backgroundColor:"#ffffff", nextState:"turningOn"
+             
+        	state "turningOn", label:'turningOn', action:"switch.off", icon:"st.Appliances.appliances17", backgroundColor:"#00a0dc", nextState:"turningOff"
+            state "turningOff", label:'turningOff', action:"switch.on", icon:"st.Appliances.appliances17", backgroundColor:"#ffffff", nextState:"turningOn"
+        }
         
         valueTile("battery", "device.battery", width: 2, height: 2) {
             state("val", label:'${currentValue}%', defaultState: true, backgroundColor:"#00a0dc")
@@ -91,6 +104,9 @@ metadata {
         standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
             state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
         }
+   	main (["pm25"])
+	details(["fineDustLevel", "switch", "usb_state", "refresh"])
+		
 	}
 }
 
