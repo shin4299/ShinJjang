@@ -28,6 +28,24 @@
  */
 
 import groovy.json.JsonSlurper
+import groovy.transform.Field
+
+@Field 
+LANGUAGE_MAP = [
+    "temp": [
+        "Korean": "온도",
+        "English": "Temp"
+    ],
+    "tarH": [
+        "Korean": "목표습도",
+        "English": "Target"
+    ],
+    "wDep": [
+        "Korean": "물양",
+        "English": "WD"
+    ]
+]
+
 
 metadata {
 	definition (name: "Xiaomi Humidifier", namespace: "fison67", author: "fison67") {
@@ -69,6 +87,7 @@ metadata {
 	}
 	preferences {
 		input name:"model", type:"enum", title:"Select Model", options:["Humidifier1", "Humidifier2"], description:"Select Your Humidifier Model(Humidifier 1: N/A Water Depth and Dry Mode, Humidifier 2: N/A LED Brightness Control and Target Humidity)"
+	        input name: "selectedLang", title:"Select a language" , type: "enum", required: true, options: ["English", "Korean"], defaultValue: "English", description:"Language for DTH"
 	}
 
 	tiles(scale: 2) {
@@ -95,7 +114,7 @@ metadata {
         		attributeState("humidity", label:'${currentValue}', unit:"%", defaultState: true)
     		}            
 			tileAttribute("device.temperature", key: "SECONDARY_CONTROL") {
-        		attributeState("temperature", label:'         온도 ${currentValue}°', unit:"°", defaultState: true)
+				attributeState("temperature", label: state.temp'          ${currentValue}°', unit:"°", defaultState: true)
     		}            
 			tileAttribute("device.water", key: "SECONDARY_CONTROL") {
         		attributeState("water", label:'                             물양 ${currentValue}%', unit:"%", defaultState: true)
@@ -482,6 +501,18 @@ def setDryOff(){
 
 def updated() {
     refresh()
+    setLanguage(settings.selectedLang)
+}
+
+def setLanguage(language){
+    log.debug "Languge >> ${language}"
+	state.language = language
+	state.wdep = LANGUAGE_MAP["wDep"][language]
+	state.temp = LANGUAGE_MAP["temp"][language]
+	state.tarH = LANGUAGE_MAP["tarH"][language]
+    
+//    sendEvent(name:"temp_label", value: LANGUAGE_MAP["temperature"][language] )
+//    sendEvent(name:"humi_label", value: LANGUAGE_MAP["humidity"][language] )
 }
 
 def callback(physicalgraph.device.HubResponse hubResponse){
