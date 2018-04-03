@@ -114,7 +114,7 @@ metadata {
         		attributeState("humidity", label:'${currentValue}', unit:"%", defaultState: true)
     		}            
 			tileAttribute("device.temperature", key: "SECONDARY_CONTROL") {
-				attributeState("temperature", label: state.temp'          ${currentValue}°', unit:"°", defaultState: true)
+				attributeState("temperature", label:'          ${currentValue}°', unit:"°", defaultState: true)
     		}            
 			tileAttribute("device.water", key: "SECONDARY_CONTROL") {
         		attributeState("water", label:'                             물양 ${currentValue}%', unit:"%", defaultState: true)
@@ -544,7 +544,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 	    	sendEvent(name:"dry", value: jsonObj.state.dry )
 	        sendEvent(name:"water", value: Math.round(jsonObj.properties.depth/12*10))
         }    
-        sendEvent(name:"temperature", value: jsonObj.properties.temperature.value)
+        sendEvent(name:"temperature", value: state.temp + jsonObj.properties.temperature.value)
         sendEvent(name:"relativeHumidity", value: jsonObj.properties.relativeHumidity)
         sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
         sendEvent(name:"level", value: jsonObj.properties.targetHumidity)
