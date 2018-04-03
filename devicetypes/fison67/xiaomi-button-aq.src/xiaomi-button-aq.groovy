@@ -62,7 +62,7 @@ metadata {
     			attributeState("default", label:'Battery: ${currentValue}%\n')
             }		
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'\nLast Update: ${currentValue}',icon: "st.Health & Wellness.health9")
+    			attributeState("default", label:'\nLast Update: ${currentValue}')
             }
 		}
         valueTile("click", "device.button", decoration: "flat", width: 2, height: 2) {
