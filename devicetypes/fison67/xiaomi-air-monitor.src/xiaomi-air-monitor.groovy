@@ -68,7 +68,7 @@ metadata {
     			attributeState("default", label:'Updated: ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
-		valueTile("pm25", "device.fineDustLevel", decoration: "flat") {
+		valueTile("pm25", "device.fineDustLevel", decoration: "flat", width: 2, height: 2) {
         	state "default", label:'${currentValue}㎍/㎥', unit:"㎍/㎥", backgroundColors:[
 			[value: -1, color: "#C4BBB5"],
             		[value: 0, color: "#7EC6EE"],
@@ -169,6 +169,7 @@ def off(){
     sendCommand(options, null)
 }
 
+//[state:[batteryLevel:100, charging:true, aqi:7, power:true], properties:[batteryLevel:100, pm2.5:7, charging:true, power:true]]
 def callback(physicalgraph.device.HubResponse hubResponse){
 	def msg
     try {
@@ -176,7 +177,9 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 		def jsonObj = new JsonSlurper().parseText(msg.body)
         log.debug jsonObj
 
-		sendEvent(name:"switch", value: (jsonObj.state.power ? "on" : "off") )
+		sendEvent(name:"switch", value: (jsonObj.state.power == true ? "on" : "off") )
+		sendEvent(name:"fineDustLevel", value: jsonObj.state.aqi )
+		sendEvent(name:"usb_state", value: (jsonObj.state.charging == true ? "USB \nConnected" : "USB \nDisconnected") )
 		updateLastTime()
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
