@@ -53,10 +53,10 @@ metadata {
             	attributeState "closed", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTI3/MDAxNTIyNjcwOTc2NDgy.WVcwn0G7-BnyFTkk4pUxZ44j-810YDbVb81-A-52D1gg.X_0ijEFzbyu8IeYXU_fr0mVtS4v_4JbZncfmoFCPH5cg.PNG.shin4299/door_off.png?type=w3", backgroundColor:"#00a0dc"
 			}
             tileAttribute("device.battery", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'Battery: ${currentValue}%')
+    			attributeState("default", label:'Battery: ${currentValue}%\n')
             }
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'Last Update: ${currentValue}')
+    			attributeState("default", label:'\nLast Update: ${currentValue}')
             }
 		}
         
@@ -64,13 +64,13 @@ metadata {
             state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
         }
         valueTile("lastOpen_label", "", decoration: "flat") {
-            state "default", label:'Last\nON'
+            state "default", label:'Last\nOpen'
         }
         valueTile("lastOpen", "device.lastOpen", decoration: "flat", width: 3, height: 1) {
             state "default", label:'${currentValue}'
         }
         valueTile("lastClosed_label", "", decoration: "flat") {
-            state "default", label:'Last\nOFF'
+            state "default", label:'Last\nClosed'
         }
         valueTile("lastClosed", "device.lastClosed", decoration: "flat", width: 3, height: 1) {
             state "default", label:'${currentValue}'
