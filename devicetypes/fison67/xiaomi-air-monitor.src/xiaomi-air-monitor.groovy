@@ -180,6 +180,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 		sendEvent(name:"switch", value: (jsonObj.state.power == true ? "on" : "off") )
 		sendEvent(name:"fineDustLevel", value: jsonObj.state.aqi )
 		sendEvent(name:"usb_state", value: (jsonObj.state.charging == true ? "USB \nConnected" : "USB \nDisconnected") )
+		sendEvent(name:"battery", value: jsonObj.state.batteryLevel )
 		updateLastTime()
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;
