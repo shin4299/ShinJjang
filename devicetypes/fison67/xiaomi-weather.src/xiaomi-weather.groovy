@@ -286,7 +286,7 @@ def setStatus(params){
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data )
     	break;		
-    checkNewDay(now)
+    checkNewDay()
 		
     }
 }
