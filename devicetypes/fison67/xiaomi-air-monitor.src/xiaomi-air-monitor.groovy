@@ -78,21 +78,6 @@ metadata {
             		[value: 500, color: "#970203"]
             ]
         }
-
-		
-         valueTile("pm25", "device.pm25", width: 2, height: 2, unit: "") {
-            state("val", label:'${currentValue}㎍/㎥', defaultState: true, 
-            	backgroundColors:[
-                    [value: 31, color: "#153591"],
-                    [value: 44, color: "#1e9cbb"],
-                    [value: 59, color: "#90d2a7"],
-                    [value: 74, color: "#44b621"],
-                    [value: 84, color: "#f1d801"],
-                    [value: 95, color: "#d04e00"],
-                    [value: 96, color: "#bc2323"]
-                ]
-            )
-        }
         
         
         valueTile("battery", "device.battery", width: 2, height: 2) {
