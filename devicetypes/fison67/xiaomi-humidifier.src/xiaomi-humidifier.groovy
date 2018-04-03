@@ -196,16 +196,16 @@ metadata {
 			state "default", label: "High", action: "setModeHigh", icon:"st.quirky.spotter.quirky-spotter-luminance-bright", backgroundColor:"#ff9eb2"
 		}
         
-        valueTile("buzzer_label", "", decoration: "flat") {
+        valueTile("buzzer_label", "device.buzzer_label", decoration: "flat") {
             state "default", label: '${currentValue}'
         }        
         valueTile("led_label", "", decoration: "flat") {
             state "default", label:'LED'
         }        
-        valueTile("time_label", "", decoration: "flat") {
+        valueTile("time_label", "device.time_label", decoration: "flat") {
             state "default", label: '${currentValue}'
         }        
-        valueTile("dry_label", "", decoration: "flat") {
+        valueTile("dry_label", "device.dry_label", decoration: "flat") {
             state "default", label: '${currentValue}'
         }        
         valueTile("update_label", "", decoration: "flat") {
