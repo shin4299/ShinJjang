@@ -287,7 +287,7 @@ def setStatus(params){
 		def st = data.replace("C","");
 		def stf = Float.parseFloat(st)
 		def tem = Math.round(stf*10)/10
-        sendEvent(name:"temperature", value: tem )
+        sendEvent(name:"temperature", value: state.temp + tem )
     	break;
     case "useTime":
 		def para = "${params.data}"
