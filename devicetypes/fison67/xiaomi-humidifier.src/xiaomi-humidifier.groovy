@@ -299,7 +299,7 @@ def setStatus(params){
 		def st = data.replace("C","");
 		def stf = Float.parseFloat(st)
 		def tem = Math.round(stf*10)/10
-        sendEvent(name:"temperature", value: state.temp + " " + tem )
+        sendEvent(name:"temperature", value: state.temp + ": " + tem )
     	break;
     case "useTime":
 		def para = "${params.data}"
@@ -325,7 +325,7 @@ def setStatus(params){
 		String data = para
 		def stf = Float.parseFloat(data)
 		def water = Math.round(stf/12*10)    
-        sendEvent(name:"water", value: state.wdep + " " + water )
+        sendEvent(name:"water", value: state.wdep + ": " + water )
     	break;
     case "buzzer":
     	sendEvent(name:"buzzer", value: (params.data == "true" ? "on" : "off") )
@@ -556,9 +556,9 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 		}
         	sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness + "2")
 	    	sendEvent(name:"dry", value: jsonObj.state.dry )
-	        sendEvent(name:"water", value: state.wdep + " " + Math.round(jsonObj.properties.depth/12*10))
+	        sendEvent(name:"water", value: state.wdep + ": " + Math.round(jsonObj.properties.depth/12*10))
         }    
-        sendEvent(name:"temperature", value: state.temp + " " + jsonObj.properties.temperature.value)
+        sendEvent(name:"temperature", value: state.temp + ": " + jsonObj.properties.temperature.value)
         sendEvent(name:"relativeHumidity", value: jsonObj.properties.relativeHumidity)
         sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
         sendEvent(name:"level", value: jsonObj.properties.targetHumidity)
