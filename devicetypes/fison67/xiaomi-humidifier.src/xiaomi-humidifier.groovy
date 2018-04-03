@@ -197,16 +197,16 @@ metadata {
 		}
         
         valueTile("buzzer_label", "", decoration: "flat") {
-            state "default", label: state.buz
+            state "default", label: '${currentValue}'
         }        
         valueTile("led_label", "", decoration: "flat") {
             state "default", label:'LED'
         }        
         valueTile("time_label", "", decoration: "flat") {
-            state "default", label: state.utime
+            state "default", label: '${currentValue}'
         }        
         valueTile("dry_label", "", decoration: "flat") {
-            state "default", label: state.dry
+            state "default", label: '${currentValue}'
         }        
         valueTile("update_label", "", decoration: "flat") {
             state "default", label:'last \nupdate'
@@ -522,12 +522,10 @@ def setLanguage(language){
 	state.wdep = LANGUAGE_MAP["wDep"][language]
 	state.temp = LANGUAGE_MAP["temp"][language]
 	state.tarH = LANGUAGE_MAP["tarH"][language]
-	state.buz = LANGUAGE_MAP["buz"][language]
-	state.utime = LANGUAGE_MAP["utime"][language]
-	state.dry = LANGUAGE_MAP["dry"][language]
 	
-    
-//    sendEvent(name:"temp_label", value: LANGUAGE_MAP["temperature"][language] )
+        sendEvent(name:"buzzer_label", value: LANGUAGE_MAP["buz"][language] )
+        sendEvent(name:"time_label", value: LANGUAGE_MAP["utime"][language] )
+        sendEvent(name:"dry_label", value: LANGUAGE_MAP["dry"][language] )
 //    sendEvent(name:"humi_label", value: LANGUAGE_MAP["humidity"][language] )
 }
 
