@@ -309,11 +309,13 @@ def checkNewDay() {
 
 def resetMinMax() {
 	def day = new Date().format("EEE", location.timeZone)
-	log.debug "resetMinMax _ ${day}"
+	log.debug "resetMinMax day_ ${day}"
 	def currentMaxTemp = device.currentValue('maxTemp')
 	def currentMinTemp = device.currentValue('minTemp')
 	def currentMaxHumi = device.currentValue('maxHumidity')
 	def currentMinHumi = device.currentValue('minHumidity')	
+	log.debug "resetMinMax day_ ${day}_xT${currentMaxTemp}_nT${currentMinTemp}_xH${currentMaxHumi}_nH${currentMinHumi}"
+	
 	if (day == "Mon") {
 		 state.sunMaxTemp = currentMaxTemp
 		 state.sunMinTemp = currentMinTemp
