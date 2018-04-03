@@ -266,9 +266,9 @@ def setStatus(params){
 		def para = "${params.data}"
 		String data = para
 		def stf = Float.parseFloat(data)
-		def hum = Math.round(stf)
-    	sendEvent(name:"humidity", value: hum )
-        updateMinMaxHumidity(hum)
+		def humidity = Math.round(stf)
+    	sendEvent(name:"humidity", value: humidity )
+        updateMinMaxHumidity(humidity)
     	break;
     case "temperature":
 		def para = "${params.data}"
@@ -301,15 +301,17 @@ def checkNewDay() {
 	}else{
 		if(state.prvDate != now){
 			state.prvDate = now
+			    log.debug "checkNewDay _ ${state.prvDate}"
 			resetMinMax()            
 		}
 	}
 }
 
 def resetMinMax() {
-	def day = new Date().format("EEE", location.timeZone)	
+	def day = new Date().format("EEE", location.timeZone)
+	log.debug "resetMinMax _ ${day}"
 	def currentMaxTemp = device.currentValue('maxTemp')
-	def currentMinTemp = device.currentValue('mimTemp')
+	def currentMinTemp = device.currentValue('minTemp')
 	def currentMaxHumi = device.currentValue('maxHumidity')
 	def currentMinHumi = device.currentValue('minHumidity')	
 	if (day == "Mon") {
