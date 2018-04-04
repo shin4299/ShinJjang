@@ -109,13 +109,14 @@ def setInfo(String app_url, String id) {
 
 def setStatus(params){
 	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+        if (settings.motionReset == null || settings.motionReset == "" ) settings.motionReset = 120	
  	switch(params.key){
     case "motion":
-        sendEvent(name:"motion", value: (params.data == "true" ? "active" : null ) )
-        if (settings.motionReset == null || settings.motionReset == "" ) settings.motionReset = 120
-        if (params.data == "true") runIn(settings.motionReset, stopMotion)
-	if (params.data == "true") sendEvent(name: "lastMotion", value: now)	
-
+	if (params.data == "true") {
+	        sendEvent(name:"motion", value: "active")
+		runIn(settings.motionReset, stopMotion)
+		 sendEvent(name: "lastMotion", value: now)
+	} else { }
 		
     	break;
     case "batteryLevel":
