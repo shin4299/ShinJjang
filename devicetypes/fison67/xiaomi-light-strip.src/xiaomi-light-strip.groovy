@@ -35,7 +35,7 @@ metadata {
         capability "Actuator"
         capability "Configuration"
         capability "Refresh"
-	capability "Color Control"
+	capability "Color Control" 
         capability "Switch Level"
         capability "Health Check"
         capability "Light"
