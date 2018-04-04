@@ -349,6 +349,7 @@ def setStatus(params){
 		def tem = Math.round(stf*10)/10
         sendEvent(name:"temperature", value: tem )
         updateMinMaxTemps(tem)
+	checkNewDay()	
 //        log.debug "${st}"
     	break;
     case "atmosphericPressure":
@@ -358,7 +359,6 @@ def setStatus(params){
     	sendEvent(name:"battery", value: params.data )
     	break;				
     }
-    checkNewDay()	
 }
 
 
