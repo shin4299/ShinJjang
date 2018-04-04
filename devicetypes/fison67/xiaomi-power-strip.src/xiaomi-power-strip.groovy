@@ -40,8 +40,6 @@ metadata {
         capability "Sensor"
         capability "Outlet"
         
-        attribute "Volt", "string"
-        attribute "temp", "string"
         attribute "lastCheckin", "Date"
         
 	}
