@@ -116,7 +116,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         log.debug jsonObj
         sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
         sendEvent(name:"density", value: jsonObj.properties.density)
-        sendEvent(name:"battery", (value: jsonObj.properties.smokeDetected == "true" ? "detected" : "clear"))
+        sendEvent(name:"battery", value: (jsonObj.properties.smokeDetected == "true" ? "detected" : "clear"))
         
         updateLastTime()
     } catch (e) {
