@@ -38,7 +38,6 @@ metadata {
 	capability "Battery"
         capability "Refresh"
          
-        attribute "battery", "string"
         attribute "lastMotion", "Date"
 
         attribute "lastCheckin", "Date"
