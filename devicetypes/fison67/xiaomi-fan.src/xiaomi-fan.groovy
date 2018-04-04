@@ -72,7 +72,7 @@ metadata {
 	capability "Refresh"
 	capability "Sensor"
 	capability "Battery"
-	capability "Power source"
+	capability "Power Source"
          
         attribute "buzzer", "string"
         attribute "anglelevel", "string"
