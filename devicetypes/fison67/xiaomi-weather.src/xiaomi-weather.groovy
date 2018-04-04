@@ -28,6 +28,67 @@
 */
 
 import groovy.json.JsonSlurper
+import groovy.transform.Field
+
+@Field 
+LANGUAGE_MAP = [
+	"atmospheric_pressure":[
+    	"Korean": "기압",
+        "English": "Atmospheric Pressure"
+    ],
+    "temperature": [
+        "Korean": "온도",
+        "English": "Temperature"
+    ],
+    "humidity": [
+        "Korean": "습도",
+        "English": "Humidity"
+    ],
+    "battery": [
+    	"Korean": "배터리",
+        "English": "Battery"
+    ],
+    "todays": [
+    	"Korean": "오늘",
+        "English": "Today's"
+    ],
+    "high": [
+    	"Korean": "최고",
+        "English": "High"
+    ],
+    "low": [
+    	"Korean": "최저",
+        "English": "Low"
+    ],
+    "mon": [
+    	"Korean": "월",
+        "English": "Mon"
+    ],
+    "tue": [
+    	"Korean": "화",
+        "English": "Tue"
+    ],
+    "wed": [
+    	"Korean": "수",
+        "English": "Wed"
+    ],
+    "thu": [
+    	"Korean": "목",
+        "English": "Thu"
+    ],
+    "fri": [
+    	"Korean": "금",
+        "English": "Fri"
+    ],
+    "sat": [
+    	"Korean": "토",
+        "English": "Sat"
+    ],
+    "sun": [
+    	"Korean": "일",
+        "English": "Sun"
+    ]
+]
 
 metadata {
 	definition (name: "xiaomi weather", namespace: "fison67", author: "fison67") {
@@ -65,7 +126,10 @@ metadata {
         attribute "lastCheckin", "Date"
 		attribute "lastCheckinDate", "String"
 
-        
+        command "setLanguage" 
+        command "refresh"
+	command	"checkNewDay"
+	
 	}
 
 
@@ -73,6 +137,7 @@ metadata {
 	preferences {
 		input name: "displayTempHighLow", type: "bool", title: "Display high/low temperature?"
 		input name: "displayHumidHighLow", type: "bool", title: "Display high/low humidity?"
+		input name: "selectedLang", title:"Select a language" , type: "enum", required: true, options: ["English", "Korean"], defaultValue: "English", description:"Language for DTH"
 	}
 
 
@@ -145,7 +210,7 @@ metadata {
         
         
         valueTile("pressure", "device.pressure", width: 2, height: 2, unit: "") {
-            state("val", label:'${currentValue}', defaultState: true, 
+            state("val", label:'${currentValue} kpa', defaultState: true, 
             	backgroundColors:[
                     [value: 10, color: "#153591"],
                     [value: 30, color: "#1e9cbb"],
@@ -160,12 +225,14 @@ metadata {
         valueTile("battery", "device.battery", width: 2, height: 2) {
             state "val", label:'${currentValue}%', defaultState: true
         }		
-        valueTile("pre", "title", decoration: "flat", inactiveLabel: false, width: 2, height: 1) {
-	    state "default", label:'기압'
-        }		
-        valueTile("humi", "title", decoration: "flat", inactiveLabel: false, width: 2, height: 1) {
-	    state "default", label:'습도'
-        }		
+        valueTile("pre", "device.pre", decoration: "flat", inactiveLabel: false, width: 2, height: 1) {
+            state("val", label:'${currentValue}', defaultState: true)
+        }
+        valueTile("humi", "device.humi", decoration: "flat", inactiveLabel: false, width: 2, height: 1) {
+            state("val", label:'${currentValue}', defaultState: true)
+        }
+        
+        
         valueTile("1l", "device.1l") {
             state "val", label:'${currentValue}', defaultState: true
         }		
@@ -223,16 +290,20 @@ metadata {
 //        valueTile("lastcheckin", "device.lastCheckin", inactiveLabel: false, decoration:"flat", width: 4, height: 1) {
 //        state "lastcheckin", label:'Last Event:\n ${currentValue}'
 //        }
-        valueTile("bat", "title", decoration: "flat", inactiveLabel: false, width: 2, height: 1) {
-	    state "default", label:'베터리'
-        }		
-
+		valueTile("bat", "device.bat", decoration: "flat", inactiveLabel: false, width: 2, height: 1) {
+            state("val", label:'${currentValue}', defaultState: true)
+        }
+        
+        standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
+            state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
+        }
 
         main("temperature2")
         details(["temperature", "humi", "pre", "bat", "humidity", "pressure", "battery",
-		"1l", "2l", "3l", "4l", "5l", "6l", 
-		"1t", "2t", "3t", "4t", "5t", "6t", 
-		"1h", "2h", "3h", "4h", "5h", "6h", 
+            "1l", "2l", "3l", "4l", "5l", "6l", 
+            "1t", "2t", "3t", "4t", "5t", "6t", 
+            "1h", "2h", "3h", "4h", "5h", "6h", 
+            "refresh"
 		])
     }
 }
@@ -281,18 +352,65 @@ def setStatus(params){
 //        log.debug "${st}"
     	break;
     case "atmosphericPressure":
-    	sendEvent(name:"pressure", value: params.data )
+    	sendEvent(name:"pressure", value: params.data.replace(" Pa","").replace(",","").toInteger()/1000 )
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data )
-    	break;		
-    checkNewDay()
-		
+    	break;				
     }
+    checkNewDay()	
 }
 
 
-def updated() {}
+def updated() {
+    setLanguage(settings.selectedLang)
+    
+    if(state.sunMaxTemp == null) state.sunMaxTemp = 0
+    if(state.sunMinTemp == null) state.sunMinTemp = 0
+    if(state.sunMaxHumi == null) state.sunMaxHumi = 0
+    if(state.sunMinHumi == null) state.sunMinHumi = 0
+    
+    if(state.monMaxTemp == null) state.monMaxTemp = 0
+    if(state.monMinTemp == null) state.monMinTemp = 0
+    if(state.monMaxHumi == null) state.monMaxHumi = 0
+    if(state.monMinHumi == null) state.monMinHumi = 0
+	
+    if(state.tueMaxTemp == null) state.tueMaxTemp = 0
+    if(state.tueMinTemp == null) state.tueMinTemp = 0
+    if(state.tueMaxHumi == null) state.tueMaxHumi = 0
+    if(state.tueMinHumi == null) state.tueMinHumi = 0
+    
+    if(state.wedMaxTemp == null) state.wedMaxTemp = 0
+    if(state.wedMinTemp == null) state.wedMinTemp = 0
+    if(state.wedMaxHumi == null) state.wedMaxHumi = 0
+    if(state.wedMinHumi == null) state.wedMinHumi = 0
+    
+    if(state.thuMaxTemp == null) state.thuMaxTemp = 0
+    if(state.thuMinTemp == null) state.thuMinTemp = 0
+    if(state.thuMaxHumi == null) state.thuMaxHumi = 0
+    if(state.thuMinHumi == null) state.thuMinHumi = 0
+
+    if(state.firMaxTemp == null) state.firMaxTemp = 0
+    if(state.firMinTemp == null) state.firMinTemp = 0
+    if(state.firMaxHumi == null) state.firMaxHumi = 0
+    if(state.firMinHumi == null) state.firMinHumi = 0
+    
+    if(state.satMaxTemp == null) state.satMaxTemp = 0
+    if(state.satMinTemp == null) state.satMinTemp = 0
+    if(state.satMaxHumi == null) state.satMaxHumi = 0
+    if(state.satMinHumi == null) state.satMinHumi = 0
+}
+
+def setLanguage(language){
+    log.debug "Languge >> ${language}"
+	state.language = language
+    
+    sendEvent(name:"pre", value: LANGUAGE_MAP["atmospheric_pressure"][language] )
+    sendEvent(name:"humi", value: LANGUAGE_MAP["humidity"][language] )
+    sendEvent(name:"bat", value: LANGUAGE_MAP["battery"][language] )
+    
+    refreshMultiAttributes()
+}
 
 def checkNewDay() {
 	def now = new Date().format("yyyy-MM-dd", location.timeZone)
@@ -386,16 +504,17 @@ def updateMinMaxHumidity(humidity) {
 // Update display of multiattributes in main tile
 def refreshMultiAttributes() {
 	def day = new Date().format("EEE", location.timeZone)		
-	def temphiloAttributes = displayTempHighLow ? (displayHumidHighLow ? "Today's High/Low:  ${device.currentState('maxTemp')?.value}° / ${device.currentState('minTemp')?.value}°" : "Today's High: ${device.currentState('maxTemp')?.value}°  /  Low: ${device.currentState('minTemp')?.value}°") : ""
-	def humidhiloAttributes = displayHumidHighLow ? (displayTempHighLow ? "    ${device.currentState('maxHumidity')?.value}% / ${device.currentState('minHumidity')?.value}%" : "Today's High: ${device.currentState('maxHumidity')?.value}%  /  Low: ${device.currentState('minHumidity')?.value}%") : ""
+    
+	def temphiloAttributes = displayTempHighLow ? (displayHumidHighLow ? getWordByLang("todays") + " " + getWordByLang("high") + "/" + getWordByLang("low") + ":  ${device.currentState('maxTemp')?.value}° / ${device.currentState('minTemp')?.value}°" : getWordByLang("todays") + " " + getWordByLang("high") + ": ${device.currentState('maxTemp')?.value}°  /  " + getWordByLang("low") + ": ${device.currentState('minTemp')?.value}°") : ""
+	def humidhiloAttributes = displayHumidHighLow ? (displayTempHighLow ? "    ${device.currentState('maxHumidity')?.value}% / ${device.currentState('minHumidity')?.value}%" : getWordByLang("todays") + " " + getWordByLang("high") + ": ${device.currentState('maxHumidity')?.value}%  /  " + getWordByLang("low") + ": ${device.currentState('minHumidity')?.value}%") : ""
 	sendEvent(name: "multiAttributesReport", value: "${temphiloAttributes}${humidhiloAttributes}", displayed: false)
 	if (day == "Mon") {
-		sendEvent(name: "1l", value: "TUE")
-		sendEvent(name: "2l", value: "WED")
-		sendEvent(name: "3l", value: "THU")
-		sendEvent(name: "4l", value: "FRI")
-		sendEvent(name: "5l", value: "SAT")
-		sendEvent(name: "6l", value: "SUN")
+		sendEvent(name: "1l", value: getWordByLang("tue"))
+		sendEvent(name: "2l", value: getWordByLang("wed"))
+		sendEvent(name: "3l", value: getWordByLang("thu"))
+		sendEvent(name: "4l", value: getWordByLang("fri"))
+		sendEvent(name: "5l", value: getWordByLang("sat"))
+		sendEvent(name: "6l", value: getWordByLang("sun"))
 		sendEvent(name: "1t", value: state.tueMaxTemp + "°\n" + state.tueMinTemp + "°")
 		sendEvent(name: "2t", value: state.wedMaxTemp + "°\n" + state.wedMinTemp + "°")
 		sendEvent(name: "3t", value: state.thuMaxTemp + "°\n" + state.thuMinTemp + "°")
@@ -409,12 +528,12 @@ def refreshMultiAttributes() {
 		sendEvent(name: "5h", value: state.satMaxHumi + "%\n" + state.satMinHumi + "%")
 		sendEvent(name: "6h", value: state.sunMaxHumi + "%\n" + state.sunMinHumi + "%")
 	} else if (day == "Tue") {
-		sendEvent(name: "6l", value: "MON")
-		sendEvent(name: "1l", value: "WED")
-		sendEvent(name: "2l", value: "THU")
-		sendEvent(name: "3l", value: "FRI")
-		sendEvent(name: "4l", value: "SAT")
-		sendEvent(name: "5l", value: "SUN")
+		sendEvent(name: "6l", value: getWordByLang("mon"))
+		sendEvent(name: "1l", value: getWordByLang("wed"))
+		sendEvent(name: "2l", value: getWordByLang("thu"))
+		sendEvent(name: "3l", value: getWordByLang("fri"))
+		sendEvent(name: "4l", value: getWordByLang("sat"))
+		sendEvent(name: "5l", value: getWordByLang("sun"))
 		sendEvent(name: "6t", value: state.monMaxTemp + "°\n" + state.monMinTemp + "°")
 		sendEvent(name: "1t", value: state.wedMaxTemp + "°\n" + state.wedMinTemp + "°")
 		sendEvent(name: "2t", value: state.thuMaxTemp + "°\n" + state.thuMinTemp + "°")
@@ -428,12 +547,12 @@ def refreshMultiAttributes() {
 		sendEvent(name: "4h", value: state.satMaxHumi + "\n" + state.satMinHumi + "%")
 		sendEvent(name: "5h", value: state.sunMaxHumi + "\n" + state.sunMinHumi + "%")
 	} else if (day == "Wed") {
-		sendEvent(name: "6l", value: "TUE")
-		sendEvent(name: "5l", value: "MON")
-		sendEvent(name: "l", value: "THU")
-		sendEvent(name: "2l", value: "FRI")
-		sendEvent(name: "3l", value: "SAT")
-		sendEvent(name: "4l", value: "SUN")
+		sendEvent(name: "6l", value: getWordByLang("tue"))
+		sendEvent(name: "5l", value: getWordByLang("mon"))
+		sendEvent(name: "l",  value: getWordByLang("tue"))
+		sendEvent(name: "2l", value: getWordByLang("fri"))
+		sendEvent(name: "3l", value: getWordByLang("sat"))
+		sendEvent(name: "4l", value: getWordByLang("sun"))
 		sendEvent(name: "6t", value: state.tueMaxTemp + "°\n" + state.tueMinTemp + "°")
 		sendEvent(name: "5t", value: state.monMaxTemp + "°\n" + state.monMinTemp + "°")
 		sendEvent(name: "1t", value: state.thuMaxTemp + "°\n" + state.thuMinTemp + "°")
@@ -447,12 +566,12 @@ def refreshMultiAttributes() {
 		sendEvent(name: "3h", value: state.satMaxHumi + "%\n" + state.satMinHumi + "%")
 		sendEvent(name: "4h", value: state.sunMaxHumi + "%\n" + state.sunMinHumi + "%")
 	} else if (day == "Thu") {
-		sendEvent(name: "5l", value: "TUE")
-		sendEvent(name: "6l", value: "WED")
-		sendEvent(name: "4l", value: "MON")
-		sendEvent(name: "1l", value: "FRI")
-		sendEvent(name: "2l", value: "SAT")
-		sendEvent(name: "3l", value: "SUN")
+		sendEvent(name: "5l", value: getWordByLang("tue"))
+		sendEvent(name: "6l", value: getWordByLang("wed"))
+		sendEvent(name: "4l", value: getWordByLang("mon"))
+		sendEvent(name: "1l", value: getWordByLang("fri"))
+		sendEvent(name: "2l", value: getWordByLang("sat"))
+		sendEvent(name: "3l", value: getWordByLang("sun"))
 		sendEvent(name: "5t", value: state.tueMaxTemp + "°\n" + state.tueMinTemp + "°")
 		sendEvent(name: "6t", value: state.wedMaxTemp + "°\n" + state.wedMinTemp + "°")
 		sendEvent(name: "4t", value: state.monMaxTemp + "°\n" + state.monMinTemp + "°")
@@ -466,12 +585,12 @@ def refreshMultiAttributes() {
 		sendEvent(name: "2h", value: state.satMaxHumi + "%\n" + state.satMinHumi + "%")
 		sendEvent(name: "3h", value: state.sunMaxHumi + "%\n" + state.sunMinHumi + "%")
 	} else if (day == "Fri") {
-		sendEvent(name: "4l", value: "TUE")
-		sendEvent(name: "5l", value: "WED")
-		sendEvent(name: "6l", value: "THU")
-		sendEvent(name: "3l", value: "MON")
-		sendEvent(name: "1l", value: "SAT")
-		sendEvent(name: "2l", value: "SUN")
+		sendEvent(name: "4l", value: getWordByLang("tue"))
+		sendEvent(name: "5l", value: getWordByLang("wed"))
+		sendEvent(name: "6l", value: getWordByLang("thu"))
+		sendEvent(name: "3l", value: getWordByLang("mon"))
+		sendEvent(name: "1l", value: getWordByLang("sat"))
+		sendEvent(name: "2l", value: getWordByLang("sun"))
 		sendEvent(name: "4t", value: state.tueMaxTemp + "°\n" + state.tueMinTemp + "°")
 		sendEvent(name: "5t", value: state.wedMaxTemp + "°\n" + state.wedMinTemp + "°")
 		sendEvent(name: "6t", value: state.thuMaxTemp + "°\n" + state.thuMinTemp + "°")
@@ -485,12 +604,12 @@ def refreshMultiAttributes() {
 		sendEvent(name: "1h", value: state.satMaxHumi + "%\n" + state.satMinHumi + "%")
 		sendEvent(name: "2h", value: state.sunMaxHumi + "%\n" + state.sunMinHumi + "%")
 	} else if (day == "Sat") {
-		sendEvent(name: "3l", value: "TUE")
-		sendEvent(name: "4l", value: "WED")
-		sendEvent(name: "5l", value: "THU")
-		sendEvent(name: "6l", value: "FRI")
-		sendEvent(name: "2l", value: "MON")
-		sendEvent(name: "1l", value: "SUN")
+		sendEvent(name: "3l", value: getWordByLang("tue"))
+		sendEvent(name: "4l", value: getWordByLang("wed"))
+		sendEvent(name: "5l", value: getWordByLang("thu"))
+		sendEvent(name: "6l", value: getWordByLang("fri"))
+		sendEvent(name: "2l", value: getWordByLang("mon"))
+		sendEvent(name: "1l", value: getWordByLang("sun"))
 		sendEvent(name: "3t", value: state.tueMaxTemp + "°\n" + state.tueMinTemp + "°")
 		sendEvent(name: "4t", value: state.wedMaxTemp + "°\n" + state.wedMinTemp + "°")
 		sendEvent(name: "5t", value: state.thuMaxTemp + "°\n" + state.thuMinTemp + "°")
@@ -504,12 +623,12 @@ def refreshMultiAttributes() {
 		sendEvent(name: "2h", value: state.monMaxHumi + "%\n" + state.monMinHumi + "%")
 		sendEvent(name: "1h", value: state.sunMaxHumi + "%\n" + state.sunMinHumi + "%")
 	} else if (day == "Sun") {
-		sendEvent(name: "2l", value: "TUE")
-		sendEvent(name: "3l", value: "WED")
-		sendEvent(name: "4l", value: "THU")
-		sendEvent(name: "5l", value: "FRI")
-		sendEvent(name: "6l", value: "SAT")
-		sendEvent(name: "1l", value: "MON")
+		sendEvent(name: "2l", value: getWordByLang("tue"))
+		sendEvent(name: "3l", value: getWordByLang("wed"))
+		sendEvent(name: "4l", value: getWordByLang("thu"))
+		sendEvent(name: "5l", value: getWordByLang("fri"))
+		sendEvent(name: "6l", value: getWordByLang("sat"))
+		sendEvent(name: "1l", value: getWordByLang("mon"))
 		sendEvent(name: "2t", value: state.tueMaxTemp + "°\n" + state.tueMinTemp + "°")
 		sendEvent(name: "3t", value: state.wedMaxTemp + "°\n" + state.wedMinTemp + "°")
 		sendEvent(name: "4t", value: state.thuMaxTemp + "°\n" + state.thuMinTemp + "°")
@@ -526,3 +645,48 @@ def refreshMultiAttributes() {
 		
 }
 
+def refresh(){
+	log.debug "Refresh"
+    def options = [
+     	"method": "GET",
+        "path": "/devices/get/${state.id}",
+        "headers": [
+        	"HOST": state.app_url,
+            "Content-Type": "application/json"
+        ]
+    ]
+    sendCommand(options, callback)
+}
+
+def sendCommand(options, _callback){
+	def myhubAction = new physicalgraph.device.HubAction(options, null, [callback: _callback])
+    sendHubCommand(myhubAction)
+}
+
+def callback(physicalgraph.device.HubResponse hubResponse){
+	def msg
+    try {
+        msg = parseLanMessage(hubResponse.description)
+		def jsonObj = new JsonSlurper().parseText(msg.body)
+        log.debug jsonObj
+        
+ 		sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
+        sendEvent(name:"temperature", value: jsonObj.properties.temperature.value)
+        sendEvent(name:"humidity", value: jsonObj.properties.relativeHumidity)
+        sendEvent(name:"pressure", value: jsonObj.properties.atmosphericPressure.value / 1000)
+        
+        updateLastTime()
+        checkNewDay()
+    } catch (e) {
+        log.error "Exception caught while parsing data: "+e;
+    }
+}
+
+def updateLastTime(){
+	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
+    sendEvent(name: "lastCheckin", value: now)
+}
+
+def getWordByLang(id){
+	return LANGUAGE_MAP[id][state.language]
+}
