@@ -35,11 +35,11 @@ metadata {
         capability "Battery"
 	capability "Refresh"
 	capability "Sensor"
+	capability "Power Source"
 	capability "Dust Sensor" // fineDustLevel : PM 2.5   dustLevel : PM 10
 
         attribute "switch", "string"
         attribute "pm25", "string"
-        attribute "battery", "string"
         attribute "usb_state", "string"
         
         attribute "lastCheckin", "Date"
@@ -97,15 +97,16 @@ metadata {
             state("val", label:'${currentValue}%', defaultState: true, backgroundColor:"#00a0dc")
         }
         
-        valueTile("usb_state", "device.usb_state", width: 2, height: 2) {
-            state("val", label:'${currentValue}', defaultState: true, backgroundColor:"#00a0dc")
+        standardTile("powerSource", "device.powerSource", width: 2, height: 2) {
+            state "dc", label:'USB', icon:"st.quirky.spotter.quirky-spotter-plugged", backgroundColor:"#00a0dc"
+            state "battery", label:'Battery', icon:"https://www.shareicon.net/data/128x128/2015/03/06/3189_battery_32x32.png", backgroundColor:"#ffffff"
         }
         
         standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
             state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
         }
    	main (["pm25"])
-	details(["fineDustLevel", "switch", "usb_state", "refresh"])
+	details(["fineDustLevel", "switch", "powerSource", "refresh"])
 		
 	}
 }
@@ -138,7 +139,7 @@ def setStatus(params){
     	sendEvent(name:"battery", value: params.data)
         break;
     case "usb_state":
-    	sendEvent(name:"usb_state", value: params.data)
+    	sendEvent(name:"powerSource", value: (params.data == "on" ? "dc" : "battery"))
     	break;
     }
     
@@ -195,7 +196,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 
 		sendEvent(name:"switch", value: (jsonObj.state.power == true ? "on" : "off") )
 		sendEvent(name:"fineDustLevel", value: jsonObj.state.aqi )
-		sendEvent(name:"usb_state", value: (jsonObj.state.charging == true ? "USB \nConnected" : "USB \nDisconnected") )
+		sendEvent(name:"powerSource", value: (jsonObj.state.charging == true ? "dc" : "battery") )
 		sendEvent(name:"battery", value: jsonObj.state.batteryLevel )
 		updateLastTime()
     } catch (e) {
