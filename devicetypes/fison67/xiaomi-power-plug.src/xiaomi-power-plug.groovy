@@ -170,7 +170,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 		def jsonObj = new JsonSlurper().parseText(msg.body)
 
         sendEvent(name:"power", value: jsonObj.properties.powerLoad.value)
-        sendEvent(name:"switch", value: jsonObj.properties.power == true ? "on" : "off")
+        sendEvent(name:"switch", value: (jsonObj.properties.power == true ? "on" : "off"))
         sendEvent(name:"energy", value: jsonObj.properties.powerConsumed.value/1000)
         
         
