@@ -113,9 +113,10 @@ def callback(physicalgraph.device.HubResponse hubResponse){
     try {
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
-        
+        log.debug jsonObj
         sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
         sendEvent(name:"density", value: jsonObj.properties.density)
+        sendEvent(name:"battery", (value: jsonObj.properties.smokeDetected == "true" ? "detected" : "clear"))
         
         updateLastTime()
     } catch (e) {
