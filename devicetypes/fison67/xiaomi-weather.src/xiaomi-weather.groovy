@@ -368,29 +368,46 @@ def setStatus(params){
 
 def polltemp() {
 	state.accessKey = "QV3XP6B0X3QF8YT2"
-    if (state.accessKey && state.apitemp) {
+    def url = "https://api.thingspeak.com/update?key=${state.accessKey}&field1=${state.apitemp}"
+    httpGet(url) { 
+        response -> 
+        if (response.status != 200 ) {
+            log.debug "ThingSpeak logging failed, status = ${response.status}"
+        }
+    }
+}    
+/*    if (state.accessKey && state.apitemp) {
         def params = [
-    	    uri: "GET https://api.thingspeak.com/update?api_key=state.accessKey&field1=state.aiptemp",
+    	    uri: "https://api.thingspeak.com/update?api_key=${state.accessKey}&field1=${state.aiptemp}"
     	]
         try {
 		httpGet(params)}catch (e) {
             log.error "error: $e"
         }
     }
-}
+}*/
 
 def pollhumi() {
 	state.accessKey = "QV3XP6B0X3QF8YT2"
-    if (state.accessKey && state.apihumi) {
+    def url = "https://api.thingspeak.com/update?key=${state.accessKey}&field2=${state.apihumi}"
+    httpGet(url) { 
+        response -> 
+        if (response.status != 200 ) {
+            log.debug "ThingSpeak logging failed, status = ${response.status}"
+        }
+    }
+}    
+    
+/*    if (state.accessKey && state.apihumi) {
         def params = [
-    	    uri: "GET https://api.thingspeak.com/update?api_key=state.accessKey&field2=state.aiphumi",
+    	    uri: "https://api.thingspeak.com/update?api_key=${state.accessKey}&field2=${state.aiptemp}"
     	]
         try {
 		httpGet(params)}catch (e) {
             log.error "error: $e"
         }
     }
-}
+}*/
 def updated() {
     setLanguage(settings.selectedLang)
     
@@ -698,12 +715,15 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
         log.debug jsonObj
+        state.apitemp = jsonObj.properties.temperature.value
+        state.apihumi = jsonObj.properties.relativeHumidity
         
  		sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
         sendEvent(name:"temperature", value: jsonObj.properties.temperature.value)
         sendEvent(name:"humidity", value: jsonObj.properties.relativeHumidity)
         sendEvent(name:"pressure", value: jsonObj.properties.atmosphericPressure.value / 1000)
-        
+        polltemp()
+        pollhumi()
         updateLastTime()
         checkNewDay()
     } catch (e) {
