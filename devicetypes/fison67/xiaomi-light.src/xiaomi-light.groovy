@@ -36,6 +36,7 @@ metadata {
         capability "Configuration"
         capability "Refresh"
 		capability "Color Control"
+		capability "Color Temperature"
         capability "Switch Level"
         capability "Health Check"
         capability "Light"
@@ -97,9 +98,13 @@ metadata {
         valueTile("lastOff", "device.lastOff", decoration: "flat", width: 3, height: 1) {
             state "default", label:'${currentValue}'
         }
+    controlTile("colorTempSliderControl", "device.colorTemperature", "slider", width: 4, height: 2, inactiveLabel: false, range:"(2000..6500)") {
+        state "colorTemperature", action:"color temperature.setColorTemperature"
+    }
+        
         
    	main (["switch2"])
-	details(["switch", "refresh", "lastOn_label", "lastOn", "lastOff_label","lastOff" ])       
+	details(["switch", "refresh", "lastOn_label", "lastOn", "lastOff_label","lastOff", "colorTempSliderControl" ])       
 	}
 }
 
@@ -174,6 +179,21 @@ def setColor(color){
     def options = makeCommand(body)
     sendCommand(options, null)
 }
+
+def setColorTemperature(temperature){
+	log.debug "setColorTemperature >> ${state.id}"
+    log.debug "${color.temperature}"
+    def temp = chroma.kelvin(temperature).hex()
+    log.debug "${color.temperature}=${temp}"
+    def body = [
+        "id": state.id,
+        "cmd": "color",
+        "data": temp
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+}
+
 
 def on(){
 	log.debug "Off >> ${state.id}"
