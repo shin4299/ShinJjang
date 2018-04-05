@@ -334,6 +334,8 @@ def setStatus(params){
     
  	switch(params.key){
     case "relativeHumidity":
+		state.apihumi = params.data
+		pollhumi()
 		def para = "${params.data}"
 		String data = para
 		def stf = Float.parseFloat(data)
@@ -342,6 +344,8 @@ def setStatus(params){
         updateMinMaxHumidity(humidity)
     	break;
     case "temperature":
+		state.apitemp = params.data
+		polltemp()
 		def para = "${params.data}"
 		String data = para
 		def st = data.replace("C","");
@@ -361,6 +365,28 @@ def setStatus(params){
     }
 }
 
+
+def polltemp() {
+	state.accessKey = "QV3XP6B0X3QF8YT2"
+    if (state.accessKey && state.apitemp) {
+        def params = [
+    	    uri: "GET https://api.thingspeak.com/update?api_key=state.accessKey&field1=state.aiptemp",
+    	]
+        try {
+		httpGet(params)}
+    }
+}
+
+def pollhumi() {
+	state.accessKey = "QV3XP6B0X3QF8YT2"
+    if (state.accessKey && state.apihumi) {
+        def params = [
+    	    uri: "GET https://api.thingspeak.com/update?api_key=state.accessKey&field2=state.aiphumi",
+    	]
+        try {
+		httpGet(params)}
+    }
+}
 
 def updated() {
     setLanguage(settings.selectedLang)
