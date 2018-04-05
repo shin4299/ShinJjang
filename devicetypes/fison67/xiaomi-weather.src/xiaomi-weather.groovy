@@ -484,7 +484,7 @@ def resetMinMax() {
 
 // Check new min or max temp for the day
 def updateMinMaxTemps(temp) {
-	temp = temp ? (int) temp : temp
+//	temp = temp ? (int) temp : temp
 	if ((temp > device.currentValue('maxTemp')) || (device.currentValue('maxTemp') == null))
 		sendEvent(name: "maxTemp", value: temp, displayed: false)	
 	if ((temp < device.currentValue('minTemp')) || (device.currentValue('minTemp') == null))

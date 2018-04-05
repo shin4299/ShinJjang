@@ -826,7 +826,8 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         sendEvent(name:"switch", value: jsonObj.properties.power == true ? "on" : "off")
         sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
         sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness)
-	    
+//[state:[naturalLevel:0, speed:446, acPower:on, powerOffTime:0, speedLevel:25, temperature:20, buzzer:true, humidity:73, angleLevel:60, led:false, angleEnable:off, batteryLevel:100, ledBrightness:bright, power:false, childLock:off],
+//properties:[buzzer:true, naturalLevel:0, angleLevel:60, led:false, relativeHumidity:73, angleEnable:off, acPower:on, speedLevel:25, ledBrightness:bright, power:false, temperature:[unit:C, value:20]]]	    
         def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
         sendEvent(name: "lastCheckin", value: now)
 	multiatt()
