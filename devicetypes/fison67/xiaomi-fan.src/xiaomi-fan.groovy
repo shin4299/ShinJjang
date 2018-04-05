@@ -120,11 +120,6 @@ metadata {
         command "setMoveLeft"
         command "setMoveRight"
         command "settimeroff"
-        command "settimer15"
-        command "settimer30"
-        command "settimer60"
-        command "settimer90"
-        command "settimer120"
 	}
 
 
@@ -292,9 +287,6 @@ def setInfo(String app_url, String id) {
 def setStatus(params){
     log.debug "${params.key} : ${params.data}"
     def now = new Date().format("HH:mm:ss", location.timeZone)
-//	state.currenttemp = device.currentState('temperature')?.value
-//	state.currenthumi = device.currentState('humidity')?.value
-//	state.currentangle = device.currentState('anglelevel')?.value
     
  	switch(params.key){
     case "temperature":
@@ -435,26 +427,6 @@ def setLevel(level) {
     processTimer(level * 60)
 }
 
-def settimer15() { 
-	log.debug "Timer 15Min >> ${state.timerCount}"
-    processTimer(15 * 60)
-}
-def settimer30() { 
-	log.debug "Timer 30Min >> ${state.timerCount}"
-    processTimer(30 * 60)
-}
-def settimer60() { 
-	log.debug "Timer 60Min >> ${state.timerCount}"
-    processTimer(60 * 60)
-}
-def settimer90() { 
-	log.debug "Timer 90Min >> ${state.timerCount}"
-    processTimer(90 * 60)
-}
-def settimer120() { 
-	log.debug "Timer 120Min >> ${state.timerCount}"
-    processTimer(120 * 60)
-}
 
 def setFanSpeed(speed){
 	log.debug "setFanSpeed >> ${state.id}"
@@ -851,7 +823,6 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 
 def multiatt(){
     	sendEvent(name:"lastCheckin", value: state.temp +": " + state.currenttemp + "° " + state.hum + ": " + state.currenthumi + "% " + state.angle + ": " + state.currentangle + "°" + " AC" + state.acPower + state.batteryLe + "%")
-//	sendEvent(name:"battery", value: state.acPower + state.batteryLe + "%" )
 //	for new smartthings app	
 	sendEvent(name:"temperature", value: state.currenttemp)
 	sendEvent(name:"humidity", value: state.currenthumi)
