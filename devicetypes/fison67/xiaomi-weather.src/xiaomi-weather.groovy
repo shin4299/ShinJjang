@@ -373,7 +373,9 @@ def polltemp() {
     	    uri: "GET https://api.thingspeak.com/update?api_key=state.accessKey&field1=state.aiptemp",
     	]
         try {
-		httpGet(params)}
+		httpGet(params)}catch (e) {
+            log.error "error: $e"
+        }
     }
 }
 
@@ -384,10 +386,11 @@ def pollhumi() {
     	    uri: "GET https://api.thingspeak.com/update?api_key=state.accessKey&field2=state.aiphumi",
     	]
         try {
-		httpGet(params)}
+		httpGet(params)}catch (e) {
+            log.error "error: $e"
+        }
     }
 }
-
 def updated() {
     setLanguage(settings.selectedLang)
     
