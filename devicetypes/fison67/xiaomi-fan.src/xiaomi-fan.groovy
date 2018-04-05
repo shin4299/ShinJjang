@@ -155,9 +155,9 @@ metadata {
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
    			attributeState("default", label:'${currentValue}                      ')
           }
-            tileAttribute("device.battery", key: "SECONDARY_CONTROL") {
-   			attributeState("default", label:'                                               AC${currentValue}')
-          }
+//            tileAttribute("device.battery", key: "SECONDARY_CONTROL") {
+//   			attributeState("default", label:'                                               AC${currentValue}')
+//          }
 		}
         standardTile("switch2", "device.switch", inactiveLabel: false, width: 2, height: 2) {
             state "on", label:'ON', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfMTcw/MDAxNTIyMzIzNDI2NjQ3.-DR_CT7fGBUGj65di_Ku0jLCvA4oSgWbFSivfsbA26og.ajX0-he2ip3P3kI_0OqhYwSzKblR8zzIeEa4QtJfSHcg.PNG.shin4299/Fan_main_on.png?type=w580", backgroundColor:"#73C1EC", nextState:"turningOff"
@@ -180,6 +180,10 @@ metadata {
             )
         }
         valueTile("humidity", "device.humidity") {
+            state("val", label:'${currentValue}', defaultState: true, 
+            )
+        }   
+        valueTile("battery", "device.battery") {
             state("val", label:'${currentValue}', defaultState: true, 
             )
         }   
@@ -832,9 +836,12 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 }
 
 def multiatt(){
-    	sendEvent(name:"lastCheckin", value: state.temp +": " + state.currenttemp + "° " + state.hum + ": " + state.currenthumi + "% " + state.angle + ": " + state.currentangle + "°")
-	sendEvent(name:"battery", value: state.acPower + state.batteryLe + "%" )
+    	sendEvent(name:"lastCheckin", value: state.temp +": " + state.currenttemp + "° " + state.hum + ": " + state.currenthumi + "% " + state.angle + ": " + state.currentangle + "°" + " AC" + state.acPower + state.batteryLe + "%")
+//	sendEvent(name:"battery", value: state.acPower + state.batteryLe + "%" )
 //	for new smartthings app	
+	sendEvent(name:"temperature", value: state.currenttemp)
+	sendEvent(name:"humidity", value: state.currenthumi)
+	sendEvent(name:"battery", value:state.batteryLe)
 	sendEvent(name:"powerSource", value: (state.acPower == "☈: " ? "dc" : "battery"))
 }
 def sendCommand(options, _callback){

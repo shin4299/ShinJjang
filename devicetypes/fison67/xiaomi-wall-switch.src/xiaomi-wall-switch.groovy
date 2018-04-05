@@ -134,7 +134,7 @@ def refresh(){
 	log.debug "Refresh"
     def options = [
      	"method": "GET",
-        "path": "/devices/get/${state.id}",
+        "path": "/devices/get/${state.id}:${state.deviceIndex}",
         "headers": [
         	"HOST": state.app_url,
             "Content-Type": "application/json"

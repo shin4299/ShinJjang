@@ -349,7 +349,7 @@ def setStatus(params){
 		def tem = Math.round(stf*10)/10
         sendEvent(name:"temperature", value: tem )
         updateMinMaxTemps(tem)
-	checkNewDay()	
+	    checkNewDay()	
 //        log.debug "${st}"
     	break;
     case "atmosphericPressure":
@@ -390,10 +390,10 @@ def updated() {
     if(state.thuMaxHumi == null) state.thuMaxHumi = 0
     if(state.thuMinHumi == null) state.thuMinHumi = 0
 
-    if(state.firMaxTemp == null) state.firMaxTemp = 0
-    if(state.firMinTemp == null) state.firMinTemp = 0
-    if(state.firMaxHumi == null) state.firMaxHumi = 0
-    if(state.firMinHumi == null) state.firMinHumi = 0
+    if(state.friMaxTemp == null) state.friMaxTemp = 0
+    if(state.friMinTemp == null) state.friMinTemp = 0
+    if(state.friMaxHumi == null) state.friMaxHumi = 0
+    if(state.friMinHumi == null) state.friMinHumi = 0
     
     if(state.satMaxTemp == null) state.satMaxTemp = 0
     if(state.satMinTemp == null) state.satMinTemp = 0
@@ -460,10 +460,10 @@ def resetMinMax() {
 		 state.thuMaxHumi = currentMaxHumi
 		 state.thuMinHumi = currentMinHumi
 	} else if (day == "Sat") {
-		 state.firMaxTemp = currentMaxTemp
-		 state.firMinTemp = currentMinTemp
-		 state.firMaxHumi = currentMaxHumi
-		 state.firMinHumi = currentMinHumi
+		 state.friMaxTemp = currentMaxTemp
+		 state.friMinTemp = currentMinTemp
+		 state.friMaxHumi = currentMaxHumi
+		 state.friMinHumi = currentMinHumi
 	} else if (day == "Sun") {
 		 state.satMaxTemp = currentMaxTemp
 		 state.satMinTemp = currentMinTemp
