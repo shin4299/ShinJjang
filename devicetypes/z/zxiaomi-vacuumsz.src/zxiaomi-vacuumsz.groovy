@@ -30,7 +30,7 @@
 import groovy.json.JsonSlurper
 
 metadata {
-    definition (name: "zXiaomi Vacuumsz", namespace: "z", author: "z") {
+    definition (name: "zzXiaomi Vacuumszz", namespace: "z", author: "z") {
        capability "Switch"    
         
         capability "Filter Status"          // onaldo
@@ -142,24 +142,53 @@ metadata {
         valueTile("fullSpeed_label", "", decoration: "flat") {
            state "default", label:'FullSpeed'
        }
+      \
+    
+    // 여기부터
+    
+      valueTile("spot_label", "", decoration: "flat") {
+           state "default", label:'Spot'
+       }
+      
+      valueTile("paused_label", "", decoration: "flat") {
+           state "default", label:'Paused/\nResume'
+       }
+      
+      valueTile("charge_label", "", decoration: "flat") {
+           state "default", label:'Carge'
+       }
+      
+      valueTile("findme_label", "", decoration: "flat") {
+           state "default", label:'Find me'
+       }
+      
+      valueTile("battery_label", "", decoration: "flat") {
+           state "default", label:'Battery'
+       }
+      
+      valueTile("speed_label", "", decoration: "flat") {
+           state "default", label:'Speed'
+       } 
+      
+      // 여기까지
         
        standardTile("quiet_mode", "device.fanSpeed", decoration: "flat") {
-            state "quiet", label: "quiet", action: "quiet", icon:"st.unknown.zwave.static-controller", backgroundColor:"#73C1EC", nextState:"off"
+            state "quiet", label: "on", action: "quiet", icon:"st.unknown.zwave.static-controller", backgroundColor:"#73C1EC", nextState:"off"
          state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"quiet"
         }
 
        standardTile("balanced_mode", "device.fanSpeed", decoration: "flat") {
-            state "balanced", label: "bal", action: "balanced", icon:"st.quirky.spotter.quirky-spotter-sound-off", backgroundColor:"#6eca8f", nextState:"off"
+            state "balanced", label: "on", action: "balanced", icon:"st.quirky.spotter.quirky-spotter-sound-off", backgroundColor:"#6eca8f", nextState:"off"
          state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"balanced"
        }
 
        standardTile("turbo_mode", "device.fanSpeed", decoration: "flat") {
-            state "turbo", label: "turbo", action: "turbo", icon:"st.quirky.spotter.quirky-spotter-luminance-light", backgroundColor:"#f9b959", nextState:"off"
+            state "turbo", label: "on", action: "turbo", icon:"st.quirky.spotter.quirky-spotter-luminance-light", backgroundColor:"#f9b959", nextState:"off"
          state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"turbo"
        }
        
        standardTile("fullspeed_mode", "device.fanSpeed", decoration: "flat") {
-            state "fullSpeed", label: "full", action: "fullSpeed", icon:"st.Weather.weather1", backgroundColor:"#db5764", nextState:"off"  
+            state "fullSpeed", label: "on", action: "fullSpeed", icon:"st.Weather.weather1", backgroundColor:"#db5764", nextState:"off"  
             state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"fullSpeed"
        }
 
@@ -263,11 +292,16 @@ metadata {
 
         
        main (["switch"])
-         details(["mode", "switch", "quiet_label", "balanced_label", "turbo_label", "fullSpeed_label", "quiet_mode", 
-        "balanced_mode", "turbo_mode", "fullspeed_mode", "spot", "paused", "charge", "find", 
-        "battery", "volume", "Filter", "f_usage_label", "filter_used", "f_remain_label", "filter_life",
-"Main brush", "m_usage_label", "m_brush_used", "m_remain_label", "m_brush_life", "Side brush", "s_usage_label", 
-"s_brush_used", "s_remain_label","s_brush_life"])
+         details(["mode", "switch", "quiet_label", "balanced_label", "turbo_label", "fullSpeed_label", 
+                  "quiet_mode", "balanced_mode", "turbo_mode", "fullspeed_mode", 
+                  "spot_label", "paused_label", "charge_label", "findme_label", "battery_label", "speed_label", 
+                  "spot", "paused", "charge", "find", "battery", "volume", 
+                  "Filter", "f_usage_label", "filter_used", 
+                            "f_remain_label", "filter_life",
+                  "Main brush", "m_usage_label", "m_brush_used", 
+                                "m_remain_label", "m_brush_life", 
+                  "Side brush", "s_usage_label", "s_brush_used", 
+                                "s_remain_label","s_brush_life"])
     }
 }
 
