@@ -297,16 +297,58 @@ metadata {
         standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
             state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
         }
+        htmlTile(name:"Home",action:"main", type: "HTML",width: 6, height: 4, whitelist: whitelist())
 
         main("temperature2")
         details(["temperature", "humi", "pre", "bat", "humidity", "pressure", "battery",
             "1l", "2l", "3l", "4l", "5l", "6l", 
             "1t", "2t", "3t", "4t", "5t", "6t", 
             "1h", "2h", "3h", "4h", "5h", "6h", 
-            "refresh"
+            "Home"
 		])
     }
 }
+//-------------------------------------
+mappings {
+	path("/main") { action: [GET:"main"] }
+}
+
+def main() {
+    renderHTML() {
+        head {
+            """
+                <meta name="viewport" content="initial-scale=1.0">
+                <meta charset="utf-8">
+                <style>
+                    body {
+                        font-size: 1em;
+                        color: #888888;
+                    }
+                    a {
+                        color: #15bfff;
+                    }
+                </style>
+            """
+        }
+        body {
+            """
+            <div id="home" style="text-align: center; padding-top:15px;">
+            This device is known to be incompatible with SmartThings and may not function as expected or cause other devices to malfunction.</br>
+            For more information go to:</br></br>
+	    <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/467919/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+            </div>
+            """
+        }
+    }
+}
+
+def whitelist() {
+    ["https://thingspeak.com"]
+}
+//--------------------------------------
+
+
+
 
 // parse events into attributes
 def parse(String description) {
