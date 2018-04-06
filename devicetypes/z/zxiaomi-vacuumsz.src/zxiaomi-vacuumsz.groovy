@@ -142,7 +142,7 @@ metadata {
         valueTile("fullSpeed_label", "", decoration: "flat") {
            state "default", label:'FullSpeed'
        }
-      \
+ 
     
     // 여기부터
     
