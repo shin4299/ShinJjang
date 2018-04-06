@@ -192,8 +192,10 @@ metadata {
             state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"fullSpeed"
        }
 
-        standardTile("charge", "device.charge", decoration: "flat", width: 1, height: 1 ) {
-           state "charge", label:'Charge', action:"charge",  backgroundColor:"#25a896", nextState:"turningOff"
+        standardTile("charge", "device.mode", decoration: "flat", width: 1, height: 1 ) {
+           state "charge", label:'Charge', action:"charge",  backgroundColor:"#25a896", nextState:"returning"
+           state "returning", label:'returning',  backgroundColor:"#25a896"
+           state "charging", label:'charging',  backgroundColor:"#25a896"
        }
 
         standardTile("spot", "device.spot", decoration: "flat", width: 1, height: 1 ) {
