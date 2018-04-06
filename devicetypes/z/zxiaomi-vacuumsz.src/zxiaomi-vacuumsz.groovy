@@ -173,23 +173,23 @@ metadata {
       // 여기까지
         
        standardTile("quiet_mode", "device.fanSpeed", decoration: "flat") {
-            state "quiet", label: "on", action: "quiet", icon:"st.unknown.zwave.static-controller", backgroundColor:"#73C1EC", nextState:"off"
-         state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"quiet"
+         state "off", label: "off", action: "quiet", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"quiet"
+            state "quiet", label: "on", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#73C1EC", nextState:"off"
         }
 
        standardTile("balanced_mode", "device.fanSpeed", decoration: "flat") {
-            state "balanced", label: "on", action: "balanced", icon:"st.quirky.spotter.quirky-spotter-sound-off", backgroundColor:"#6eca8f", nextState:"off"
-         state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"balanced"
+         state "off", label: "off", action: "balanced", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"balanced"
+            state "balanced", label: "on", action: "off", icon:"st.quirky.spotter.quirky-spotter-sound-off", backgroundColor:"#6eca8f", nextState:"off"
        }
 
        standardTile("turbo_mode", "device.fanSpeed", decoration: "flat") {
-            state "turbo", label: "on", action: "turbo", icon:"st.quirky.spotter.quirky-spotter-luminance-light", backgroundColor:"#f9b959", nextState:"off"
-         state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"turbo"
+         state "off", label: "off", action: "turbo", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"turbo"
+            state "turbo", label: "on", action: "off", icon:"st.quirky.spotter.quirky-spotter-luminance-light", backgroundColor:"#f9b959", nextState:"off"
        }
        
        standardTile("fullspeed_mode", "device.fanSpeed", decoration: "flat") {
-            state "fullSpeed", label: "on", action: "fullSpeed", icon:"st.Weather.weather1", backgroundColor:"#db5764", nextState:"off"  
-            state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"fullSpeed"
+            state "off", label: "off", action: "fullSpeed", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"fullSpeed"
+            state "fullSpeed", label: "on", action: "off", icon:"st.Weather.weather1", backgroundColor:"#db5764", nextState:"off"  
        }
 
         standardTile("charge", "device.mode", decoration: "flat", width: 1, height: 1 ) {
@@ -404,50 +404,50 @@ def setVolumeWithTest(volume){
 
 def quiet(){
    log.debug "quiet >> ${state.id}"
+   sendEvent(name:"fanSpeed", value: off )
+   sendEvent(name:"fanSpeed", value: quiet )    
    def body = [
        "id": state.id,
        "cmd": "quiet"
    ]
    def options = makeCommand(body)
    sendCommand(options, null)
-   sendEvent(name:"fanSpeed", value: off )
-   sendEvent(name:"fanSpeed", value: quiet )    
 }
 
 def balanced(){
    log.debug "balanced >> ${state.id}"
+   sendEvent(name:"fanSpeed", value: off )
+   sendEvent(name:"fanSpeed", value: balanced )
    def body = [
        "id": state.id,
        "cmd": "balanced"
    ]
    def options = makeCommand(body)
    sendCommand(options, null)
-   sendEvent(name:"fanSpeed", value: off )
-   sendEvent(name:"fanSpeed", value: balanced )
 }
 
 def turbo(){
    log.debug "turbo >> ${state.id}"
+   sendEvent(name:"fanSpeed", value: off )
+   sendEvent(name:"fanSpeed", value: turbo )     
    def body = [
        "id": state.id,
        "cmd": "turbo"
    ]
    def options = makeCommand(body)
    sendCommand(options, null)
-   sendEvent(name:"fanSpeed", value: off )
-   sendEvent(name:"fanSpeed", value: turbo ) 
 }
 
 def fullSpeed(){
    log.debug "fullSpeed >> ${state.id}"
+   sendEvent(name:"fanSpeed", value: off )
+   sendEvent(name:"fanSpeed", value: fullSpeed )
    def body = [
        "id": state.id,
        "cmd": "fullSpeed"
    ]
    def options = makeCommand(body)
    sendCommand(options, null)
-   sendEvent(name:"fanSpeed", value: off )
-   sendEvent(name:"fanSpeed", value: fullSpeed )
 }
 
 def spotClean(){
