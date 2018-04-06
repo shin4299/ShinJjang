@@ -144,23 +144,23 @@ metadata {
        }
         
        standardTile("quiet_mode", "device.fanSpeed", decoration: "flat") {
-            state "on", label: "on", action: "quiet", icon:"st.unknown.zwave.static-controller", backgroundColor:"#73C1EC", nextState:"off"
-         state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"on"
+            state "quiet", label: "quiet", action: "quiet", icon:"st.unknown.zwave.static-controller", backgroundColor:"#73C1EC", nextState:"off"
+         state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"quiet"
         }
 
        standardTile("balanced_mode", "device.fanSpeed", decoration: "flat") {
-            state "on", label: "on", action: "balanced", icon:"st.quirky.spotter.quirky-spotter-sound-off", backgroundColor:"#6eca8f", nextState:"off"
-         state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"on"
+            state "balanced", label: "bal", action: "balanced", icon:"st.quirky.spotter.quirky-spotter-sound-off", backgroundColor:"#6eca8f", nextState:"off"
+         state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"balanced"
        }
 
        standardTile("turbo_mode", "device.fanSpeed", decoration: "flat") {
-            state "on", label: "on", action: "turbo", icon:"st.quirky.spotter.quirky-spotter-luminance-light", backgroundColor:"#f9b959", nextState:"off"
-         state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"on"
+            state "turbo", label: "turbo", action: "turbo", icon:"st.quirky.spotter.quirky-spotter-luminance-light", backgroundColor:"#f9b959", nextState:"off"
+         state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"turbo"
        }
        
        standardTile("fullspeed_mode", "device.fanSpeed", decoration: "flat") {
-            state "on", label: "on", action: "fullSpeed", icon:"st.Weather.weather1", backgroundColor:"#db5764", nextState:"off"  
-            state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"on"
+            state "fullSpeed", label: "full", action: "fullSpeed", icon:"st.Weather.weather1", backgroundColor:"#db5764", nextState:"off"  
+            state "off", label: "off", action: "off", icon:"st.unknown.zwave.static-controller", backgroundColor:"#bcbcbc", nextState:"fullSpeed"
        }
 
         standardTile("charge", "device.charge", decoration: "flat", width: 1, height: 1 ) {
@@ -319,7 +319,7 @@ def setStatus(params){
     	break;
    case "cleaning":
        sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off") )
-          sendEvent(name:"paused", value: params.data == "true" ? "paused" : "restart" )     
+          sendEvent(name:"paused", value: params.data == "true" ? "restart" : "paused" )     
        break;
    case "volume":
        sendEvent(name:"volume", value: params.data )
@@ -374,6 +374,8 @@ def quiet(){
    ]
    def options = makeCommand(body)
    sendCommand(options, null)
+   sendEvent(name:"fanSpeed", value: off )
+   sendEvent(name:"fanSpeed", value: quiet )    
 }
 
 def balanced(){
@@ -384,6 +386,8 @@ def balanced(){
    ]
    def options = makeCommand(body)
    sendCommand(options, null)
+   sendEvent(name:"fanSpeed", value: off )
+   sendEvent(name:"fanSpeed", value: balanced )
 }
 
 def turbo(){
@@ -394,6 +398,8 @@ def turbo(){
    ]
    def options = makeCommand(body)
    sendCommand(options, null)
+   sendEvent(name:"fanSpeed", value: off )
+   sendEvent(name:"fanSpeed", value: turbo ) 
 }
 
 def fullSpeed(){
@@ -404,6 +410,8 @@ def fullSpeed(){
    ]
    def options = makeCommand(body)
    sendCommand(options, null)
+   sendEvent(name:"fanSpeed", value: off )
+   sendEvent(name:"fanSpeed", value: fullSpeed )
 }
 
 def spotClean(){
