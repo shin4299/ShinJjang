@@ -554,8 +554,8 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 		def jsonObj = new JsonSlurper().parseText(msg.body)
                  
         sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
-        sendEvent(name:"m_brush_used", value: Math.round(jsonObj.state.mainBrushWorkTime/3600))
-        sendEvent(name:"s_brush_used", value: Math.round(jsonObj.state.sideBrushWorkTime/3600))        
+        sendEvent(name:"M_brush_used", value: Math.round(jsonObj.state.mainBrushWorkTime/3600))
+        sendEvent(name:"S_brush_used", value: Math.round(jsonObj.state.sideBrushWorkTime/3600))        
         sendEvent(name:"mode", value: jsonObj.state.state)
         log.debug (jsonObj.properties.cleaning ? "on" : "off")
         sendEvent(name:"switch", value: (jsonObj.properties.cleaning ? "on" : "off") )
