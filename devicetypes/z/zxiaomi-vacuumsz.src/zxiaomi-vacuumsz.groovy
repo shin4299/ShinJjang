@@ -254,15 +254,15 @@ metadata {
           state "default", label: 'Side brush'
        }
         
-        valueTile("s_brush_used", "device.S_brush_used", width: 2, height: 1) {
+        valueTile("s_brush_used", "device.S_brush_used", width: 3, height: 1) {
           state("val", label:'${currentValue} hours', defaultState: true, backgroundColor:"#bcbcbc")
        }
         
-        valueTile("s_usage_label", "", decoration: "flat", width: 2, height:1) {
-           state "default", label:'Usage \nTime'
+        valueTile("s_usage_label", "", decoration: "flat", width: 3, height:1) {
+           state "default", label:'Side Brush\nUsage Time'
         }
         
-        valueTile("s_brush_life", "device.S_brush_life", width: 2, height: 1) {
+        valueTile("s_brush_life", "device.S_brush_life", width: 3, height: 1) {
           state("val", label:'${currentValue} hours', defaultState: true, backgroundColor:"#bcbcbc")
        }
         
@@ -270,25 +270,28 @@ metadata {
            state "default", label:'Remaining \nTime'
         }    
             
-        
+
         valueTile("Main brush","",decoration : "flat", width: 2, height: 2) {
           state "default", label: 'Main brush'
        }
         
-        valueTile("m_brush_used", "device.M_brush_used", width: 2, height: 1) {
+        valueTile("m_brush_used", "device.M_brush_used", width: 3, height: 1) {
           state("val", label:'${currentValue} hours', defaultState: true, backgroundColor:"#bcbcbc")
        }
         
-        valueTile("m_usage_label", "", decoration: "flat", width: 2, height:1) {
-           state "default", label:'Usage \nTime'
+        valueTile("m_usage_label", "", decoration: "flat", width: 3, height:1) {
+           state "default", label:'Main Brush\nUsage Time'
         }
         
-        valueTile("m_brush_life", "device.M_brush_life", width: 2, height: 1) {
+        valueTile("m_brush_life", "device.M_brush_life", width: 3, height: 1) {
           state("val", label:'${currentValue} hours', defaultState: true, backgroundColor:"#bcbcbc")
        }
         
         valueTile("m_remain_label", "", decoration: "flat", width:2, height:1) {
            state "default", label:'Remaining \nTime'
+        }
+        standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
         }
         
 
@@ -298,12 +301,12 @@ metadata {
                   "quiet_mode", "balanced_mode", "turbo_mode", "fullspeed_mode", 
                   "spot_label", "paused_label", "charge_label", "findme_label", "battery_label", "speed_label", 
                   "spot", "paused", "charge", "find", "battery", "volume", 
-                  "Filter", "f_usage_label", "filter_used", 
-                            "f_remain_label", "filter_life",
-                  "Main brush", "m_usage_label", "m_brush_used", 
-                                "m_remain_label", "m_brush_life", 
-                  "Side brush", "s_usage_label", "s_brush_used", 
-                                "s_remain_label","s_brush_life"])
+                //  "Filter", "f_usage_label", "filter_used", 
+                  //          "f_remain_label", "filter_life",
+                  "m_usage_label", "m_brush_used", 
+                    //  "Main brush",           "m_remain_label", "m_brush_life", 
+                   "s_usage_label", "s_brush_used", 
+                      //  "Side brush",        "s_remain_label","s_brush_life", "refresh"])
     }
 }
 
@@ -378,6 +381,19 @@ def setStatus(params){
    
    def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
    sendEvent(name: "lastCheckin", value: now)
+}
+
+def refresh(){
+	log.debug "Refresh"
+    def options = [
+     	"method": "GET",
+        "path": "/devices/get/${state.id}",
+        "headers": [
+        	"HOST": state.app_url,
+            "Content-Type": "application/json"
+        ]
+    ]
+    sendCommand(options, callback)
 }
 
 def setVolume(volume){
@@ -528,18 +544,46 @@ def timer(mSecond, function){
     def runTime = new Date(now.getTime() + mSecond)
     runOnce(runTime, function);
 }
+{"properties":{"batteryLevel":100,"charging":false,"cleaning":true,"error":{"id":3,"description":"Unknown error 3"},"fanSpeed":38},"state":{"error":null,"state":"cleaning","batteryLevel":100,"cleanTime":0,"cleanArea":0,"fanSpeed":38,"in_cleaning":0,"mainBrushWorkTime":308198,"sideBrushWorkTime":308198}}
 */
 
 def callback(physicalgraph.device.HubResponse hubResponse){
-    def msg
-   try {
-       msg = parseLanMessage(hubResponse.description)
-        def jsonObj = new JsonSlurper().parseText(msg.body)
-       setStatus(jsonObj.state)
-   } catch (e) {
-       log.error "Exception caught while parsing data: "+e;
-   }
+	def msg
+    try {
+        msg = parseLanMessage(hubResponse.description)
+		def jsonObj = new JsonSlurper().parseText(msg.body)
+                 
+        sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
+        sendEvent(name:"m_brush_used", value: Math.round(jsonObj.state.mainBrushWorkTime/3600))
+        sendEvent(name:"s_brush_used", value: Math.round(jsonObj.state.sideBrushWorkTime/3600))        
+        sendEvent(name:"mode", value: jsonObj.state.state)
+        log.debug (jsonObj.properties.cleaning ? "on" : "off")
+        sendEvent(name:"switch", value: (jsonObj.properties.cleaning ? "on" : "off") )
+       	sendEvent(name:"paused", value: jsonObj.properties.cleaning ? "paused" : "restart" )  
+        
+        def fanSpeed;
+        switch(jsonObj.state.fanSpeed){
+        case 38:
+        	fanSpeed = "quiet"
+        	break;
+        case 60:
+        	fanSpeed = "balanced"
+        	break;
+        case 77:
+        	fanSpeed = "turbo"
+        	break;
+        case 90:
+        	fanSpeed = "fullSpeed"
+        	break;
+        }
+    	sendEvent(name:"fanSpeed", value: fanSpeed )
+        
+        updateLastTime()
+    } catch (e) {
+        log.error "Exception caught while parsing data: "+e;
+    }
 }
+
 
 def updated() {
                
