@@ -138,14 +138,15 @@ metadata {
                 attributeState "turningOn", label:'\n${name}', action:"switch.off", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfNjkg/MDAxNTIyMzIzNDI2NjQ4.b5E7CPu8ljgF_eHdHFDmK7wLHQG6iymo2DErBeN2u3Ug.61d9mZ5QYaP-oUoIPnXaHA_rocGnrRxBArjSbjctQGwg.PNG.shin4299/Fan_tile_off.png?type=w580", backgroundColor:"#73C1EC", nextState:"turningOff"
                 attributeState "turningOff", label:'\n${name}', action:"switch.on", icon:"https://postfiles.pstatic.net/MjAxODAzMjlfNjIg/MDAxNTIyMzIzNDI2NjQ2.cPAScBLV_hQaqFRkRqjImmaqyFmY7FY23A23k-t8RZ4g.ORO7eIOdaPHIJwR3tMXLLvU741B6NrncFi2a29ZDWbwg.PNG.shin4299/Fan_tile_on.png?type=w580", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
-            tileAttribute ("device.fanSpeed", key: "SLIDER_CONTROL") {
-                attributeState "speed", action:"speed.setFanSpeed"
-            }            
                         
 		    tileAttribute("device.speedlevel", key: "VALUE_CONTROL") {
 	        attributeState("VALUE_UP", action: "tempUp")
     	    attributeState("VALUE_DOWN", action: "tempDown")
     		}
+            
+            tileAttribute ("device.fanSpeed", key: "SLIDER_CONTROL") {
+                attributeState "level", action:"FanSpeed.setFanSpeed"
+            }            
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
    			attributeState("default", label:'${currentValue}                      ')
