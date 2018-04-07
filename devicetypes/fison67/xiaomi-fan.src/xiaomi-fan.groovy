@@ -342,6 +342,7 @@ def setStatus(params){
     	break;        
     case "batteryLevel":
 	state.batteryLe = params.data	
+        sendEvent(name:"battery", value: params.data)
 	multiatt()
     	break;
     case "power":
@@ -798,6 +799,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         sendEvent(name:"switch", value: jsonObj.properties.power == true ? "on" : "off")
         sendEvent(name:"buzzer", value: (jsonObj.state.buzzer == true ? "on" : "off"))
         sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness)
+        sendEvent(name:"battery", value: state.batteryLe)
 	if( jsonObj.properties.naturalLevel > 0 ) {
 		sendEvent(name:"fanmode", value: "natural")
 		String data = jsonObj.properties.naturalLevel
