@@ -144,7 +144,7 @@ metadata {
     		}
             
             tileAttribute ("device.fanSpeed", key: "SLIDER_CONTROL") {
-                attributeState "level", action:"FanSpeed.setFanSpeed"
+                attributeState "speed", action:"speed.setFanSpeed"
             }            
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
