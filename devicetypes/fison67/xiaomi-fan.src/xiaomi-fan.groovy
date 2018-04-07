@@ -89,9 +89,11 @@ metadata {
         attribute "speed", "string"
         attribute "powerOffTime", "string"
         attribute "childLock", "string"
+        attribute "setTimeRemaining", "number"
         
         attribute "lastCheckin", "Date"
          
+        command "setTimeRemaining"
         command "multiatt"
         command "generalOn"
         command "naturalOn"
@@ -145,8 +147,8 @@ metadata {
     	    attributeState("VALUE_DOWN", action: "tempDown")
     		}
             
-            tileAttribute ("device.fanSpeed", key: "SLIDER_CONTROL") {
-                attributeState "speed", action:"FanSpeed.setFanSpeed"
+            tileAttribute ("device.level", key: "SLIDER_CONTROL") {
+                attributeState "level", action:"switch level.setLevel"
             }            
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
@@ -187,12 +189,9 @@ metadata {
         valueTile("anglelevel", "device.anglelevel") {
             state("val", label:'${currentValue}', defaultState: true)
         }
-        valueTile("timerset", "device.timerset") {
-            state("val", label:'timerset', defaultState: true)
-        }
-//	controlTile("timerset", "device.timeRemaining", "slider", height: 1, width: 1, range:"(1..120)") {
-//	    state "level", action:"timeRemaining.setTimeRemaining"
-//		}
+	controlTile("time", "device.timeRemaining", "slider", height: 1, width: 1, range:"(1..120)") {
+	    state "time", action:"setTimeRemaining"
+		}
         
         standardTile("angle", "device.setangle") {
             state "on", label:'ON', action:"setAngleOff", icon:"st.motion.motion.inactive", backgroundColor:"#b2cc68", nextState:"turningOff"
@@ -259,8 +258,8 @@ metadata {
             state "dim", label: 'Dim', action: "setBrightOff", icon: "st.illuminance.illuminance.light", backgroundColor: "#ffc2cd", nextState:"off"
             state "off", label: 'Off', action: "setBright", icon: "st.illuminance.illuminance.dark", backgroundColor: "#d6c6c9", nextState:"bright"
         } 
-        standardTile("tiemr0", "device.settimer") {
-			state "default", label: "OFF", action: "settimeroff", icon:"st.Health & Wellness.health7", backgroundColor:"#c7bbc9"
+        standardTile("tiemr0", "device.timeRemaining") {
+			state "default", label: "OFF", action: "stop", icon:"st.Health & Wellness.health7", backgroundColor:"#c7bbc9"
 		}
 //	for new smartthings app	
         standardTile("powerSource", "device.powerSource") {
@@ -270,7 +269,7 @@ metadata {
 		
    	main (["switch2"])
 	details(["switch", "mode_label", "rotation_label",  "buzzer_label", "led_label", "timer_label", 
-    "mode", "angle", "buzzer", "ledBrightness", "tiemr0", "timerset", 
+    "mode", "angle", "buzzer", "ledBrightness", "tiemr0", "time", 
     "head_label", "angle_label", "refresh",
      "headl", "headr", "angle1", "angle2", "angle3", "angle4"
     ])
@@ -312,7 +311,7 @@ def setStatus(params){
 	multiatt()
     	break;        
     case "speedLevel":
-        sendEvent(name:"fanSpeed", value: params.data)
+        sendEvent(name:"level", value: params.data)
 		def para = params.data
 		String data = para
 		def stf = Float.parseFloat(data)
@@ -330,7 +329,7 @@ def setStatus(params){
 		def tem = Math.round((stf+12)/25)        
         sendEvent(name:"speedlevel", value: tem)        
         sendEvent(name:"fanmode", value: "natural")
-        sendEvent(name:"fanSpeed", value: para)
+        sendEvent(name:"level", value: para)
         }
     	break;        
     case "angleEnable":
@@ -339,7 +338,7 @@ def setStatus(params){
     	break;        
         
     case "fanNatural":
-        sendEvent(name:"fanSpeed", value: params.data)
+        sendEvent(name:"level", value: params.data)
     	break;        
     case "acPower":
     	state.acPower = (params.data == "on" ? "☈: " : "✕: ")
@@ -406,6 +405,7 @@ def updateTimer(){
     def timeStr = msToTime(state.timerCount)
 	log.debug "Left time >> ${timeStr}"
     sendEvent(name:"leftTime", value: "${timeStr}")
+    sendEvent(name:"timeRemaining", value: Math.round(state.timerCount/60))
 }
 
 def processTimer(second){
@@ -422,26 +422,26 @@ def processTimer(second){
     updateTimer()
 }
 
-def settimeroff() { 
+def stop() { 
 	unschedule()
 	log.debug "Timer Off"
 	state.timerCount = 0
 	updateTimer()
 }
-def setTimeRemaining(level) { 
-	log.debug "Timer ${level}Min >> ${state.timerCount}"
-    processTimer(level * 60)
+def setTimeRemaining(time) { 
+	log.debug "Timer ${time}Min >> ${state.timerCount}"
+    processTimer(time * 60)
 }
 
 
-def setFanSpeed(speed){
+def setLevel(level){
 	log.debug "setFanSpeed >> ${state.id}"
 	def currentState = device.currentValue("fanmode")    
     if(currentState =="natural"){
     	def body = [
         	"id": state.id,
         	"cmd": "fanNatural",
-        	"data": speed
+        	"data": level
     	]
     	def options = makeCommand(body)
     	sendCommand(options, null)
@@ -450,7 +450,7 @@ def setFanSpeed(speed){
     	def body = [
         	"id": state.id,
         	"cmd": "fanSpeed",
-        	"data": speed
+        	"data": level
     	]
     	def options = makeCommand(body)
     	sendCommand(options, null)
@@ -811,14 +811,14 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 		def stf = Float.parseFloat(data)
 		def tem = Math.round((stf+12)/25)        
         	sendEvent(name:"speedlevel", value: tem)        
-        	sendEvent(name:"fanSpeed", value: para)
+        	sendEvent(name:"level", value: para)
 	} else {
 		sendEvent(name:"fanmode", value: "general")
 		String data = jsonObj.properties.speedLevel
 		def stf = Float.parseFloat(data)
 		def tem = Math.round((stf+12)/25)        
         	sendEvent(name:"speedlevel", value: tem)        
-        	sendEvent(name:"fanSpeed", value: para)
+        	sendEvent(name:"level", value: para)
 	}
         def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
         sendEvent(name: "lastCheckin", value: now)
