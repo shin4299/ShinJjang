@@ -175,11 +175,11 @@ metadata {
             state "default", label:'Set Timer\n${currentValue}'
         }
         valueTile("temperature", "device.temperature") {
-            state("val", label:'${currentValue}°', unit:'°C', defaultState: true, 
+            state("val", label:'${currentValue}°', unit:'C', defaultState: true, 
             )
         }
         valueTile("humidity", "device.humidity") {
-            state("val", label:'${currentValue}', defaultState: true, 
+            state("val", label:'${currentValue}', unit:'%', defaultState: true, 
             )
         }   
         valueTile("battery", "device.battery") {
@@ -811,14 +811,14 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 		def stf = Float.parseFloat(data)
 		def tem = Math.round((stf+12)/25)        
         	sendEvent(name:"speedlevel", value: tem)        
-        	sendEvent(name:"level", value: para)
+        	sendEvent(name:"level", value: jsonObj.properties.naturalLevel)
 	} else {
 		sendEvent(name:"fanmode", value: "general")
 		String data = jsonObj.properties.speedLevel
 		def stf = Float.parseFloat(data)
 		def tem = Math.round((stf+12)/25)        
         	sendEvent(name:"speedlevel", value: tem)        
-        	sendEvent(name:"level", value: para)
+        	sendEvent(name:"level", value: jsonObj.properties.speedLevel)
 	}
         def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
         sendEvent(name: "lastCheckin", value: now)
