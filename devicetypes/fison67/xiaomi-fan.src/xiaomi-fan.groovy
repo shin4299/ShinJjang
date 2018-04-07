@@ -831,7 +831,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 def multiatt(){
     	sendEvent(name:"lastCheckin", value: state.temp +": " + state.currenttemp + "° " + state.hum + ": " + state.currenthumi + "% " + state.angle + ": " + state.currentangle + "°" + " AC" + state.acPower + state.batteryLe + "%")
 //	for new smartthings app	
-	sendEvent(name:"temperature", value: state.currenttemp)
+	sendEvent(name:"temperature", value: state.currenttemp, unit: "C")
 	sendEvent(name:"humidity", value: state.currenthumi)
 	sendEvent(name:"battery", value:state.batteryLe)
 	sendEvent(name:"powerSource", value: (state.acPower == "☈: " ? "dc" : "battery"))
