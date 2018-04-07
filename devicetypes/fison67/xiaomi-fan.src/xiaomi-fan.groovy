@@ -72,6 +72,7 @@ metadata {
 		capability "Refresh"
 		capability "Sensor"
 		capability "Battery"
+		capability "Timed Session"
 		capability "Power Source"
          
         attribute "buzzer", "string"
@@ -145,11 +146,11 @@ metadata {
     		}
             
             tileAttribute ("device.fanSpeed", key: "SLIDER_CONTROL") {
-                attributeState "level", action:"FanSpeed.setFanSpeed"
+                attributeState "speed", action:"FanSpeed.setFanSpeed"
             }            
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
-   			attributeState("default", label:'${currentValue}                      ')
+   			attributeState("default", label:'${currentValue}')
           }
 //            tileAttribute("device.battery", key: "SECONDARY_CONTROL") {
 //   			attributeState("default", label:'                                               AC${currentValue}')
@@ -172,7 +173,7 @@ metadata {
             state "default", label:'Set Timer\n${currentValue}'
         }
         valueTile("temperature", "device.temperature") {
-            state("val", label:'${currentValue}', defaultState: true, 
+            state("val", label:'${currentValue}°', unit:'°C', defaultState: true, 
             )
         }
         valueTile("humidity", "device.humidity") {
@@ -186,9 +187,12 @@ metadata {
         valueTile("anglelevel", "device.anglelevel") {
             state("val", label:'${currentValue}', defaultState: true)
         }
-	controlTile("timerset", "device.level", "slider", height: 1, width: 1, range:"(1..120)") {
-	    state "level", action:"switch level.setLevel"
-		}
+        valueTile("timerset", "device.timerset") {
+            state("val", label:'timerset', defaultState: true)
+        }
+//	controlTile("timerset", "device.timeRemaining", "slider", height: 1, width: 1, range:"(1..120)") {
+//	    state "level", action:"timeRemaining.setTimeRemaining"
+//		}
         
         standardTile("angle", "device.setangle") {
             state "on", label:'ON', action:"setAngleOff", icon:"st.motion.motion.inactive", backgroundColor:"#b2cc68", nextState:"turningOff"
@@ -424,7 +428,7 @@ def settimeroff() {
 	state.timerCount = 0
 	updateTimer()
 }
-def setLevel(level) { 
+def setTimeRemaining(level) { 
 	log.debug "Timer ${level}Min >> ${state.timerCount}"
     processTimer(level * 60)
 }
