@@ -138,6 +138,11 @@ metadata {
 		input name: "displayTempHighLow", type: "bool", title: "Display high/low temperature?"
 		input name: "displayHumidHighLow", type: "bool", title: "Display high/low humidity?"
 		input name: "selectedLang", title:"Select a language" , type: "enum", required: true, options: ["English", "Korean"], defaultValue: "English", description:"Language for DTH"
+		input "apiKey", "text", type: "password", title: "Write API Key", description: "thingspeak.com에서 계정을 만들고 채널을 생성하세요.", required: true 
+		input "channel", "text", title: "Channel ID", description: "온습도를 기록할 공개 채널을 만들고 채널 ID를 입력해주세요.", required: true
+		input name:"tempField", type:"number", title:"Select Temperature Field", description:"Select Temperature Field"
+		input name:"humiField", type:"number", title:"Select Humidity Field", description:"Select Humidity Field"
+        
 	}
 
 
@@ -290,117 +295,1005 @@ metadata {
 //        valueTile("lastcheckin", "device.lastCheckin", inactiveLabel: false, decoration:"flat", width: 4, height: 1) {
 //        state "lastcheckin", label:'Last Event:\n ${currentValue}'
 //        }
-		valueTile("bat", "device.bat", decoration: "flat", inactiveLabel: false, width: 2, height: 1) {
+		valueTile("bat", "device.bat", decoration: "flat", inactiveLabel: false, width: 1, height: 1) {
             state("val", label:'${currentValue}', defaultState: true)
         }
         
         standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
             state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
         }
-        htmlTile(name:"Home",action:"main", type: "HTML",width: 6, height: 4, whitelist: whitelist())
+        htmlTile(name:"tempD",action:"tempD", type: "HTML",width: 6, height: 3, whitelist: whitelist())
+        htmlTile(name:"tempW",action:"tempW", type: "HTML",width: 6, height: 3, whitelist: whitelist())
+        htmlTile(name:"humiD",action:"humiD", type: "HTML",width: 6, height: 3, whitelist: whitelist())
+        htmlTile(name:"humiW",action:"humiW", type: "HTML",width: 6, height: 3, whitelist: whitelist())
 
         main("temperature2")
-        details(["temperature", "humi", "pre", "bat", "humidity", "pressure", "battery",
+        details(["temperature", "humi", "pre", "bat", "refresh", "humidity", "pressure", "battery",
             "1l", "2l", "3l", "4l", "5l", "6l", 
             "1t", "2t", "3t", "4t", "5t", "6t", 
             "1h", "2h", "3h", "4h", "5h", "6h", 
-            "Home"
+            "tempD", "humiD", "tempW", "humiW"
 		])
     }
 }
 //-------------------------------------
 mappings {
-	path("/main") { action: [GET:"main"] }
+	path("/tempD") { action: [GET:"tempD"] }
+	path("/humiD") { action: [GET:"humiD"] }
+	path("/tempW") { action: [GET:"tempW"] }
+	path("/humiW") { action: [GET:"humiW"] }
 }
+def tempD() {
+	def html = """
 
-def main() {
-def sign = '$'
-    renderHTML() {
-        head {
-            """
-  
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>  
-<script src="http://code.highcharts.com/highcharts.js"></script>  
-  
 
-            """
-        }
-        body {
-            """            
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/series-label.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<!DOCTYPE html>
+<html style="height: 100%;">
 
-<script>  
+<head>
+<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","errorBeacon":"bam.nr-data.net","licenseKey":"199e8a4832","applicationID":"2972453","transactionName":"c11cQBFeWw5TSh9TXlFARkdMQl8NQQ==","queueTime":0,"applicationTime":6,"agent":""}</script>
+<script type="text/javascript">window.NREUM||(NREUM={}),__nr_require=function(e,t,n){function r(n){if(!t[n]){var o=t[n]={exports:{}};e[n][0].call(o.exports,function(t){var o=e[n][1][t];return r(o||t)},o,o.exports)}return t[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({1:[function(e,t,n){function r(){}function o(e,t,n){return function(){return i(e,[f.now()].concat(u(arguments)),t?null:this,n),t?void 0:this}}var i=e("handle"),a=e(2),u=e(3),c=e("ee").get("tracer"),f=e("loader"),s=NREUM;"undefined"==typeof window.newrelic&&(newrelic=s);var p=["setPageViewName","setCustomAttribute","setErrorHandler","finished","addToTrace","inlineHit","addRelease"],d="api-",l=d+"ixn-";a(p,function(e,t){s[t]=o(d+t,!0,"api")}),s.addPageAction=o(d+"addPageAction",!0),s.setCurrentRouteName=o(d+"routeName",!0),t.exports=newrelic,s.interaction=function(){return(new r).get()};var m=r.prototype={createTracer:function(e,t){var n={},r=this,o="function"==typeof t;return i(l+"tracer",[f.now(),e,n],r),function(){if(c.emit((o?"":"no-")+"fn-start",[f.now(),r,o],n),o)try{return t.apply(this,arguments)}catch(e){throw c.emit("fn-err",[arguments,this,e],n),e}finally{c.emit("fn-end",[f.now()],n)}}}};a("setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),function(e,t){m[t]=o(l+t)}),newrelic.noticeError=function(e){"string"==typeof e&&(e=new Error(e)),i("err",[e,f.now()])}},{}],2:[function(e,t,n){function r(e,t){var n=[],r="",i=0;for(r in e)o.call(e,r)&&(n[i]=t(r,e[r]),i+=1);return n}var o=Object.prototype.hasOwnProperty;t.exports=r},{}],3:[function(e,t,n){function r(e,t,n){t||(t=0),"undefined"==typeof n&&(n=e?e.length:0);for(var r=-1,o=n-t||0,i=Array(o<0?0:o);++r<o;)i[r]=e[t+r];return i}t.exports=r},{}],4:[function(e,t,n){t.exports={exists:"undefined"!=typeof window.performance&&window.performance.timing&&"undefined"!=typeof window.performance.timing.navigationStart}},{}],ee:[function(e,t,n){function r(){}function o(e){function t(e){return e&&e instanceof r?e:e?c(e,u,i):i()}function n(n,r,o,i){if(!d.aborted||i){e&&e(n,r,o);for(var a=t(o),u=m(n),c=u.length,f=0;f<c;f++)u[f].apply(a,r);var p=s[y[n]];return p&&p.push([b,n,r,a]),a}}function l(e,t){v[e]=m(e).concat(t)}function m(e){return v[e]||[]}function w(e){return p[e]=p[e]||o(n)}function g(e,t){f(e,function(e,n){t=t||"feature",y[n]=t,t in s||(s[t]=[])})}var v={},y={},b={on:l,emit:n,get:w,listeners:m,context:t,buffer:g,abort:a,aborted:!1};return b}function i(){return new r}function a(){(s.api||s.feature)&&(d.aborted=!0,s=d.backlog={})}var u="nr@context",c=e("gos"),f=e(2),s={},p={},d=t.exports=o();d.backlog=s},{}],gos:[function(e,t,n){function r(e,t,n){if(o.call(e,t))return e[t];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(e,t,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return e[t]=r,r}var o=Object.prototype.hasOwnProperty;t.exports=r},{}],handle:[function(e,t,n){function r(e,t,n,r){o.buffer([e],r),o.emit(e,t,n)}var o=e("ee").get("handle");t.exports=r,r.ee=o},{}],id:[function(e,t,n){function r(e){var t=typeof e;return!e||"object"!==t&&"function"!==t?-1:e===window?0:a(e,i,function(){return o++})}var o=1,i="nr@id",a=e("gos");t.exports=r},{}],loader:[function(e,t,n){function r(){if(!x++){var e=h.info=NREUM.info,t=d.getElementsByTagName("script")[0];if(setTimeout(s.abort,3e4),!(e&&e.licenseKey&&e.applicationID&&t))return s.abort();f(y,function(t,n){e[t]||(e[t]=n)}),c("mark",["onload",a()+h.offset],null,"api");var n=d.createElement("script");n.src="https://"+e.agent,t.parentNode.insertBefore(n,t)}}function o(){"complete"===d.readyState&&i()}function i(){c("mark",["domContent",a()+h.offset],null,"api")}function a(){return E.exists&&performance.now?Math.round(performance.now()):(u=Math.max((new Date).getTime(),u))-h.offset}var u=(new Date).getTime(),c=e("handle"),f=e(2),s=e("ee"),p=window,d=p.document,l="addEventListener",m="attachEvent",w=p.XMLHttpRequest,g=w&&w.prototype;NREUM.o={ST:setTimeout,SI:p.setImmediate,CT:clearTimeout,XHR:w,REQ:p.Request,EV:p.Event,PR:p.Promise,MO:p.MutationObserver};var v=""+location,y={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-1071.min.js"},b=w&&g&&g[l]&&!/CriOS/.test(navigator.userAgent),h=t.exports={offset:u,now:a,origin:v,features:{},xhrWrappable:b};e(1),d[l]?(d[l]("DOMContentLoaded",i,!1),p[l]("load",r,!1)):(d[m]("onreadystatechange",o),p[m]("onload",r)),c("mark",["firstbyte",u],null,"api");var x=0,E=e(4)},{}]},{},["loader"]);</script>
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="//thingspeak.com/highcharts-3.0.8.js"></script>
+  <script src="/assets/application-03e2c06ff0f3b0568246067907657e6d.js"></script>
+    <script type="text/javascript">
+    // user's timezone offset
+    var myOffset = new Date().getTimezoneOffset();
 
-Highcharts.chart('container', {
+    // converts date format from JSON
+    function getChartDate(d) {
+      // offset in minutes is converted to milliseconds and subtracted so that chart's x-axis is correct
+      return Date.parse(d) - (myOffset * 60000);
+    }
 
-    title: {
-        text: 'Solar Employment Growth by Sector, 2010-2016'
-    },
+    \$(document).on('page:load ready', function() {
+      // blank array for holding chart data
+      var chartData = [];
+      // variable for the local date in milliseconds
+      var localDate;
+      // variable for the last date added to the chart
+      var last_date;
 
-    subtitle: {
-        text: 'Source: thesolarfoundation.com'
-    },
+      // get the data with a webservice call
+      \$.getJSON('https://thingspeak.com/channels/${channel}/field/${tempField}.json?callback=?&amp;offset=0&amp;results=360&amp;timescale=30', function(data) {
 
-    yAxis: {
-        title: {
-            text: 'Number of Employees'
-        }
-    },
-    legend: {
-        layout: 'vertical',
-        align: 'right',
-        verticalAlign: 'middle'
-    },
+          // if no access
+          if (data == '-1') {
+            \$('#chart-container').append('This channel is not public.  To embed charts, the channel must be public or a read key must be specified.');
+          }
 
-    plotOptions: {
-        series: {
-            label: {
-                connectorAllowed: false
-            },
-            pointStart: 2010
-        }
-    },
-
-    series: [{
-        name: 'Installation',
-        data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
-    }, {
-        name: 'Manufacturing',
-        data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
-    }, {
-        name: 'Sales & Distribution',
-        data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
-    }, {
-        name: 'Project Development',
-        data: [null, null, 7988, 12169, 15112, 22452, 34400, 34227]
-    }, {
-        name: 'Other',
-        data: [12908, 5948, 8105, 11248, 8989, 11816, 18274, 18111]
-    }],
-
-    responsive: {
-        rules: [{
-            condition: {
-                maxWidth: 500
-            },
-            chartOptions: {
-                legend: {
-                    layout: 'horizontal',
-                    align: 'center',
-                    verticalAlign: 'bottom'
-                }
+          // iterate through each feed
+          \$.each(data.feeds, function() {
+            var p = new Highcharts.Point();
+            // set the proper values
+            var v = this.field${tempField};
+            p.x = getChartDate(this.created_at);
+            p.y = parseFloat(v);
+            // add location if possible
+            if (this.location) {
+              p.name = this.location;
             }
-        }]
-    }
+            // if a numerical value exists add it
+            if (!isNaN(parseInt(v))
+                            ) {
+              chartData.push(p);
+            }
+          });
 
-});</script>  
+          // specify the chart options
+          var chartOptions = {
+            chart: {
+              renderTo: 'chart-container',
+              defaultSeriesType: 'line',
+              backgroundColor: '#ffffff',
+              style: {
+                fontSize: '15pt',
+                fontWeight: 'bold'
+              },              
+              events: {
+                load: function() {
+                  //if dynamic and no "timeslice" options are set
+                  //   GAK 02/16/2013 Let's try to add the last "average" slice if params[:average]
 
-            """
-        }
-    }
+                  var url = 'https://thingspeak.com/channels/${channel}/feed/last.json?callback=?&amp;offset=0&amp;location=true&amp;results=360&amp;timescale=30';
+                  if ("".length > 0) {
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_average.json?callback=?&amp;offset=0&amp;location=true&amp;average=&amp;results=360&amp;timescale=30';
+                  } else if ("".length > 0) {
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_median.json?callback=?&amp;offset=0&amp;location=true&amp;median=&amp;results=360&amp;timescale=30';
+                  } else if ("".length > 0) {
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_sum.json?callback=?&amp;offset=0&amp;location=true&amp;sum=&amp;results=360&amp;timescale=30';
+                  }
+
+                  if ('true' === 'true' && ('30'.length < 1)) {
+                    // push data every 15 seconds
+                    setInterval(function() {
+                      // get the data with a webservice call if we're just getting the last channel
+                      \$.getJSON(url, function(data) {
+                        // if data exists
+                        if (data && data.field${tempField}) {
+
+                          var p = new Highcharts.Point();
+                          // set the proper values
+                          var v = data.field${tempField};
+
+                          p.x = getChartDate(data.created_at);
+                          p.y = parseFloat(v);
+                          // add location if possible
+                          if (data.location) {
+                            p.name = data.location;
+                          }
+                          // get the last date if possible
+                          if (dynamicChart.series[0].data.length > 0) {
+                            last_date = dynamicChart.series[0].data[dynamicChart.series[0].data.length - 1].x;
+                          }
+                          var shift = false; //default for shift
+
+                          //if push is requested in parameters
+                          // then if results is and data.length is < results, shift = false
+                          var results = 360;
+
+                          if (results && dynamicChart.series[0].data.length + 1 >= results) {
+                            shift = true;
+                          }
+                          // if a numerical value exists and it is a new date, add it
+                          if (!isNaN(parseInt(v)) && (p.x != last_date)
+                                                        ) {
+                            dynamicChart.series[0].addPoint(p, true, shift);
+                          } else {
+                            dynamicChart.series[0].data[dynamicChart.series[0].data.length - 1].update(p);
+                          }
+                        }
+                      });
+
+                    }, 15000);
+                  }
+                }
+              }
+            },
+            title: {
+              text: '',
+              style: {
+                fontSize: '20pt',
+                color: '#d60202',
+                fontWeight: 'bold'
+              }
+            },
+            plotOptions: {
+              line: {
+                color: '#d62020'
+              },
+              bar: {
+                color: '#d62020'
+              },
+              column: {
+                color: '#d62020'
+              },
+              spline: {
+                color: '#d62020'
+              },
+              series: {
+                marker: {
+                  radius: 3
+                },
+                animation: true,
+                step: false,
+                borderWidth: 0,
+                turboThreshold: 0
+              }
+            },
+            exporting: {
+              enabled: false
+            },
+            tooltip: {
+              // reformat the tooltips so that local times are displayed
+              formatter: function() {
+                var d = new Date(this.x + (myOffset * 60000));
+                var n = (this.point.name === undefined) ? '' : '<br/>' + this.point.name;
+                return this.series.name + ':<b>' + this.y + '</b>' + n + '<br/>' + d.toDateString() + '<br/>' + d.toTimeString().replace();
+              }
+            },
+            xAxis: {
+              type: 'datetime',
+              title: {
+                text: 'test',
+                style: {
+                fontSize: '17pt',
+                color: '#7a7a7a',
+                fontWeight: 'bold'
+              }
+              }
+            },
+            yAxis: {
+              title: {
+                text: '',
+                style: {
+                fontSize: '17pt',
+                color: '#7a7a7a',
+                fontWeight: 'bold'
+              }
+              },
+              min: null ,
+              max: null
+            },
+            legend: {
+              enabled: false
+            },
+            series: [{
+              name: data.channel.field${tempField}
+            }],
+            credits: {
+              text: 'ThingSpeak.com',
+              href: 'https://thingspeak.com/',
+              style: {
+                color: '#D62020'
+              }
+            }
+          };
+
+          // add the data to the chart
+          chartOptions.series[0].data = chartData;
+
+          // set chart labels here so that decoding occurs properly
+          chartOptions.title.text = decodeURIComponent('Temperature%20-%2024h');
+          chartOptions.xAxis.title.text = decodeURIComponent('time');
+          chartOptions.yAxis.title.text = decodeURIComponent('%C2%B0C');
+
+          // draw the chart
+          var dynamicChart = new Highcharts.Chart(chartOptions);
+
+          // end getJSON success
+        })
+        // chained to getjson, on error
+        .error(function() {
+          \$('#chart-container').html('Invalid Channel.');
+        });
+
+    }); // end document.ready
+    </script>
+</head>
+
+<body style='background-color: #ffffff; height: 100%; margin: 0; padding: 0;'>
+  <div id="chart-container" style="width: 945px; height: 450px; display: block; position:absolute; bottom:0; top:0; left:0; right:0; margin: 5px 15px 15px 0; overflow: hidden;">
+    <img alt="Loader transparent" src="/assets/loader-transparent-dcfdb186859b297e13cf2c077ca08e36.gif" style="position: absolute; margin: auto; top: 0; left: 0; right: 0; bottom: 0;" />
+  </div>
+</body>
+
+</html>
+
+
+
+"""
+ render contentType: "text/html", data: html, status: 200
 }
+
+
+def humiD() {
+	def html = """
+
+
+<!DOCTYPE html>
+<html style="height: 100%;">
+
+<head>
+<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","errorBeacon":"bam.nr-data.net","licenseKey":"199e8a4832","applicationID":"2972453","transactionName":"c11cQBFeWw5TSh9TXlFARkdMQl8NQQ==","queueTime":0,"applicationTime":6,"agent":""}</script>
+<script type="text/javascript">window.NREUM||(NREUM={}),__nr_require=function(e,t,n){function r(n){if(!t[n]){var o=t[n]={exports:{}};e[n][0].call(o.exports,function(t){var o=e[n][1][t];return r(o||t)},o,o.exports)}return t[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({1:[function(e,t,n){function r(){}function o(e,t,n){return function(){return i(e,[f.now()].concat(u(arguments)),t?null:this,n),t?void 0:this}}var i=e("handle"),a=e(2),u=e(3),c=e("ee").get("tracer"),f=e("loader"),s=NREUM;"undefined"==typeof window.newrelic&&(newrelic=s);var p=["setPageViewName","setCustomAttribute","setErrorHandler","finished","addToTrace","inlineHit","addRelease"],d="api-",l=d+"ixn-";a(p,function(e,t){s[t]=o(d+t,!0,"api")}),s.addPageAction=o(d+"addPageAction",!0),s.setCurrentRouteName=o(d+"routeName",!0),t.exports=newrelic,s.interaction=function(){return(new r).get()};var m=r.prototype={createTracer:function(e,t){var n={},r=this,o="function"==typeof t;return i(l+"tracer",[f.now(),e,n],r),function(){if(c.emit((o?"":"no-")+"fn-start",[f.now(),r,o],n),o)try{return t.apply(this,arguments)}catch(e){throw c.emit("fn-err",[arguments,this,e],n),e}finally{c.emit("fn-end",[f.now()],n)}}}};a("setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),function(e,t){m[t]=o(l+t)}),newrelic.noticeError=function(e){"string"==typeof e&&(e=new Error(e)),i("err",[e,f.now()])}},{}],2:[function(e,t,n){function r(e,t){var n=[],r="",i=0;for(r in e)o.call(e,r)&&(n[i]=t(r,e[r]),i+=1);return n}var o=Object.prototype.hasOwnProperty;t.exports=r},{}],3:[function(e,t,n){function r(e,t,n){t||(t=0),"undefined"==typeof n&&(n=e?e.length:0);for(var r=-1,o=n-t||0,i=Array(o<0?0:o);++r<o;)i[r]=e[t+r];return i}t.exports=r},{}],4:[function(e,t,n){t.exports={exists:"undefined"!=typeof window.performance&&window.performance.timing&&"undefined"!=typeof window.performance.timing.navigationStart}},{}],ee:[function(e,t,n){function r(){}function o(e){function t(e){return e&&e instanceof r?e:e?c(e,u,i):i()}function n(n,r,o,i){if(!d.aborted||i){e&&e(n,r,o);for(var a=t(o),u=m(n),c=u.length,f=0;f<c;f++)u[f].apply(a,r);var p=s[y[n]];return p&&p.push([b,n,r,a]),a}}function l(e,t){v[e]=m(e).concat(t)}function m(e){return v[e]||[]}function w(e){return p[e]=p[e]||o(n)}function g(e,t){f(e,function(e,n){t=t||"feature",y[n]=t,t in s||(s[t]=[])})}var v={},y={},b={on:l,emit:n,get:w,listeners:m,context:t,buffer:g,abort:a,aborted:!1};return b}function i(){return new r}function a(){(s.api||s.feature)&&(d.aborted=!0,s=d.backlog={})}var u="nr@context",c=e("gos"),f=e(2),s={},p={},d=t.exports=o();d.backlog=s},{}],gos:[function(e,t,n){function r(e,t,n){if(o.call(e,t))return e[t];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(e,t,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return e[t]=r,r}var o=Object.prototype.hasOwnProperty;t.exports=r},{}],handle:[function(e,t,n){function r(e,t,n,r){o.buffer([e],r),o.emit(e,t,n)}var o=e("ee").get("handle");t.exports=r,r.ee=o},{}],id:[function(e,t,n){function r(e){var t=typeof e;return!e||"object"!==t&&"function"!==t?-1:e===window?0:a(e,i,function(){return o++})}var o=1,i="nr@id",a=e("gos");t.exports=r},{}],loader:[function(e,t,n){function r(){if(!x++){var e=h.info=NREUM.info,t=d.getElementsByTagName("script")[0];if(setTimeout(s.abort,3e4),!(e&&e.licenseKey&&e.applicationID&&t))return s.abort();f(y,function(t,n){e[t]||(e[t]=n)}),c("mark",["onload",a()+h.offset],null,"api");var n=d.createElement("script");n.src="https://"+e.agent,t.parentNode.insertBefore(n,t)}}function o(){"complete"===d.readyState&&i()}function i(){c("mark",["domContent",a()+h.offset],null,"api")}function a(){return E.exists&&performance.now?Math.round(performance.now()):(u=Math.max((new Date).getTime(),u))-h.offset}var u=(new Date).getTime(),c=e("handle"),f=e(2),s=e("ee"),p=window,d=p.document,l="addEventListener",m="attachEvent",w=p.XMLHttpRequest,g=w&&w.prototype;NREUM.o={ST:setTimeout,SI:p.setImmediate,CT:clearTimeout,XHR:w,REQ:p.Request,EV:p.Event,PR:p.Promise,MO:p.MutationObserver};var v=""+location,y={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-1071.min.js"},b=w&&g&&g[l]&&!/CriOS/.test(navigator.userAgent),h=t.exports={offset:u,now:a,origin:v,features:{},xhrWrappable:b};e(1),d[l]?(d[l]("DOMContentLoaded",i,!1),p[l]("load",r,!1)):(d[m]("onreadystatechange",o),p[m]("onload",r)),c("mark",["firstbyte",u],null,"api");var x=0,E=e(4)},{}]},{},["loader"]);</script>
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="//thingspeak.com/highcharts-3.0.8.js"></script>
+  <script src="/assets/application-03e2c06ff0f3b0568246067907657e6d.js"></script>
+    <script type="text/javascript">
+    // user's timezone offset
+    var myOffset = new Date().getTimezoneOffset();
+
+    // converts date format from JSON
+    function getChartDate(d) {
+      // offset in minutes is converted to milliseconds and subtracted so that chart's x-axis is correct
+      return Date.parse(d) - (myOffset * 60000);
+    }
+
+    \$(document).on('page:load ready', function() {
+      // blank array for holding chart data
+      var chartData = [];
+      // variable for the local date in milliseconds
+      var localDate;
+      // variable for the last date added to the chart
+      var last_date;
+
+      // get the data with a webservice call
+      \$.getJSON('https://thingspeak.com/channels/${channel}/field/${humiField}.json?callback=?&amp;offset=0&amp;results=360&amp;timescale=30', function(data) {
+
+          // if no access
+          if (data == '-1') {
+            \$('#chart-container').append('This channel is not public.  To embed charts, the channel must be public or a read key must be specified.');
+          }
+
+          // iterate through each feed
+          \$.each(data.feeds, function() {
+            var p = new Highcharts.Point();
+            // set the proper values
+            var v = this.field${humiField};
+            p.x = getChartDate(this.created_at);
+            p.y = parseFloat(v);
+            // add location if possible
+            if (this.location) {
+              p.name = this.location;
+            }
+            // if a numerical value exists add it
+            if (!isNaN(parseInt(v))
+                            ) {
+              chartData.push(p);
+            }
+          });
+
+          // specify the chart options
+          var chartOptions = {
+            chart: {
+              renderTo: 'chart-container',
+              defaultSeriesType: 'line',
+              backgroundColor: '#ffffff',
+              style: {
+                fontSize: '15pt',
+                fontWeight: 'bold'
+              },              
+              events: {
+                load: function() {
+                  //if dynamic and no "timeslice" options are set
+                  //   GAK 02/16/2013 Let's try to add the last "average" slice if params[:average]
+
+                  var url = 'https://thingspeak.com/channels/${channel}/feed/last.json?callback=?&amp;offset=0&amp;location=true&amp;results=360&amp;timescale=30';
+                  if ("".length > 0) {
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_average.json?callback=?&amp;offset=0&amp;location=true&amp;average=&amp;results=360&amp;timescale=30';
+                  } else if ("".length > 0) {
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_median.json?callback=?&amp;offset=0&amp;location=true&amp;median=&amp;results=360&amp;timescale=30';
+                  } else if ("".length > 0) {
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_sum.json?callback=?&amp;offset=0&amp;location=true&amp;sum=&amp;results=360&amp;timescale=30';
+                  }
+
+                  if ('true' === 'true' && ('30'.length < 1)) {
+                    // push data every 15 seconds
+                    setInterval(function() {
+                      // get the data with a webservice call if we're just getting the last channel
+                      \$.getJSON(url, function(data) {
+                        // if data exists
+                        if (data && data.field${humiField}) {
+
+                          var p = new Highcharts.Point();
+                          // set the proper values
+                          var v = data.field${humiField};
+
+                          p.x = getChartDate(data.created_at);
+                          p.y = parseFloat(v);
+                          // add location if possible
+                          if (data.location) {
+                            p.name = data.location;
+                          }
+                          // get the last date if possible
+                          if (dynamicChart.series[0].data.length > 0) {
+                            last_date = dynamicChart.series[0].data[dynamicChart.series[0].data.length - 1].x;
+                          }
+                          var shift = false; //default for shift
+
+                          //if push is requested in parameters
+                          // then if results is and data.length is < results, shift = false
+                          var results = 360;
+
+                          if (results && dynamicChart.series[0].data.length + 1 >= results) {
+                            shift = true;
+                          }
+                          // if a numerical value exists and it is a new date, add it
+                          if (!isNaN(parseInt(v)) && (p.x != last_date)
+                                                        ) {
+                            dynamicChart.series[0].addPoint(p, true, shift);
+                          } else {
+                            dynamicChart.series[0].data[dynamicChart.series[0].data.length - 1].update(p);
+                          }
+                        }
+                      });
+
+                    }, 15000);
+                  }
+                }
+              }
+            },
+            title: {
+              text: '',
+              style: {
+                fontSize: '20pt',
+                color: '#0003ce',
+                fontWeight: 'bold'
+              }
+            },
+            plotOptions: {
+              line: {
+                color: '#018ec1'
+              },
+              bar: {
+                color: '#018ec1'
+              },
+              column: {
+                color: '#018ec1'
+              },
+              spline: {
+                color: '#018ec1'
+              },
+              series: {
+                marker: {
+                  radius: 3
+                },
+                animation: true,
+                step: false,
+                borderWidth: 0,
+                turboThreshold: 0
+              }
+            },
+            exporting: {
+              enabled: false
+            },
+            tooltip: {
+              // reformat the tooltips so that local times are displayed
+              formatter: function() {
+                var d = new Date(this.x + (myOffset * 60000));
+                var n = (this.point.name === undefined) ? '' : '<br/>' + this.point.name;
+                return this.series.name + ':<b>' + this.y + '</b>' + n + '<br/>' + d.toDateString() + '<br/>' + d.toTimeString().replace();
+              }
+            },
+            xAxis: {
+              type: 'datetime',
+              title: {
+                text: 'test',
+                style: {
+                fontSize: '17pt',
+                color: '#7a7a7a',
+                fontWeight: 'bold'
+              }
+              }
+            },
+            yAxis: {
+              title: {
+                text: '',
+                style: {
+                fontSize: '17pt',
+                color: '#7a7a7a',
+                fontWeight: 'bold'
+              }
+              },
+              min: null ,
+              max: null
+            },
+            legend: {
+              enabled: false
+            },
+            series: [{
+              name: data.channel.field${humiField}
+            }],
+            credits: {
+              text: 'ThingSpeak.com',
+              href: 'https://thingspeak.com/',
+              style: {
+                color: '#D62020'
+              }
+            }
+          };
+
+          // add the data to the chart
+          chartOptions.series[0].data = chartData;
+
+          // set chart labels here so that decoding occurs properly
+          chartOptions.title.text = decodeURIComponent('Humidity%20-%2024h');
+          chartOptions.xAxis.title.text = decodeURIComponent('time');
+          chartOptions.yAxis.title.text = decodeURIComponent('%25');
+
+          // draw the chart
+          var dynamicChart = new Highcharts.Chart(chartOptions);
+
+          // end getJSON success
+        })
+        // chained to getjson, on error
+        .error(function() {
+          \$('#chart-container').html('Invalid Channel.');
+        });
+
+    }); // end document.ready
+    </script>
+</head>
+
+<body style='background-color: #ffffff; height: 100%; margin: 0; padding: 0;'>
+  <div id="chart-container" style="width: 945px; height: 450px; display: block; position:absolute; bottom:0; top:0; left:0; right:0; margin: 5px 15px 15px 0; overflow: hidden;">
+    <img alt="Loader transparent" src="/assets/loader-transparent-dcfdb186859b297e13cf2c077ca08e36.gif" style="position: absolute; margin: auto; top: 0; left: 0; right: 0; bottom: 0;" />
+  </div>
+</body>
+
+</html>
+
+
+"""
+ render contentType: "text/html", data: html, status: 200
+}
+
+def tempW() {
+	def html = """
+
+<!DOCTYPE html>
+<html style="height: 100%;">
+
+<head>
+<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","errorBeacon":"bam.nr-data.net","licenseKey":"199e8a4832","applicationID":"2972453","transactionName":"c11cQBFeWw5TSh9TXlFARkdMQl8NQQ==","queueTime":0,"applicationTime":6,"agent":""}</script>
+<script type="text/javascript">window.NREUM||(NREUM={}),__nr_require=function(e,t,n){function r(n){if(!t[n]){var o=t[n]={exports:{}};e[n][0].call(o.exports,function(t){var o=e[n][1][t];return r(o||t)},o,o.exports)}return t[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({1:[function(e,t,n){function r(){}function o(e,t,n){return function(){return i(e,[f.now()].concat(u(arguments)),t?null:this,n),t?void 0:this}}var i=e("handle"),a=e(2),u=e(3),c=e("ee").get("tracer"),f=e("loader"),s=NREUM;"undefined"==typeof window.newrelic&&(newrelic=s);var p=["setPageViewName","setCustomAttribute","setErrorHandler","finished","addToTrace","inlineHit","addRelease"],d="api-",l=d+"ixn-";a(p,function(e,t){s[t]=o(d+t,!0,"api")}),s.addPageAction=o(d+"addPageAction",!0),s.setCurrentRouteName=o(d+"routeName",!0),t.exports=newrelic,s.interaction=function(){return(new r).get()};var m=r.prototype={createTracer:function(e,t){var n={},r=this,o="function"==typeof t;return i(l+"tracer",[f.now(),e,n],r),function(){if(c.emit((o?"":"no-")+"fn-start",[f.now(),r,o],n),o)try{return t.apply(this,arguments)}catch(e){throw c.emit("fn-err",[arguments,this,e],n),e}finally{c.emit("fn-end",[f.now()],n)}}}};a("setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),function(e,t){m[t]=o(l+t)}),newrelic.noticeError=function(e){"string"==typeof e&&(e=new Error(e)),i("err",[e,f.now()])}},{}],2:[function(e,t,n){function r(e,t){var n=[],r="",i=0;for(r in e)o.call(e,r)&&(n[i]=t(r,e[r]),i+=1);return n}var o=Object.prototype.hasOwnProperty;t.exports=r},{}],3:[function(e,t,n){function r(e,t,n){t||(t=0),"undefined"==typeof n&&(n=e?e.length:0);for(var r=-1,o=n-t||0,i=Array(o<0?0:o);++r<o;)i[r]=e[t+r];return i}t.exports=r},{}],4:[function(e,t,n){t.exports={exists:"undefined"!=typeof window.performance&&window.performance.timing&&"undefined"!=typeof window.performance.timing.navigationStart}},{}],ee:[function(e,t,n){function r(){}function o(e){function t(e){return e&&e instanceof r?e:e?c(e,u,i):i()}function n(n,r,o,i){if(!d.aborted||i){e&&e(n,r,o);for(var a=t(o),u=m(n),c=u.length,f=0;f<c;f++)u[f].apply(a,r);var p=s[y[n]];return p&&p.push([b,n,r,a]),a}}function l(e,t){v[e]=m(e).concat(t)}function m(e){return v[e]||[]}function w(e){return p[e]=p[e]||o(n)}function g(e,t){f(e,function(e,n){t=t||"feature",y[n]=t,t in s||(s[t]=[])})}var v={},y={},b={on:l,emit:n,get:w,listeners:m,context:t,buffer:g,abort:a,aborted:!1};return b}function i(){return new r}function a(){(s.api||s.feature)&&(d.aborted=!0,s=d.backlog={})}var u="nr@context",c=e("gos"),f=e(2),s={},p={},d=t.exports=o();d.backlog=s},{}],gos:[function(e,t,n){function r(e,t,n){if(o.call(e,t))return e[t];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(e,t,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return e[t]=r,r}var o=Object.prototype.hasOwnProperty;t.exports=r},{}],handle:[function(e,t,n){function r(e,t,n,r){o.buffer([e],r),o.emit(e,t,n)}var o=e("ee").get("handle");t.exports=r,r.ee=o},{}],id:[function(e,t,n){function r(e){var t=typeof e;return!e||"object"!==t&&"function"!==t?-1:e===window?0:a(e,i,function(){return o++})}var o=1,i="nr@id",a=e("gos");t.exports=r},{}],loader:[function(e,t,n){function r(){if(!x++){var e=h.info=NREUM.info,t=d.getElementsByTagName("script")[0];if(setTimeout(s.abort,3e4),!(e&&e.licenseKey&&e.applicationID&&t))return s.abort();f(y,function(t,n){e[t]||(e[t]=n)}),c("mark",["onload",a()+h.offset],null,"api");var n=d.createElement("script");n.src="https://"+e.agent,t.parentNode.insertBefore(n,t)}}function o(){"complete"===d.readyState&&i()}function i(){c("mark",["domContent",a()+h.offset],null,"api")}function a(){return E.exists&&performance.now?Math.round(performance.now()):(u=Math.max((new Date).getTime(),u))-h.offset}var u=(new Date).getTime(),c=e("handle"),f=e(2),s=e("ee"),p=window,d=p.document,l="addEventListener",m="attachEvent",w=p.XMLHttpRequest,g=w&&w.prototype;NREUM.o={ST:setTimeout,SI:p.setImmediate,CT:clearTimeout,XHR:w,REQ:p.Request,EV:p.Event,PR:p.Promise,MO:p.MutationObserver};var v=""+location,y={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-1071.min.js"},b=w&&g&&g[l]&&!/CriOS/.test(navigator.userAgent),h=t.exports={offset:u,now:a,origin:v,features:{},xhrWrappable:b};e(1),d[l]?(d[l]("DOMContentLoaded",i,!1),p[l]("load",r,!1)):(d[m]("onreadystatechange",o),p[m]("onload",r)),c("mark",["firstbyte",u],null,"api");var x=0,E=e(4)},{}]},{},["loader"]);</script>
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="//thingspeak.com/highcharts-3.0.8.js"></script>
+  <script src="/assets/application-03e2c06ff0f3b0568246067907657e6d.js"></script>
+    <script type="text/javascript">
+    // user's timezone offset
+    var myOffset = new Date().getTimezoneOffset();
+
+    // converts date format from JSON
+    function getChartDate(d) {
+      // offset in minutes is converted to milliseconds and subtracted so that chart's x-axis is correct
+      return Date.parse(d) - (myOffset * 60000);
+    }
+
+    \$(document).on('page:load ready', function() {
+      // blank array for holding chart data
+      var chartData = [];
+      // variable for the local date in milliseconds
+      var localDate;
+      // variable for the last date added to the chart
+      var last_date;
+
+      // get the data with a webservice call
+      \$.getJSON('https://thingspeak.com/channels/${channel}/field/${tempField}.json?callback=?&amp;offset=0&amp;days=7&amp;timescale=240', function(data) {
+
+          // if no access
+          if (data == '-1') {
+            \$('#chart-container').append('This channel is not public.  To embed charts, the channel must be public or a read key must be specified.');
+          }
+
+          // iterate through each feed
+          \$.each(data.feeds, function() {
+            var p = new Highcharts.Point();
+            // set the proper values
+            var v = this.field${tempField};
+            p.x = getChartDate(this.created_at);
+            p.y = parseFloat(v);
+            // add location if possible
+            if (this.location) {
+              p.name = this.location;
+            }
+            // if a numerical value exists add it
+            if (!isNaN(parseInt(v))
+                            ) {
+              chartData.push(p);
+            }
+          });
+
+          // specify the chart options
+          var chartOptions = {
+            chart: {
+              renderTo: 'chart-container',
+              defaultSeriesType: 'line',
+              backgroundColor: '#ffffff',
+              style: {
+                fontSize: '15pt',
+                fontWeight: 'bold'
+              },              
+              events: {
+                load: function() {
+                  //if dynamic and no "timeslice" options are set
+                  //   GAK 02/16/2013 Let's try to add the last "average" slice if params[:average]
+
+                  var url = 'https://thingspeak.com/channels/${channel}/feed/last.json?callback=?&amp;offset=0&amp;location=true&amp;days=7&amp;timescale=240';
+                  if ("".length > 0) {
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_average.json?callback=?&amp;offset=0&amp;location=true&amp;average=&amp;days=7&amp;timescale=240';
+                  } else if ("".length > 0) {
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_median.json?callback=?&amp;offset=0&amp;location=true&amp;median=&amp;days=7&amp;timescale=240';
+                  } else if ("".length > 0) {
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_sum.json?callback=?&amp;offset=0&amp;location=true&amp;sum=&amp;days=7&amp;timescale=240';
+                  }
+
+                  if ('true' === 'true' && ('30'.length < 1)) {
+                    // push data every 15 seconds
+                    setInterval(function() {
+                      // get the data with a webservice call if we're just getting the last channel
+                      \$.getJSON(url, function(data) {
+                        // if data exists
+                        if (data && data.field${tempField}) {
+
+                          var p = new Highcharts.Point();
+                          // set the proper values
+                          var v = data.field${tempField};
+
+                          p.x = getChartDate(data.created_at);
+                          p.y = parseFloat(v);
+                          // add location if possible
+                          if (data.location) {
+                            p.name = data.location;
+                          }
+                          // get the last date if possible
+                          if (dynamicChart.series[0].data.length > 0) {
+                            last_date = dynamicChart.series[0].data[dynamicChart.series[0].data.length - 1].x;
+                          }
+                          var shift = false; //default for shift
+
+                          //if push is requested in parameters
+                          // then if results is and data.length is < results, shift = false
+                          var results = 360;
+
+                          if (results && dynamicChart.series[0].data.length + 1 >= results) {
+                            shift = true;
+                          }
+                          // if a numerical value exists and it is a new date, add it
+                          if (!isNaN(parseInt(v)) && (p.x != last_date)
+                                                        ) {
+                            dynamicChart.series[0].addPoint(p, true, shift);
+                          } else {
+                            dynamicChart.series[0].data[dynamicChart.series[0].data.length - 1].update(p);
+                          }
+                        }
+                      });
+
+                    }, 15000);
+                  }
+                }
+              }
+            },
+            title: {
+              text: '',
+              style: {
+                fontSize: '20pt',
+                color: '#d60202',
+                fontWeight: 'bold'
+              }
+            },
+            plotOptions: {
+              line: {
+                color: '#d62020'
+              },
+              bar: {
+                color: '#d62020'
+              },
+              column: {
+                color: '#d62020'
+              },
+              spline: {
+                color: '#d62020'
+              },
+              series: {
+                marker: {
+                  radius: 3
+                },
+                animation: true,
+                step: false,
+                borderWidth: 0,
+                turboThreshold: 0
+              }
+            },
+            exporting: {
+              enabled: false
+            },
+            tooltip: {
+              // reformat the tooltips so that local times are displayed
+              formatter: function() {
+                var d = new Date(this.x + (myOffset * 60000));
+                var n = (this.point.name === undefined) ? '' : '<br/>' + this.point.name;
+                return this.series.name + ':<b>' + this.y + '</b>' + n + '<br/>' + d.toDateString() + '<br/>' + d.toTimeString().replace();
+              }
+            },
+            xAxis: {
+              type: 'datetime',
+              title: {
+                text: 'test',
+                style: {
+                fontSize: '17pt',
+                color: '#7a7a7a',
+                fontWeight: 'bold'
+              }
+              }
+            },
+            yAxis: {
+              title: {
+                text: '',
+                style: {
+                fontSize: '17pt',
+                color: '#7a7a7a',
+                fontWeight: 'bold'
+              }
+              },
+              min: null ,
+              max: null
+            },
+            legend: {
+              enabled: false
+            },
+            series: [{
+              name: data.channel.field${tempField}
+            }],
+            credits: {
+              text: 'ThingSpeak.com',
+              href: 'https://thingspeak.com/',
+              style: {
+                color: '#D62020'
+              }
+            }
+          };
+
+          // add the data to the chart
+          chartOptions.series[0].data = chartData;
+
+          // set chart labels here so that decoding occurs properly
+          chartOptions.title.text = decodeURIComponent('Temperature%20-%20Week');
+          chartOptions.xAxis.title.text = decodeURIComponent('time');
+          chartOptions.yAxis.title.text = decodeURIComponent('%C2%B0C');
+
+          // draw the chart
+          var dynamicChart = new Highcharts.Chart(chartOptions);
+
+          // end getJSON success
+        })
+        // chained to getjson, on error
+        .error(function() {
+          \$('#chart-container').html('Invalid Channel.');
+        });
+
+    }); // end document.ready
+    </script>
+</head>
+
+<body style='background-color: #ffffff; height: 100%; margin: 0; padding: 0;'>
+  <div id="chart-container" style="width: 945px; height: 450px; display: block; position:absolute; bottom:0; top:0; left:0; right:0; margin: 5px 15px 15px 0; overflow: hidden;">
+    <img alt="Loader transparent" src="/assets/loader-transparent-dcfdb186859b297e13cf2c077ca08e36.gif" style="position: absolute; margin: auto; top: 0; left: 0; right: 0; bottom: 0;" />
+  </div>
+</body>
+
+</html>
+
+
+"""
+ render contentType: "text/html", data: html, status: 200
+}
+
+
+def humiW() {
+	def html = """
+
+<!DOCTYPE html>
+<html style="height: 100%;">
+
+<head>
+<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","errorBeacon":"bam.nr-data.net","licenseKey":"199e8a4832","applicationID":"2972453","transactionName":"c11cQBFeWw5TSh9TXlFARkdMQl8NQQ==","queueTime":0,"applicationTime":6,"agent":""}</script>
+<script type="text/javascript">window.NREUM||(NREUM={}),__nr_require=function(e,t,n){function r(n){if(!t[n]){var o=t[n]={exports:{}};e[n][0].call(o.exports,function(t){var o=e[n][1][t];return r(o||t)},o,o.exports)}return t[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({1:[function(e,t,n){function r(){}function o(e,t,n){return function(){return i(e,[f.now()].concat(u(arguments)),t?null:this,n),t?void 0:this}}var i=e("handle"),a=e(2),u=e(3),c=e("ee").get("tracer"),f=e("loader"),s=NREUM;"undefined"==typeof window.newrelic&&(newrelic=s);var p=["setPageViewName","setCustomAttribute","setErrorHandler","finished","addToTrace","inlineHit","addRelease"],d="api-",l=d+"ixn-";a(p,function(e,t){s[t]=o(d+t,!0,"api")}),s.addPageAction=o(d+"addPageAction",!0),s.setCurrentRouteName=o(d+"routeName",!0),t.exports=newrelic,s.interaction=function(){return(new r).get()};var m=r.prototype={createTracer:function(e,t){var n={},r=this,o="function"==typeof t;return i(l+"tracer",[f.now(),e,n],r),function(){if(c.emit((o?"":"no-")+"fn-start",[f.now(),r,o],n),o)try{return t.apply(this,arguments)}catch(e){throw c.emit("fn-err",[arguments,this,e],n),e}finally{c.emit("fn-end",[f.now()],n)}}}};a("setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),function(e,t){m[t]=o(l+t)}),newrelic.noticeError=function(e){"string"==typeof e&&(e=new Error(e)),i("err",[e,f.now()])}},{}],2:[function(e,t,n){function r(e,t){var n=[],r="",i=0;for(r in e)o.call(e,r)&&(n[i]=t(r,e[r]),i+=1);return n}var o=Object.prototype.hasOwnProperty;t.exports=r},{}],3:[function(e,t,n){function r(e,t,n){t||(t=0),"undefined"==typeof n&&(n=e?e.length:0);for(var r=-1,o=n-t||0,i=Array(o<0?0:o);++r<o;)i[r]=e[t+r];return i}t.exports=r},{}],4:[function(e,t,n){t.exports={exists:"undefined"!=typeof window.performance&&window.performance.timing&&"undefined"!=typeof window.performance.timing.navigationStart}},{}],ee:[function(e,t,n){function r(){}function o(e){function t(e){return e&&e instanceof r?e:e?c(e,u,i):i()}function n(n,r,o,i){if(!d.aborted||i){e&&e(n,r,o);for(var a=t(o),u=m(n),c=u.length,f=0;f<c;f++)u[f].apply(a,r);var p=s[y[n]];return p&&p.push([b,n,r,a]),a}}function l(e,t){v[e]=m(e).concat(t)}function m(e){return v[e]||[]}function w(e){return p[e]=p[e]||o(n)}function g(e,t){f(e,function(e,n){t=t||"feature",y[n]=t,t in s||(s[t]=[])})}var v={},y={},b={on:l,emit:n,get:w,listeners:m,context:t,buffer:g,abort:a,aborted:!1};return b}function i(){return new r}function a(){(s.api||s.feature)&&(d.aborted=!0,s=d.backlog={})}var u="nr@context",c=e("gos"),f=e(2),s={},p={},d=t.exports=o();d.backlog=s},{}],gos:[function(e,t,n){function r(e,t,n){if(o.call(e,t))return e[t];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(e,t,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return e[t]=r,r}var o=Object.prototype.hasOwnProperty;t.exports=r},{}],handle:[function(e,t,n){function r(e,t,n,r){o.buffer([e],r),o.emit(e,t,n)}var o=e("ee").get("handle");t.exports=r,r.ee=o},{}],id:[function(e,t,n){function r(e){var t=typeof e;return!e||"object"!==t&&"function"!==t?-1:e===window?0:a(e,i,function(){return o++})}var o=1,i="nr@id",a=e("gos");t.exports=r},{}],loader:[function(e,t,n){function r(){if(!x++){var e=h.info=NREUM.info,t=d.getElementsByTagName("script")[0];if(setTimeout(s.abort,3e4),!(e&&e.licenseKey&&e.applicationID&&t))return s.abort();f(y,function(t,n){e[t]||(e[t]=n)}),c("mark",["onload",a()+h.offset],null,"api");var n=d.createElement("script");n.src="https://"+e.agent,t.parentNode.insertBefore(n,t)}}function o(){"complete"===d.readyState&&i()}function i(){c("mark",["domContent",a()+h.offset],null,"api")}function a(){return E.exists&&performance.now?Math.round(performance.now()):(u=Math.max((new Date).getTime(),u))-h.offset}var u=(new Date).getTime(),c=e("handle"),f=e(2),s=e("ee"),p=window,d=p.document,l="addEventListener",m="attachEvent",w=p.XMLHttpRequest,g=w&&w.prototype;NREUM.o={ST:setTimeout,SI:p.setImmediate,CT:clearTimeout,XHR:w,REQ:p.Request,EV:p.Event,PR:p.Promise,MO:p.MutationObserver};var v=""+location,y={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-1071.min.js"},b=w&&g&&g[l]&&!/CriOS/.test(navigator.userAgent),h=t.exports={offset:u,now:a,origin:v,features:{},xhrWrappable:b};e(1),d[l]?(d[l]("DOMContentLoaded",i,!1),p[l]("load",r,!1)):(d[m]("onreadystatechange",o),p[m]("onload",r)),c("mark",["firstbyte",u],null,"api");var x=0,E=e(4)},{}]},{},["loader"]);</script>
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="//thingspeak.com/highcharts-3.0.8.js"></script>
+  <script src="/assets/application-03e2c06ff0f3b0568246067907657e6d.js"></script>
+    <script type="text/javascript">
+    // user's timezone offset
+    var myOffset = new Date().getTimezoneOffset();
+
+    // converts date format from JSON
+    function getChartDate(d) {
+      // offset in minutes is converted to milliseconds and subtracted so that chart's x-axis is correct
+      return Date.parse(d) - (myOffset * 60000);
+    }
+
+    \$(document).on('page:load ready', function() {
+      // blank array for holding chart data
+      var chartData = [];
+      // variable for the local date in milliseconds
+      var localDate;
+      // variable for the last date added to the chart
+      var last_date;
+
+      // get the data with a webservice call
+      \$.getJSON('https://thingspeak.com/channels/${channel}/field/${humiField}.json?callback=?&amp;offset=0&amp;days=7&amp;timescale=240', function(data) {
+
+          // if no access
+          if (data == '-1') {
+            \$('#chart-container').append('This channel is not public.  To embed charts, the channel must be public or a read key must be specified.');
+          }
+
+          // iterate through each feed
+          \$.each(data.feeds, function() {
+            var p = new Highcharts.Point();
+            // set the proper values
+            var v = this.field${humiField};
+            p.x = getChartDate(this.created_at);
+            p.y = parseFloat(v);
+            // add location if possible
+            if (this.location) {
+              p.name = this.location;
+            }
+            // if a numerical value exists add it
+            if (!isNaN(parseInt(v))
+                            ) {
+              chartData.push(p);
+            }
+          });
+
+          // specify the chart options
+          var chartOptions = {
+            chart: {
+              renderTo: 'chart-container',
+              defaultSeriesType: 'line',
+              backgroundColor: '#ffffff',
+              style: {
+                fontSize: '15pt',
+                fontWeight: 'bold'
+              },              
+              events: {
+                load: function() {
+                  //if dynamic and no "timeslice" options are set
+                  //   GAK 02/16/2013 Let's try to add the last "average" slice if params[:average]
+
+                  var url = 'https://thingspeak.com/channels/${channel}/feed/last.json?callback=?&amp;offset=0&amp;location=true&amp;days=7&amp;timescale=240';
+                  if ("".length > 0) {
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_average.json?callback=?&amp;offset=0&amp;location=true&amp;average=&amp;days=7&amp;timescale=240';
+                  } else if ("".length > 0) {
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_median.json?callback=?&amp;offset=0&amp;location=true&amp;median=&amp;days=7&amp;timescale=240';
+                  } else if ("".length > 0) {
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_sum.json?callback=?&amp;offset=0&amp;location=true&amp;sum=&amp;days=7&amp;timescale=240';
+                  }
+
+                  if ('true' === 'true' && ('30'.length < 1)) {
+                    // push data every 15 seconds
+                    setInterval(function() {
+                      // get the data with a webservice call if we're just getting the last channel
+                      \$.getJSON(url, function(data) {
+                        // if data exists
+                        if (data && data.field${humiField}) {
+
+                          var p = new Highcharts.Point();
+                          // set the proper values
+                          var v = data.field${humiField};
+
+                          p.x = getChartDate(data.created_at);
+                          p.y = parseFloat(v);
+                          // add location if possible
+                          if (data.location) {
+                            p.name = data.location;
+                          }
+                          // get the last date if possible
+                          if (dynamicChart.series[0].data.length > 0) {
+                            last_date = dynamicChart.series[0].data[dynamicChart.series[0].data.length - 1].x;
+                          }
+                          var shift = false; //default for shift
+
+                          //if push is requested in parameters
+                          // then if results is and data.length is < results, shift = false
+                          var results = 360;
+
+                          if (results && dynamicChart.series[0].data.length + 1 >= results) {
+                            shift = true;
+                          }
+                          // if a numerical value exists and it is a new date, add it
+                          if (!isNaN(parseInt(v)) && (p.x != last_date)
+                                                        ) {
+                            dynamicChart.series[0].addPoint(p, true, shift);
+                          } else {
+                            dynamicChart.series[0].data[dynamicChart.series[0].data.length - 1].update(p);
+                          }
+                        }
+                      });
+
+                    }, 15000);
+                  }
+                }
+              }
+            },
+            title: {
+              text: '',
+              style: {
+                fontSize: '20pt',
+                color: '#0003ce',
+                fontWeight: 'bold'
+              }
+            },
+            plotOptions: {
+              line: {
+                color: '#018ec1'
+              },
+              bar: {
+                color: '#018ec1'
+              },
+              column: {
+                color: '#018ec1'
+              },
+              spline: {
+                color: '#018ec1'
+              },
+              series: {
+                marker: {
+                  radius: 3
+                },
+                animation: true,
+                step: false,
+                borderWidth: 0,
+                turboThreshold: 0
+              }
+            },
+            exporting: {
+              enabled: false
+            },
+            tooltip: {
+              // reformat the tooltips so that local times are displayed
+              formatter: function() {
+                var d = new Date(this.x + (myOffset * 60000));
+                var n = (this.point.name === undefined) ? '' : '<br/>' + this.point.name;
+                return this.series.name + ':<b>' + this.y + '</b>' + n + '<br/>' + d.toDateString() + '<br/>' + d.toTimeString().replace();
+              }
+            },
+            xAxis: {
+              type: 'datetime',
+              title: {
+                text: 'test',
+                style: {
+                fontSize: '17pt',
+                color: '#7a7a7a',
+                fontWeight: 'bold'
+              }
+              }
+            },
+            yAxis: {
+              title: {
+                text: '',
+                style: {
+                fontSize: '17pt',
+                color: '#7a7a7a',
+                fontWeight: 'bold'
+              }
+              },
+              min: null ,
+              max: null
+            },
+            legend: {
+              enabled: false
+            },
+            series: [{
+              name: data.channel.field${humiField}
+            }],
+            credits: {
+              text: 'ThingSpeak.com',
+              href: 'https://thingspeak.com/',
+              style: {
+                color: '#D62020'
+              }
+            }
+          };
+
+          // add the data to the chart
+          chartOptions.series[0].data = chartData;
+
+          // set chart labels here so that decoding occurs properly
+          chartOptions.title.text = decodeURIComponent('Humidity%20-%20Week');
+          chartOptions.xAxis.title.text = decodeURIComponent('time');
+          chartOptions.yAxis.title.text = decodeURIComponent('%25');
+
+          // draw the chart
+          var dynamicChart = new Highcharts.Chart(chartOptions);
+
+          // end getJSON success
+        })
+        // chained to getjson, on error
+        .error(function() {
+          \$('#chart-container').html('Invalid Channel.');
+        });
+
+    }); // end document.ready
+    </script>
+</head>
+
+<body style='background-color: #ffffff; height: 100%; margin: 0; padding: 0;'>
+  <div id="chart-container" style="width: 945px; height: 450px; display: block; position:absolute; bottom:0; top:0; left:0; right:0; margin: 5px 15px 15px 0; overflow: hidden;">
+    <img alt="Loader transparent" src="/assets/loader-transparent-dcfdb186859b297e13cf2c077ca08e36.gif" style="position: absolute; margin: auto; top: 0; left: 0; right: 0; bottom: 0;" />
+  </div>
+</body>
+
+</html>
+
+
+"""
+ render contentType: "text/html", data: html, status: 200
+}
+
+
+
 
 def whitelist() {
     ["code.highcharts.com",
@@ -447,14 +1340,14 @@ def setStatus(params){
         updateMinMaxHumidity(humidity)
     	break;
     case "temperature":
-		state.apitemp = params.data
-		polltemp()
 		def para = "${params.data}"
 		String data = para
 		def st = data.replace("C","");
 		def stf = Float.parseFloat(st)
 		def tem = Math.round(stf*10)/10
         sendEvent(name:"temperature", value: tem )
+		state.apitemp = "${tem}"
+		polltemp()        
         updateMinMaxTemps(tem)
 	    checkNewDay()	
 //        log.debug "${st}"
@@ -468,10 +1361,9 @@ def setStatus(params){
     }
 }
 
-
+//${tempField}
 def polltemp() {
-	state.accessKey = "QV3XP6B0X3QF8YT2"
-    def url = "https://api.thingspeak.com/update?key=${state.accessKey}&field1=${state.apitemp}"
+    def url = "https://api.thingspeak.com/update?key=${apiKey}&field${tempField}=${state.apitemp}"
     httpGet(url) { 
         response -> 
         if (response.status != 200 ) {
@@ -491,8 +1383,7 @@ def polltemp() {
 }*/
 
 def pollhumi() {
-	state.accessKey = "QV3XP6B0X3QF8YT2"
-    def url = "https://api.thingspeak.com/update?key=${state.accessKey}&field2=${state.apihumi}"
+    def url = "https://api.thingspeak.com/update?key=${apiKey}&field${humiField}=${state.apihumi}"
     httpGet(url) { 
         response -> 
         if (response.status != 200 ) {
