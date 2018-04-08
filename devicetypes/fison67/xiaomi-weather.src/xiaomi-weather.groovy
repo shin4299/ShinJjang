@@ -840,7 +840,7 @@ def tempW() {
       var last_date;
 
       // get the data with a webservice call
-      \$.getJSON('https://thingspeak.com/channels/${channel}/field/${tempField}.json?callback=?&amp;offset=0&amp;days=7&amp;timescale=240', function(data) {
+      \$.getJSON('https://thingspeak.com/channels/${channel}/field/${tempField}.json?callback=?&amp;offset=0&amp;days=7&amp;timescale=60', function(data) {
 
           // if no access
           if (data == '-1') {
@@ -880,13 +880,13 @@ def tempW() {
                   //if dynamic and no "timeslice" options are set
                   //   GAK 02/16/2013 Let's try to add the last "average" slice if params[:average]
 
-                  var url = 'https://thingspeak.com/channels/${channel}/feed/last.json?callback=?&amp;offset=0&amp;location=true&amp;days=7&amp;timescale=240';
+                  var url = 'https://thingspeak.com/channels/${channel}/feed/last.json?callback=?&amp;offset=0&amp;location=true&amp;days=7&amp;timescale=60';
                   if ("".length > 0) {
-                    url = 'https://thingspeak.com/channels/${channel}/feed/last_average.json?callback=?&amp;offset=0&amp;location=true&amp;average=&amp;days=7&amp;timescale=240';
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_average.json?callback=?&amp;offset=0&amp;location=true&amp;average=&amp;days=7&amp;timescale=60';
                   } else if ("".length > 0) {
-                    url = 'https://thingspeak.com/channels/${channel}/feed/last_median.json?callback=?&amp;offset=0&amp;location=true&amp;median=&amp;days=7&amp;timescale=240';
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_median.json?callback=?&amp;offset=0&amp;location=true&amp;median=&amp;days=7&amp;timescale=60';
                   } else if ("".length > 0) {
-                    url = 'https://thingspeak.com/channels/${channel}/feed/last_sum.json?callback=?&amp;offset=0&amp;location=true&amp;sum=&amp;days=7&amp;timescale=240';
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_sum.json?callback=?&amp;offset=0&amp;location=true&amp;sum=&amp;days=7&amp;timescale=60';
                   }
 
                   if ('true' === 'true' && ('30'.length < 1)) {
@@ -1082,7 +1082,7 @@ def humiW() {
       var last_date;
 
       // get the data with a webservice call
-      \$.getJSON('https://thingspeak.com/channels/${channel}/field/${humiField}.json?callback=?&amp;offset=0&amp;days=7&amp;timescale=240', function(data) {
+      \$.getJSON('https://thingspeak.com/channels/${channel}/field/${humiField}.json?callback=?&amp;offset=0&amp;days=7&amp;timescale=60', function(data) {
 
           // if no access
           if (data == '-1') {
@@ -1122,13 +1122,13 @@ def humiW() {
                   //if dynamic and no "timeslice" options are set
                   //   GAK 02/16/2013 Let's try to add the last "average" slice if params[:average]
 
-                  var url = 'https://thingspeak.com/channels/${channel}/feed/last.json?callback=?&amp;offset=0&amp;location=true&amp;days=7&amp;timescale=240';
+                  var url = 'https://thingspeak.com/channels/${channel}/feed/last.json?callback=?&amp;offset=0&amp;location=true&amp;days=7&amp;timescale=60';
                   if ("".length > 0) {
-                    url = 'https://thingspeak.com/channels/${channel}/feed/last_average.json?callback=?&amp;offset=0&amp;location=true&amp;average=&amp;days=7&amp;timescale=240';
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_average.json?callback=?&amp;offset=0&amp;location=true&amp;average=&amp;days=7&amp;timescale=60';
                   } else if ("".length > 0) {
-                    url = 'https://thingspeak.com/channels/${channel}/feed/last_median.json?callback=?&amp;offset=0&amp;location=true&amp;median=&amp;days=7&amp;timescale=240';
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_median.json?callback=?&amp;offset=0&amp;location=true&amp;median=&amp;days=7&amp;timescale=60';
                   } else if ("".length > 0) {
-                    url = 'https://thingspeak.com/channels/${channel}/feed/last_sum.json?callback=?&amp;offset=0&amp;location=true&amp;sum=&amp;days=7&amp;timescale=240';
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_sum.json?callback=?&amp;offset=0&amp;location=true&amp;sum=&amp;days=7&amp;timescale=60';
                   }
 
                   if ('true' === 'true' && ('30'.length < 1)) {
@@ -1337,6 +1337,7 @@ def setStatus(params){
 		def stf = Float.parseFloat(data)
 		def humidity = Math.round(stf)
     	sendEvent(name:"humidity", value: humidity )
+		pollhumi()                
         updateMinMaxHumidity(humidity)
     	break;
     case "temperature":
