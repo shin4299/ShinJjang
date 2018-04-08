@@ -140,9 +140,9 @@ metadata {
 		input name: "selectedLang", title:"Select a language" , type: "enum", required: true, options: ["English", "Korean"], defaultValue: "English", description:"Language for DTH"
 		input "apiKey", "text", type: "password", title: "Write API Key", description: "thingspeak.com에서 계정을 만들고 채널을 생성하세요.", required: true 
 		input "channel", "text", title: "Channel ID", description: "온습도를 기록할 공개 채널을 만들고 채널 ID를 입력해주세요.", required: true
-		input name:"tempField", type:"number", title:"Select Temperature Field", description:"Select Temperature Field"
-		input name:"humiField", type:"number", title:"Select Humidity Field", description:"Select Humidity Field"
-        
+		input name:"tempField", type:"number", title:"Select Temperature Field", description:"Select Temperature Field", required: true
+		input name:"humiField", type:"number", title:"Select Humidity Field", description:"Select Humidity Field", required: true
+        input "refreshRateMin", "enum", title: "Update interval", defaultValue: 30, options:[5: "5 Min", 10: "10 Min", 15 : "15 Min", 20: "20 Min", 30: "30 Min", ], description: "온습도 업데이트 최소 주기 설정", displayDuringSetup: true        
 	}
 
 
@@ -355,7 +355,7 @@ def tempD() {
       var last_date;
 
       // get the data with a webservice call
-      \$.getJSON('https://thingspeak.com/channels/${channel}/field/${tempField}.json?callback=?&amp;offset=0&amp;results=360&amp;timescale=30', function(data) {
+      \$.getJSON('https://thingspeak.com/channels/${channel}/field/${tempField}.json?callback=?&amp;offset=0&amp;days=1&amp;timescale=30', function(data) {
 
           // if no access
           if (data == '-1') {
@@ -395,13 +395,13 @@ def tempD() {
                   //if dynamic and no "timeslice" options are set
                   //   GAK 02/16/2013 Let's try to add the last "average" slice if params[:average]
 
-                  var url = 'https://thingspeak.com/channels/${channel}/feed/last.json?callback=?&amp;offset=0&amp;location=true&amp;results=360&amp;timescale=30';
+                  var url = 'https://thingspeak.com/channels/${channel}/feed/last.json?callback=?&amp;offset=0&amp;location=true&amp;days=1&amp;timescale=30';
                   if ("".length > 0) {
-                    url = 'https://thingspeak.com/channels/${channel}/feed/last_average.json?callback=?&amp;offset=0&amp;location=true&amp;average=&amp;results=360&amp;timescale=30';
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_average.json?callback=?&amp;offset=0&amp;location=true&amp;average=&amp;days=1&amp;timescale=30';
                   } else if ("".length > 0) {
-                    url = 'https://thingspeak.com/channels/${channel}/feed/last_median.json?callback=?&amp;offset=0&amp;location=true&amp;median=&amp;results=360&amp;timescale=30';
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_median.json?callback=?&amp;offset=0&amp;location=true&amp;median=&amp;days=1&amp;timescale=30';
                   } else if ("".length > 0) {
-                    url = 'https://thingspeak.com/channels/${channel}/feed/last_sum.json?callback=?&amp;offset=0&amp;location=true&amp;sum=&amp;results=360&amp;timescale=30';
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_sum.json?callback=?&amp;offset=0&amp;location=true&amp;sum=&amp;days=1&amp;timescale=30';
                   }
 
                   if ('true' === 'true' && ('30'.length < 1)) {
@@ -599,7 +599,7 @@ def humiD() {
       var last_date;
 
       // get the data with a webservice call
-      \$.getJSON('https://thingspeak.com/channels/${channel}/field/${humiField}.json?callback=?&amp;offset=0&amp;results=360&amp;timescale=30', function(data) {
+      \$.getJSON('https://thingspeak.com/channels/${channel}/field/${humiField}.json?callback=?&amp;offset=0&amp;days=1&amp;timescale=30', function(data) {
 
           // if no access
           if (data == '-1') {
@@ -639,13 +639,13 @@ def humiD() {
                   //if dynamic and no "timeslice" options are set
                   //   GAK 02/16/2013 Let's try to add the last "average" slice if params[:average]
 
-                  var url = 'https://thingspeak.com/channels/${channel}/feed/last.json?callback=?&amp;offset=0&amp;location=true&amp;results=360&amp;timescale=30';
+                  var url = 'https://thingspeak.com/channels/${channel}/feed/last.json?callback=?&amp;offset=0&amp;location=true&amp;days=1&amp;timescale=30';
                   if ("".length > 0) {
-                    url = 'https://thingspeak.com/channels/${channel}/feed/last_average.json?callback=?&amp;offset=0&amp;location=true&amp;average=&amp;results=360&amp;timescale=30';
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_average.json?callback=?&amp;offset=0&amp;location=true&amp;average=&amp;days=1&amp;timescale=30';
                   } else if ("".length > 0) {
-                    url = 'https://thingspeak.com/channels/${channel}/feed/last_median.json?callback=?&amp;offset=0&amp;location=true&amp;median=&amp;results=360&amp;timescale=30';
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_median.json?callback=?&amp;offset=0&amp;location=true&amp;median=&amp;days=1&amp;timescale=30';
                   } else if ("".length > 0) {
-                    url = 'https://thingspeak.com/channels/${channel}/feed/last_sum.json?callback=?&amp;offset=0&amp;location=true&amp;sum=&amp;results=360&amp;timescale=30';
+                    url = 'https://thingspeak.com/channels/${channel}/feed/last_sum.json?callback=?&amp;offset=0&amp;location=true&amp;sum=&amp;days=1&amp;timescale=30';
                   }
 
                   if ('true' === 'true' && ('30'.length < 1)) {
@@ -1370,6 +1370,9 @@ def polltemp() {
             log.debug "ThingSpeak logging failed, status = ${response.status}"
         }
     }
+    def refreshTime = (refreshRateMin as int) * 60
+    	runIn(refreshTime, polltemp)        
+        log.debug "Update Temperature to ThingSpeak = ${state.apitemp}C"
 }    
 /*    if (state.accessKey && state.apitemp) {
         def params = [
@@ -1390,6 +1393,9 @@ def pollhumi() {
             log.debug "ThingSpeak logging failed, status = ${response.status}"
         }
     }
+    def refreshTime = (refreshRateMin as int) * 60
+	    runIn(refreshTime, pollhumi)
+        log.debug "Update Humidity to ThingSpeak = ${state.apihumi}%"
 }    
     
 /*    if (state.accessKey && state.apihumi) {
@@ -1404,6 +1410,8 @@ def pollhumi() {
 }*/
 def updated() {
     setLanguage(settings.selectedLang)
+    polltemp()
+    pollhumi()
     
     if(state.sunMaxTemp == null) state.sunMaxTemp = 0
     if(state.sunMinTemp == null) state.sunMinTemp = 0
