@@ -48,20 +48,31 @@ definition(
 preferences {
    page(name: "mainPage")
    page(name: "monitorPage")
+   page(name: "langPage")
 }
 
 
 def mainPage() {
+	def languageList = ["English", "Korean"]
     dynamicPage(name: "mainPage", title: "Home Assistant Manage", nextPage: null, uninstall: true, install: true) {
    		section("Request New Devices"){
         	input "address", "string", title: "Server address", required: true
+            input(name: "selectedLang", title:"Select a language" , type: "enum", required: true, options: languageList, defaultValue: "English", description:"Language for DTH")
         	href url:"http://${settings.address}", style:"embedded", required:false, title:"Management", description:"This makes you easy to setup"
         }
-       
+        
        	section() {
             paragraph "View this SmartApp's configuration to use it in other places."
             href url:"${apiServerUrl("/api/smartapps/installations/${app.id}/config?access_token=${state.accessToken}")}", style:"embedded", required:false, title:"Config", description:"Tap, select, copy, then click \"Done\""
        	}
+    }
+}
+
+def langPage(){
+	dynamicPage(name: "langPage", title:"Select a Language") {
+    	section ("Select") {
+        	input "Korean",  title: "Korean", multiple: false, required: false
+        }
     }
 }
 
@@ -85,6 +96,18 @@ def updated() {
     initialize()
 }
 
+def updateLanguage(){
+    log.debug "Languge >> ${settings.selectedLang}"
+    def list = getChildDevices()
+    list.each { child ->
+        try{
+        	child.setLanguage(settings.selectedLang)
+        }catch(e){
+        	log.error "DTH is not supported to select language"
+        }
+    }
+}
+
 def initialize() {
 	log.debug "initialize"
     
@@ -104,6 +127,8 @@ def initialize() {
     log.debug options
     def myhubAction = new physicalgraph.device.HubAction(options, null, [callback: null])
     sendHubCommand(myhubAction)
+    
+    updateLanguage()
 }
 
 def dataCallback(physicalgraph.device.HubResponse hubResponse) {
@@ -150,20 +175,13 @@ def addDevice(){
         def dth = null
         def name = null
 
-
         if(params.type == "zhimi.airpurifier.m1" || params.type == "zhimi.airpurifier.v1" || params.type == "zhimi.airpurifier.v2" || params.type ==  "zhimi.airpurifier.v3" || params.type ==  "zhimi.airpurifier.v6" || params.type ==  "zhimi.airpurifier.ma2"){
             dth = "Xiaomi Air Purifier";
-            name = "Xiaomi Air Purifier";	
-        }else if(params.type == "zhimi.fan.v3"){
-        	dth = "Xiaomi Fan";
-            name = "Xiaomi Fan";
-        }else if(params.type == "zhimi.airmonitor.v1"){
-        	dth = "Xiaomi Air Monitor";
-            name = "Xiaomi Air Monitor";
+            name = "Xiaomi Air Purifier";
         }else if(params.type == "lumi.gateway.v2"){
         	dth = "Xiaomi Gateway";
             name = "Xiaomi Gateway V2";
-        }else if(params.type == "lumi.gateway.v3"){
+        }else if(params.type == "lumi.gateway.v3" || params.type == "lumi.acpartner.v1"){
         	dth = "Xiaomi Gateway";
             name = "Xiaomi Gateway V3";
         }else if(params.type == "lumi.magnet" || params.type == "lumi.magnet.aq2"){
@@ -175,9 +193,12 @@ def addDevice(){
         }else if(params.type == "lumi.switch"){
         	dth = "Xiaomi Button Ori";
             name = "Xiaomi Button Ori";
-        }else if(params.type == "lumi.86sw1" || params.type == "lumi.switch.v2"){
+        }else if(params.type == "lumi.switch.v2"){
         	dth = "Xiaomi Button AQ";
             name = "Xiaomi Button AQ";
+        }else if(params.type == "lumi.86sw1"){
+        	dth = "Xiaomi Button SW1";
+            name = "Xiaomi Button SW1";
         }else if(params.type == "lumi.86sw2"){
         	dth = "Xiaomi Button SW";
             name = "Xiaomi Button SW";
@@ -187,7 +208,7 @@ def addDevice(){
         }else if(params.type == "zhimi.humidifier.v1" || params.type == "zhimi.humidifier.ca1"){
         	dth = "Xiaomi Humidifier";
             name = "Xiaomi Humidifier";
-        }else if(params.type == "yeelink.light.color1"){
+       	}else if(params.type == "yeelink.light.color1"){
         	dth = "Xiaomi Light";
             name = "Xiaomi Light";
         }else if(params.type == "yeelink.light.strip1"){
@@ -217,83 +238,79 @@ def addDevice(){
         }else if(params.type == "lumi.sensor_ht"){
         	dth = "Xiaomi Sensor HT";
             name = "Xiaomi Sensor HT";
+        }else if(params.type == "zhimi.airmonitor.v1"){
+        	dth = "Xiaomi Air Monitor";
+            name = "Xiaomi Air Monitor";
         }else if(params.type == "lumi.weather"){
         	dth = "Xiaomi Weather";
             name = "Xiaomi Weather";
         }else if(params.type == "lumi.smoke"){
         	dth = "Xiaomi Smoke Detector";
-            name = "Xiaomi Smoke Detector";        	
-        }else{
-        	dth = "Xiaomi Dummy";
-            name = "Xiaomi Dummy";
-        	
-        }
+            name = "Xiaomi Smoke Dectector";
+	}else if(params.type == "lumi.gas"){
+		dth = "Xiaomi Gas Detector";
+            name = "Xiaomi Gas Dectector";
+	}else if(params.type == "lumi.water"){
+		dth = "Xiaomi Water Detector";
+            name = "Xiaomi Water Dectector";
+	}
+
         
         if(dth == null){
         	log.warn("Failed >> Non exist DTH!!! Type >> " + type);
             def resultString = new groovy.json.JsonOutput().toJson("result":"nonExist")
             render contentType: "application/javascript", data: resultString
-/*}else if(params.type == "lumi.ctrl_neutral1" || params.type == "lumi.ctrl_ln1"){
-try{
-def childDevice = addChildDevice("fison67", dth, (dni + "-1"), location.hubs[0].id, [
-"label": name + "1"
-]) 
-childDevice.setInfo(settings.address, id, "1")
-log.debug "Success >> ADD Device : ${type} DNI=${dni}"
-def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
-render contentType: "application/javascript", data: resultString
-}catch(e){
-log.error "Failed >> ADD Device Error : ${e}"
-def resultString = new groovy.json.JsonOutput().toJson("result":"fail")
-render contentType: "application/javascript", data: resultString
-}*/
-}else if(params.type == "lumi.ctrl_neutral1" || params.type == "lumi.ctrl_ln1"){
-try{
-def index = 1;
-def childDevice = addChildDevice("fison67", dth, (dni + "-" + index), location.hubs[0].id, [
-"label": name + index
-]) 
-childDevice.setInfo(settings.address, id, index.toString())
-log.debug "Success >> ADD Device : ${type} DNI=${dni}"
-def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
-render contentType: "application/javascript", data: resultString
-}catch(e){
-log.error "Failed >> ADD Device Error : ${e}"
-def resultString = new groovy.json.JsonOutput().toJson("result":"fail")
-render contentType: "application/javascript", data: resultString
-}
-}else if(params.type == "lumi.ctrl_neutral2" || params.type == "lumi.ctrl_ln2"){
-try{
-def index = 1;
-for (def i = 0; i <2; i++) {
-def childDevice = addChildDevice("fison67", dth, (dni + "-" + index), location.hubs[0].id, [
-"label": name + index
-]) 
-childDevice.setInfo(settings.address, id, index.toString())
-log.debug "Success >> ADD Device : ${type} DNI=${dni}"
-index += 1
-}
-def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
-render contentType: "application/javascript", data: resultString
-
-}catch(e){
-log.error "Failed >> ADD Device Error : ${e}"
-def resultString = new groovy.json.JsonOutput().toJson("result":"fail")
-render contentType: "application/javascript", data: resultString
-}
-}else{            try{
+        }else if(params.type == "lumi.ctrl_neutral1" || params.type == "lumi.ctrl_ln1"){
+        	try{
+                def childDevice = addChildDevice("fison67", dth, (dni + "-1"), location.hubs[0].id, [
+                    "label": name + "1"
+                ])    
+                childDevice.setInfo(settings.address, id, "1")
+                
+                try{ childDevice.refresh() }catch(e){}
+                try{ childDevice.setLanguage(settings.selectedLang) }catch(e){}
+                
+                log.debug "Success >> ADD Device : ${type} DNI=${dni}"
+                def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
+                render contentType: "application/javascript", data: resultString
+            }catch(e){
+                log.error "Failed >> ADD Device Error : ${e}"
+                def resultString = new groovy.json.JsonOutput().toJson("result":"fail")
+                render contentType: "application/javascript", data: resultString
+            }
+        }else if(params.type == "lumi.ctrl_neutral2" || params.type == "lumi.ctrl_ln2"){
+        	try{
+            	def index = 1;
+            	for (def i = 0; i <2; i++) {
+                	def childDevice = addChildDevice("fison67", dth, (dni + "-" + index), location.hubs[0].id, [
+                        "label": name + index
+                    ])    
+                    childDevice.setInfo(settings.address, id, index.toString())
+                    
+                	try{ childDevice.refresh() }catch(e){}
+                	try{ childDevice.setLanguage(settings.selectedLang) }catch(e){}
+                    
+                    log.debug "Success >> ADD Device : ${type} DNI=${dni}"
+                    index += 1
+                }
+                def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
+                render contentType: "application/javascript", data: resultString
+            	
+            }catch(e){
+                log.error "Failed >> ADD Device Error : ${e}"
+                def resultString = new groovy.json.JsonOutput().toJson("result":"fail")
+                render contentType: "application/javascript", data: resultString
+            }
+        }else{
+            try{
                 def childDevice = addChildDevice("fison67", dth, dni, location.hubs[0].id, [
                     "label": name
                 ])    
                 childDevice.setInfo(settings.address, id)
                 log.debug "Success >> ADD Device : ${type} DNI=${dni}"
-                data.each { key, value ->
-                //	log.debug "Key:" + key + ", " + value
-                	def map = [:]
-                    map['key'] = key
-                    map['data'] = value
-                	childDevice.setStatus(map)
-                }
+         
+                try{ childDevice.refresh() }catch(e){}
+                try{ childDevice.setLanguage(settings.selectedLang) }catch(e){}
                 
                 def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
                 render contentType: "application/javascript", data: resultString
