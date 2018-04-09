@@ -327,7 +327,7 @@ def setStatus(params){
 		String data = para
 		def stf = Float.parseFloat(data)
 		def humidity = Math.round(stf)
-    	sendEvent(name:"humidity", value: humidity )
+    	sendEvent(name:"humidity", value: humidity, unit: "%")
         updateMinMaxHumidity(humidity)
     	break;
     case "temperature":
@@ -662,7 +662,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         
  		sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
         sendEvent(name:"temperature", value: jsonObj.properties.temperature.value, unit: "C" )
-        sendEvent(name:"humidity", value: jsonObj.properties.relativeHumidity)
+        sendEvent(name:"humidity", value: jsonObj.properties.relativeHumidity, unit: "%")
         updateLastTime()
         checkNewDay()
     } catch (e) {
