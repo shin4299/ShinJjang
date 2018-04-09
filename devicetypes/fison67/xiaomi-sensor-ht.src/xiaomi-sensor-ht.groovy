@@ -336,14 +336,14 @@ def setStatus(params){
 		def st = data.replace("C","");
 		def stf = Float.parseFloat(st)
 		def tem = Math.round(stf*10)/10
-        sendEvent(name:"temperature", value: tem )
+        sendEvent(name:"temperature", value: tem , unit: "C" )
 		state.apitemp = "${tem}"
         updateMinMaxTemps(tem)
 	    checkNewDay()	
 //        log.debug "${st}"
     	break;
     case "batteryLevel":
-    	sendEvent(name:"battery", value: params.data )
+    	sendEvent(name:"battery", value: params.data)
     	break;				
     }
 }
@@ -661,7 +661,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         state.apihumi = jsonObj.properties.relativeHumidity
         
  		sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
-        sendEvent(name:"temperature", value: jsonObj.properties.temperature.value)
+        sendEvent(name:"temperature", value: jsonObj.properties.temperature.value, unit: "C" )
         sendEvent(name:"humidity", value: jsonObj.properties.relativeHumidity)
         updateLastTime()
         checkNewDay()
