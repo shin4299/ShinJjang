@@ -104,8 +104,13 @@ def setStatus(params){
     case "power":
     	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
     	break;
-    case "powerLoad":
-    	sendEvent(name:"power", value: params.data)
+    case "powerLoad":params.data.replace(" lx","")
+                def para = "${params.data}"
+                String data = para
+                def st = data.replace(" w","");
+                def stf = Float.parseFloat(st)
+                def power = Math.round(stf)/1000		
+    	sendEvent(name:"power", value: power, unit: "W")
     	break;
     case "loadVoltage":
     	sendEvent(name:"powerVolt", value: params.data)
