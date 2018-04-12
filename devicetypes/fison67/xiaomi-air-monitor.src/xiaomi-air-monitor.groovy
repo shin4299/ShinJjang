@@ -332,6 +332,50 @@ def setEndMin() {
     }
 }
 
+def setUpTime(){
+	log.debug "setUpTime >> ${state.id}"
+	if(device.currentValue('setbe_ap') == 'am'){
+    		if(device.currentValue('setbe_hour') == '12'){
+        	state.beHour = 23
+            } else { state.beHour = Integer.parseInt(device.currentValue('setbe_hour')) - 1
+            }
+     } else {
+     		if(device.currentValue('setbe_hour') == '12'){
+        	state.beHour = 11
+            } else { state.beHour = Integer.parseInt(device.currentValue('setbe_hour')) + 11
+            }
+     }
+    if(device.currentValue('setend_ap') == 'am'){
+    		if(device.currentValue('setend_hour') == '12'){
+        	state.endHour = 23
+            } else { state.endHour = Integer.parseInt(device.currentValue('setend_hour')) - 1
+            }
+     } else {
+     		if(device.currentValue('setend_hour') == '12'){
+        	state.endHour = 11
+            } else { state.endHour = Integer.parseInt(device.currentValue('setend_hour')) + 11
+            }
+     }
+    def beHour = state.beHour
+    def endHour = state.endHour
+    def beMin = Integer.parseInt(device.currentValue('setbe_min'))
+    def endMin = Integer.parseInt(device.currentValue('setend_min'))
+    
+	log.debug "setUpTime >> Begin ${beHour}h ${beMin}min End ${endHour}h ${endMin}min"
+    log.debug "setUpTime >> Begin ${device.currentValue('setbe_ap')}h ${device.currentValue('setbe_hour')}min End ${endHour}h ${endMin}min"
+    def body = [
+        "id": state.id,
+        "cmd": "nightTime",
+        "data": [ 
+				"beginHour": beHour, 
+				"beginMinute": beMin, 
+				"endHour": endHour, 
+				"endMinute": endMin
+				]
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
+}
 
 def updateLastTime(){
 	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
