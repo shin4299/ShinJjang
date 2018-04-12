@@ -1331,7 +1331,6 @@ def setStatus(params){
  	switch(params.key){
     case "relativeHumidity":
 		state.apihumi = params.data
-		pollhumi()
 		def para = "${params.data}"
 		String data = para
 		def stf = Float.parseFloat(data)
