@@ -71,7 +71,7 @@ metadata {
         attribute "mode", "enum", ["auto", "silent", "medium", "high"]
         attribute "buzzer", "enum", ["on", "off"]
         attribute "ledBrightness", "enum", ["off", "dim", "bright"]
-        attribute "water", "string"
+        attribute "water", "number"
         attribute "use_time", "string"
         attribute "dry", "enum", ["on", "off"]
         

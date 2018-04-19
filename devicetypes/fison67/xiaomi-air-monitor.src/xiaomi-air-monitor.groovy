@@ -73,6 +73,8 @@ metadata {
 
         attribute "clock", "enum", ["on", "off"]
         attribute "night", "enum", ["on", "off"]
+        attribute "setbeap", "enum", ["am", "pm"]
+        attribute "setendap", "enum", ["am", "pm"]
         
         attribute "lastCheckin", "Date"
      
@@ -181,14 +183,22 @@ metadata {
         valueTile("setend_label", "device.setend_label", decoration: "flat", width: 2, height: 1) {
             state "default", label:'${currentValue}'
         }
-        standardTile("setbe_ap", "device.setbe_ap", inactiveLabel: false, decoration: "flat") {
-            state "am", label:"am", action:"setBePm", icon:"st.Weather.weather14", backgroundColor:"#edd884", nextState:"pm"
-            state "pm", label:"pm", action:"setBeAm", icon:"st.Weather.weather4", backgroundColor:"#7a88bc", nextState:"am"
+
+        standardTile("setbeap", "device.setbeap", decoration: "flat") {
+            state "am", label:"am", action:"setBePm", icon:"st.Weather.weather14", backgroundColor:"#edd884", nextState:"am.."
+            state "pm", label:"pm", action:"setBeAm", icon:"st.Weather.weather4", backgroundColor:"#7a88bc", nextState:"pm.."
+
+            state "am..", label:"..", action:"setBePm", icon:"st.Weather.weather14", backgroundColor:"#edd884", nextState:"pm.."
+            state "pm..", label:"..", action:"setBeAm", icon:"st.Weather.weather4", backgroundColor:"#7a88bc", nextState:"am.."
         }
-        standardTile("setend_ap", "device.setend_ap", inactiveLabel: false, decoration: "flat") {
-            state "am", label:"am", action:"setEndPm", icon:"st.Weather.weather14", backgroundColor:"#edd884", nextState:"pm"
-            state "pm", label:"pm", action:"setEndAm", icon:"st.Weather.weather4", backgroundColor:"#7a88bc", nextState:"am"
+        standardTile("setendap", "device.setendap", decoration: "flat") {
+            state "am", label:"am", action:"setEndPm", icon:"st.Weather.weather14", backgroundColor:"#edd884", nextState:"am.."
+            state "pm", label:"pm", action:"setEndAm", icon:"st.Weather.weather4", backgroundColor:"#7a88bc", nextState:"pm.."
+
+            state "am..", label:"..", action:"setEndPm", icon:"st.Weather.weather14", backgroundColor:"#edd884", nextState:"pm.."
+            state "pm..", label:"..", action:"setEndPm", icon:"st.Weather.weather4", backgroundColor:"#7a88bc", nextState:"am.."
         }
+        
         valueTile("setbe_hour", "device.setbe_hour", inactiveLabel: false, decoration: "flat") {
             state "default", label:'${currentValue}h', action:"setBeHour"
             }
@@ -209,10 +219,10 @@ metadata {
         }
         
         main (["pm25"])
-		details(["fineDustLevel", "switch", "power_label", "display_label", "night_label", "refresh_label", 
-    		"powerSource", "clock", "night", "refresh",
-            "setbe_label", "setbe_ap", "setbe_hour", "setbe_min", "timeset_label", 
-            "setend_label", "setend_ap", "setend_hour", "setend_min"])
+		details(["fineDustLevel", "switch", "display_label", "night_label", "power_label", "refresh_label", 
+    		"clock", "night", "powerSource", "refresh",
+            "setbe_label", "setbe_hour", "setbe_min", "setbeap", "timeset_label", 
+            "setend_label", "setend_hour", "setend_min", "setendap"])
 		
 	}
 }
@@ -334,7 +344,7 @@ def setEndMin() {
 
 def setUpTime(){
 	log.debug "setUpTime >> ${state.id}"
-	if(device.currentValue('setbe_ap') == 'am'){
+	if(device.currentValue('setbeap') == 'am'){
     		if(device.currentValue('setbe_hour') == '12'){
         	state.beHour = 23
             } else { state.beHour = Integer.parseInt(device.currentValue('setbe_hour')) - 1
@@ -345,7 +355,7 @@ def setUpTime(){
             } else { state.beHour = Integer.parseInt(device.currentValue('setbe_hour')) + 11
             }
      }
-    if(device.currentValue('setend_ap') == 'am'){
+    if(device.currentValue('setendap') == 'am'){
     		if(device.currentValue('setend_hour') == '12'){
         	state.endHour = 23
             } else { state.endHour = Integer.parseInt(device.currentValue('setend_hour')) - 1
@@ -362,7 +372,7 @@ def setUpTime(){
     def endMin = Integer.parseInt(device.currentValue('setend_min'))
     
 	log.debug "setUpTime >> Begin ${beHour}h ${beMin}min End ${endHour}h ${endMin}min"
-    log.debug "setUpTime >> Begin ${device.currentValue('setbe_ap')}h ${device.currentValue('setbe_hour')}min End ${endHour}h ${endMin}min"
+    log.debug "setUpTime >> Begin ${device.currentValue('setbeap')}h ${device.currentValue('setbe_hour')}min End ${endHour}h ${endMin}min"
     def body = [
         "id": state.id,
         "cmd": "nightTime",
@@ -458,22 +468,25 @@ def nightOff(){
 }
 
 def setBeAm() {
-sendEvent(state:"setbe_ap", value: "am")
+	sendEvent(name:"setbeap", value: "am")
+    log.debug "setBeginAP >> am"
 }
 
 def setBePm() {
-sendEvent(state:"setbe_ap", value: "pm")
+	sendEvent(name:"setbeap", value: "pm" )
+    log.debug "setBeginAP >> pm"
 }
 
 def setEndAm() {
-sendEvent(state:"setend_ap", value: "am")
+	sendEvent(name:"setendap", value: "am")
+    log.debug "setEndAP >> am"
 }
 
 def setEndPm() {
-sendEvent(state:"setend_ap", value: "pm")
+	sendEvent(name:"setendap", value: "pm")
+    log.debug "setEndAP >> pm"
 }
 
-//[state:[batteryLevel:100, charging:true, aqi:7, power:true], properties:[batteryLevel:100, pm2.5:7, charging:true, power:true]]
 def callback(physicalgraph.device.HubResponse hubResponse){
 	def msg
     try {
@@ -502,23 +515,23 @@ def beginTime() {
     def hours = ((state.BeginTime/(60*60)).intValue() %24).intValue()
     log.debug "refresh begin time '${hours}'/'${minutes}'"    
 	if(hours < 11) {
-		sendEvent(name:"setbe_ap", value: "am" )
+		sendEvent(name:"setbeap", value: "am" )
 		sendEvent(name:"setbe_hour", value: hours + 1 )
 		sendEvent(name:"setbe_min", value: minutes )
     } else if(hours == 11) {
-		sendEvent(name:"setbe_ap", value: "pm" )
+		sendEvent(name:"setbeap", value: "pm" )
 		sendEvent(name:"setbe_hour", value: hours + 1 )
 		sendEvent(name:"setbe_min", value: minutes )
     } else if(hours == 23) {
-		sendEvent(name:"setbe_ap", value: "am" )
+		sendEvent(name:"setbeap", value: "am" )
 		sendEvent(name:"setbe_hour", value: hours - 11 )
 		sendEvent(name:"setbe_min", value: minutes )
     } else if(hours == 24) {
-		sendEvent(name:"setbe_ap", value: "am" )
+		sendEvent(name:"setbeap", value: "am" )
 		sendEvent(name:"setbe_hour", value: 1 )
 		sendEvent(name:"setbe_min", value: minutes )
     } else {
-		sendEvent(name:"setbe_ap", value: "pm" )
+		sendEvent(name:"setbeap", value: "pm" )
 		sendEvent(name:"setbe_hour", value: hours - 11 )
 		sendEvent(name:"setbe_min", value: minutes )
     }
@@ -530,23 +543,23 @@ def endTime() {
     log.debug "refresh end time '${hours}'/'${minutes}'"    
 
 	if(hours < 11) {
-		sendEvent(name:"setend_ap", value: "am" )
+		sendEvent(name:"setendap", value: "am" )
 		sendEvent(name:"setend_hour", value: hours + 1 )
 		sendEvent(name:"setend_min", value: minutes )
     } else if(hours == 11) {
-		sendEvent(name:"setend_ap", value: "pm" )
+		sendEvent(name:"setendap", value: "pm" )
 		sendEvent(name:"setend_hour", value: hours + 1 )
 		sendEvent(name:"setend_min", value: minutes )
     } else if(hours == 23) {
-		sendEvent(name:"setend_ap", value: "am" )
+		sendEvent(name:"setendap", value: "am" )
 		sendEvent(name:"setend_hour", value: hours - 11 )
 		sendEvent(name:"setend_min", value: minutes )
     } else if(hours == 24) {
-		sendEvent(name:"setend_ap", value: "am" )
+		sendEvent(name:"setendap", value: "am" )
 		sendEvent(name:"setend_hour", value: 1 )
 		sendEvent(name:"setend_min", value: minutes )
     } else {
-		sendEvent(name:"setend_ap", value: "pm" )
+		sendEvent(name:"setendap", value: "pm" )
 		sendEvent(name:"setend_hour", value: hours - 11 )
 		sendEvent(name:"setend_min", value: minutes )
     }

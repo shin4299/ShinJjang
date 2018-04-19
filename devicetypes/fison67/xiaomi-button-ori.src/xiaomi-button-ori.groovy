@@ -35,7 +35,7 @@ metadata {
         capability "Button"
         capability "Configuration"
         capability "Battery"
-	capability "Refresh"
+		capability "Refresh"
 
         attribute "status", "string"
         
