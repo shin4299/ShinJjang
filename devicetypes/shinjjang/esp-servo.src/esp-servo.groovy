@@ -229,7 +229,10 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 	def msg, json, status
     try {
         msg = parseLanMessage(hubResponse.description)
-        def jsonObj = msg.json
+        log.debug msg.body
+        def jsonObj = new JsonSlurper().parseText(msg.body)
+
+//        def jsonObj = msg.json
         setData(jsonObj)
 //	log.debug "SetData >> ${jsonObj.Sensors}"
         
