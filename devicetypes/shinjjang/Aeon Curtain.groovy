@@ -12,7 +12,7 @@
  *
  */
 metadata {
-	definition (name: "Z-Wave Switch", namespace: "Curtain-smartthings", author: "SmartThings") {
+	definition (name: "Z-Wave Switch_test_shin", namespace: "Curtain-smartthings", author: "SmartThings") {
 		capability "Actuator"
 		capability "Indicator"
  		capability "Switch"
