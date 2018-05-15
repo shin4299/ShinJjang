@@ -59,11 +59,6 @@ metadata {
                 	attributeState("level", action: "switch level.setLevel")
             	}
 		
-		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: true){
-			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-				attributeState "on", label:'open', action:"switch.off", icon:"st.doors.garage.garage-open", backgroundColor:"#F7D73E", nextState:"off"
-				attributeState "off", label:'closed', action:"switch.on", icon:"st.doors.garage.garage-closed", backgroundColor:"#A8A8C6", nextState:"on"
-		}
 	}
 
 		standardTile("indicator", "device.indicatorStatus", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
@@ -74,6 +69,13 @@ metadata {
 		standardTile("refresh", "device.switch", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
 			state "default", label:'', action:"refresh.refresh", icon:"st.secondary.refresh"
 		}
+		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4){
+			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
+			attributeState "on", label:'open', action:"switch.off", icon:"st.doors.garage.garage-open", backgroundColor:"#F7D73E", nextState:"off"
+			attributeState "off", label:'closed', action:"switch.on", icon:"st.doors.garage.garage-closed", backgroundColor:"#A8A8C6", nextState:"on"
+		}
+		}
+
 
 		main "switch"
 		details(["switch","refresh"])
