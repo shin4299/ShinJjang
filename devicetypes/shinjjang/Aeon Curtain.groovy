@@ -21,8 +21,9 @@ metadata {
 		capability "Sensor"
 		capability "Health Check"
 		capability "Switch Level"
+        	capability "windowShade"	
 
-    	command "levelOpenClose"
+    		command "levelOpenClose"
 
 		fingerprint mfr:"0063", prod:"4952", deviceJoinName: "Z-Wave Wall Switch"
 		fingerprint mfr:"0063", prod:"5257", deviceJoinName: "Z-Wave Wall Switch"
@@ -46,17 +47,29 @@ metadata {
 
 	// tile definitions
 	tiles(scale: 2) {
+	        multiAttributeTile(name: "windowShade", type: "windowShade", width: 6, height: 4) {
+        	    tileAttribute("device.windowShade", key: "PRIMARY_CONTROL") {
+                	attributeState("close", label: 'closed', action: "windowShade.open", icon: "st.doors.garage.garage-closed", backgroundColor: "#A8A8C6", nextState: "opening")
+	                attributeState("open", label: 'open', action: "windowShade.close", icon: "st.doors.garage.garage-open", backgroundColor: "#F7D73E", nextState: "closing")
+       		        attributeState("closing", label: '${name}', action: "windowShade.open", icon: "st.contact.contact.closed", backgroundColor: "#B9C6A8")
+                	attributeState("opening", label: '${name}', action: "windowShade.close", icon: "st.contact.contact.open", backgroundColor: "#D4CF14")
+                	attributeState("partly", label: 'partially\nopen', action: "windowShade.close", icon: "st.doors.garage.garage-closing", backgroundColor: "#D4ACEE", nextState: "closing")
+            	}
+            	tileAttribute("device.level", key: "SLIDER_CONTROL") {
+                	attributeState("level", action: "switch level.setLevel")
+            	}
+/*		
 		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: true){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
 				attributeState "on", label:'open', action:"switch.off", icon:"st.doors.garage.garage-open", backgroundColor:"#F7D73E", nextState:"turningOff"
 				attributeState "off", label:'closed', action:"switch.on", icon:"st.doors.garage.garage-closed", backgroundColor:"#A8A8C6", nextState:"turningOn"
 				attributeState "turningOn", label:'opening', action:"switch.off", icon:"st.contact.contact.open", backgroundColor:"#D4CF14", nextState:"turningOff"
 				attributeState "turningOff", label:'closing', action:"switch.on", icon:"st.contact.contact.closed", backgroundColor:"#B9C6A8", nextState:"turningOn"
-			}
+		}
 			tileAttribute ("device.level", key: "SLIDER_CONTROL") {
 				attributeState "level", action:"switch level.setLevel"
-			}
-		}
+			} */
+	}
 
 		standardTile("indicator", "device.indicatorStatus", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
 			state "when off", action:"indicator.indicatorWhenOn", icon:"st.indicators.lit-when-off"
@@ -107,15 +120,15 @@ def parse(String description) {
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
-	[name: "switch", value: cmd.value ? "on" : "off", type: "physical"]
+	[name: "windowShade", value: cmd.value ? "open" : "close", type: "physical"]
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicSet cmd) {
-	[name: "switch", value: cmd.value ? "on" : "off", type: "physical"]
+	[name: "windowShade", value: cmd.value ? "open" : "close", type: "physical"]
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cmd) {
-	[name: "switch", value: cmd.value ? "on" : "off", type: "digital"]
+	[name: "windowShade", value: cmd.value ? "open" : "close", type: "digital"]
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.configurationv1.ConfigurationReport cmd) {
@@ -146,20 +159,20 @@ def zwaveEvent(physicalgraph.zwave.Command cmd) {
 	[:]
 }
 
-def on() {
+def open() {
 	delayBetween([
 		zwave.basicV1.basicSet(value: 0xFF).format(),
 		zwave.switchBinaryV1.switchBinaryGet().format()
 	])
-		sendEvent(name: "switch", value: "on")
+		sendEvent(name: "windowShade", value: "open")
 }
 
-def off() {
+def close() {
 	delayBetween([
 		zwave.basicV1.basicSet(value: 0x00).format(),
 		zwave.switchBinaryV1.switchBinaryGet().format()
 	])
-		sendEvent(name: "switch", value: "off")
+		sendEvent(name: "windowShade", value: "close")
 }
 def setLevel(value) {
 	log.debug "setLevel >> value: $value"
@@ -169,14 +182,14 @@ def setLevel(value) {
 		zwave.basicV1.basicSet(value: 0xFF).format(),
 		zwave.switchBinaryV1.switchBinaryGet().format()
         	])
-		sendEvent(name: "switch", value: "on")
+		sendEvent(name: "windowShade", value: "open")
 		sendEvent(name: "level", value: 100 )
 	} else {
 	delayBetween([
 		zwave.basicV1.basicSet(value: 0x00).format(),
 		zwave.switchBinaryV1.switchBinaryGet().format()
 	])
-		sendEvent(name: "switch", value: "off")
+		sendEvent(name: "windowShade", value: "close")
         sendEvent(name: "level", value: 0 )
 
 	}
