@@ -120,14 +120,17 @@ def parse(String description) {
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
+	log.debug "BasicReport ${cmd.value}"	
 	[name: "windowShade", value: cmd.value ? "open" : "close", type: "physical"]
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicSet cmd) {
+	log.debug "BasicSet ${cmd.value}"	
 	[name: "windowShade", value: cmd.value ? "open" : "close", type: "physical"]
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cmd) {
+	log.debug "SwitchBinaryReport ${cmd.value}"	
 	[name: "windowShade", value: cmd.value ? "open" : "close", type: "digital"]
 }
 
