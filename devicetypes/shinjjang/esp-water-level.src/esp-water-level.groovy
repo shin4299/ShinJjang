@@ -164,22 +164,20 @@ mappings {
 def CoD() {
 	def html = """
 
-
-
 <html ng-app="embedinsapp" lang="en">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta property="og:title" content="Water Tank"/>
+    <meta property="og:title" content="WaterTank"/>
     <meta property="og:type" content="article"/>
-    <meta property="og:description" content="Check out my sensor data Water Tank"/>
-    <meta property="og:url" content="https://app.ubidots.com/ubi/getchart/page/9-4Moi2uVn6sBuEux65LQ-4uTZg at ubidots.com"/>
+    <meta property="og:description" content="Check out my sensor data WaterTank"/>
+    <meta property="og:url" content="https://app.ubidots.com/ubi/getchart/page/u4Bsn_7OU4b4M8Ev-u-ORHZ-Kec at ubidots.com"/>
     <meta property="og:image"
           content="https://app.ubidots.comhttps://648d4.https.cdn.softlayer.net/app/static/images/logos/ubidots_big.png"/>
     <meta property="og:site_name" content="Ubidots"/>
 
-    <title>Water Tank</title>
+    <title>WaterTank</title>
 
     <link rel="stylesheet" href="https://648d4.https.cdn.softlayer.net/app/static/CACHE/css/daad6cb64ff6.css" type="text/css" />
     <link href='//fonts.googleapis.com/css?family=Open+Sans:700,600,400,300' rel='stylesheet' type='text/css'>
@@ -229,6 +227,110 @@ def CoD() {
         max-height: 400px;
     }
     </style>
+    
+    
+    
+     <div class="embed-insight-container" ng-controller="embedInsDisplay">
+        
+        <div ng-show="!outOfCredits && !trialExpired" class="embed-insight">
+        
+            
+            <embed-insight getins="getInsByCode('u4Bsn_7OU4b4M8Ev-u-ORHZ-Kec')" get-data="embedGetData(insight)" page="true" out-of-credits="outOfCredits" trial-expired="trialExpired"></embed-insight>
+            
+        </div>
+
+        
+        <div ng-show="outOfCredits" ng-cloak style="flex: 1">
+            <div class="row-fluid col-md-10 col-md-offset-1 col-xs-12 text-center information-box">
+                <h1>Account out of credits</h1>
+                
+                <p>Click <a href="/userdata/plans/">here</a> to purchase more credits.</p>
+                
+            </div>
+        </div>
+
+        <div ng-show="trialExpired" ng-cloak style="flex: 1">
+            <h1 ng-bind="('business_account_deactivated' | translate)"></h1>
+        </div>
+        
+    </div>
+
+
+    <script type="text/javascript" src="https://648d4.https.cdn.softlayer.net/app/static/CACHE/js/cd785acfec6d.js"></script>
+    <script src="/wafflejs"></script>
+</head>
+<body class="dashboard-body">
+
+</body>
+</html>
+
+"""
+ render contentType: "text/html", data: html, status: 200
+}
+
+def CoW() {
+	def html = """
+<html ng-app="embedinsapp" lang="en" class="ng-scope"><head><style type="text/css">[uib-typeahead-popup].dropdown-menu{display:block;}</style><style type="text/css">.uib-time input{width:50px;}</style><style type="text/css">[uib-tooltip-popup].tooltip.top-left > .tooltip-arrow,[uib-tooltip-popup].tooltip.top-right > .tooltip-arrow,[uib-tooltip-popup].tooltip.bottom-left > .tooltip-arrow,[uib-tooltip-popup].tooltip.bottom-right > .tooltip-arrow,[uib-tooltip-popup].tooltip.left-top > .tooltip-arrow,[uib-tooltip-popup].tooltip.left-bottom > .tooltip-arrow,[uib-tooltip-popup].tooltip.right-top > .tooltip-arrow,[uib-tooltip-popup].tooltip.right-bottom > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.top-left > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.top-right > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.bottom-left > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.bottom-right > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.left-top > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.left-bottom > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.right-top > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.right-bottom > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.top-left > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.top-right > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.bottom-left > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.bottom-right > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.left-top > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.left-bottom > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.right-top > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.right-bottom > .tooltip-arrow,[uib-popover-popup].popover.top-left > .arrow,[uib-popover-popup].popover.top-right > .arrow,[uib-popover-popup].popover.bottom-left > .arrow,[uib-popover-popup].popover.bottom-right > .arrow,[uib-popover-popup].popover.left-top > .arrow,[uib-popover-popup].popover.left-bottom > .arrow,[uib-popover-popup].popover.right-top > .arrow,[uib-popover-popup].popover.right-bottom > .arrow,[uib-popover-html-popup].popover.top-left > .arrow,[uib-popover-html-popup].popover.top-right > .arrow,[uib-popover-html-popup].popover.bottom-left > .arrow,[uib-popover-html-popup].popover.bottom-right > .arrow,[uib-popover-html-popup].popover.left-top > .arrow,[uib-popover-html-popup].popover.left-bottom > .arrow,[uib-popover-html-popup].popover.right-top > .arrow,[uib-popover-html-popup].popover.right-bottom > .arrow,[uib-popover-template-popup].popover.top-left > .arrow,[uib-popover-template-popup].popover.top-right > .arrow,[uib-popover-template-popup].popover.bottom-left > .arrow,[uib-popover-template-popup].popover.bottom-right > .arrow,[uib-popover-template-popup].popover.left-top > .arrow,[uib-popover-template-popup].popover.left-bottom > .arrow,[uib-popover-template-popup].popover.right-top > .arrow,[uib-popover-template-popup].popover.right-bottom > .arrow{top:auto;bottom:auto;left:auto;right:auto;margin:0;}[uib-popover-popup].popover,[uib-popover-html-popup].popover,[uib-popover-template-popup].popover{display:block !important;}</style><style type="text/css">.uib-datepicker-popup.dropdown-menu{display:block;float:none;margin:0;}.uib-button-bar{padding:10px 9px 2px;}</style><style type="text/css">.uib-position-measure{display:block !important;visibility:hidden !important;position:absolute !important;top:-9999px !important;left:-9999px !important;}.uib-position-scrollbar-measure{position:absolute !important;top:-9999px !important;width:50px !important;height:50px !important;overflow:scroll !important;}.uib-position-body-scrollbar-measure{overflow:scroll !important;}</style><style type="text/css">.uib-datepicker .uib-title{width:100%;}.uib-day button,.uib-month button,.uib-year button{min-width:100%;}.uib-left,.uib-right{width:100%}</style><style type="text/css">@charset "UTF-8";[ng:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta property="og:title" content="WaterTank">
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="Check out my sensor data WaterTank">
+    <meta property="og:url" content="https://app.ubidots.com/ubi/getchart/page/u4Bsn_7OU4b4M8Ev-u-ORHZ-Kec at ubidots.com">
+    <meta property="og:image" content="https://app.ubidots.comhttps://648d4.https.cdn.softlayer.net/app/static/images/logos/ubidots_big.png">
+    <meta property="og:site_name" content="Ubidots">
+
+    <title>WaterTank</title>
+
+    <link rel="stylesheet" href="https://648d4.https.cdn.softlayer.net/app/static/CACHE/css/daad6cb64ff6.css" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:700,600,400,300" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://648d4.https.cdn.softlayer.net/app/static/js/libs/nvd3/1.8.5/nv.d3.min.css">
+
+    <style type="text/css">
+        html, body { overflow: hidden; }
+    </style>
+    <script type="text/javascript" src="https://648d4.https.cdn.softlayer.net/app/static/js/libs/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="https://648d4.https.cdn.softlayer.net/app/static/js/libs/jstimezonedetect/jstz-1.0.4.min.js"></script>
+    <script type="text/javascript" src="https://648d4.https.cdn.softlayer.net/app/static/js/libs/d3.min.js"></script>
+    <script type="text/javascript" src="//maps.google.com/maps/api/js?v=3.28&amp;key=AIzaSyCtOe1RtUgmdOK1ofAyjJEJlMcizAoYnx0"></script>
+    <script type="text/javascript">
+        var ubi_tz="";
+        var staticUrl = 'https://648d4.https.cdn.softlayer.net/app/static/';
+        var isSingleUserSharedInstance = false;
+        \$().ready(function(){
+            
+            ubi_tz = jstz.determine().name();
+            
+            moment.tz.setDefault(ubi_tz);
+        });
+        var permissions = 1;
+    </script>
+
+    <script type="text/javascript" src="https://648d4.https.cdn.softlayer.net/app/static/CACHE/js/6c9259b9387d.js"></script>
+
+    <!-- End / Insight Directives -->
+    <script type="text/javascript" src="https://648d4.https.cdn.softlayer.net/app/static/js/libs/socket.io/socket.io.min.js"></script>
+    <script type="text/javascript" src="https://648d4.https.cdn.softlayer.net/app/static/js/libs/bootstrap-colorpicker.js"></script>
+    <script type="text/javascript" src="https://648d4.https.cdn.softlayer.net/app/static/js/libs/slider/js/rzslider.min.js"></script>
+
+    <script type="text/javascript" src="https://648d4.https.cdn.softlayer.net/app/static/js/libs/angular-1.5.8/angular-sanitize.js"></script>
+    <script type="text/javascript" src="https://648d4.https.cdn.softlayer.net/app/static/js/libs/ng-csv.min.js"></script>
+    <script type="text/javascript">
+        UbiModelsApp.Constants.constant('UBI_APP_URL', 'https://app.ubidots.com/');
+    </script>
+
+    
+    <script type="text/javascript">
+        var mixpanel = {track: function(){}};
+    </script>
+    
+
+    <style>
+    .ins-widget [insights-info-box] {
+        max-height: 400px;
+    }
+    </style>
 </head>
 
 <body class="dashboard-body">
@@ -257,14 +359,9 @@ def CoD() {
                     </button>
                     <a href="/" class="navbar-brand">
                         
-                            <img
-                                src="https://648d4.https.cdn.softlayer.net/app/static/images/logo-ubidots@2x.png"
-                                srcset="https://648d4.https.cdn.softlayer.net/app/static/images/logo-ubidots@2x.png 1x,
+                            <img src="https://648d4.https.cdn.softlayer.net/app/static/images/logo-ubidots@2x.png" srcset="https://648d4.https.cdn.softlayer.net/app/static/images/logo-ubidots@2x.png 1x,
                                 https://648d4.https.cdn.softlayer.net/app/static/images/logo-ubidots@2x.png 2x,
-                                https://648d4.https.cdn.softlayer.net/app/static/images/logo-ubidots@3x.png 3x"
-                                alt="Ubidots"
-                                title="Ubidots"
-                            />
+                                https://648d4.https.cdn.softlayer.net/app/static/images/logo-ubidots@3x.png 3x" alt="Ubidots" title="Ubidots">
                         
                     </a>
                     <div class="text-organizations">
@@ -306,17 +403,17 @@ def CoD() {
 
 
 
-    <div class="embed-insight-container" ng-controller="embedInsDisplay">
+    <div class="embed-insight-container ng-scope" ng-controller="embedInsDisplay">
         
-        <div ng-show="!outOfCredits && !trialExpired" class="embed-insight">
+        <div ng-show="!outOfCredits &amp;&amp; !trialExpired" class="embed-insight">
         
             
-            <embed-insight getins="getInsByCode('9-4Moi2uVn6sBuEux65LQ-4uTZg')" get-data="embedGetData(insight)" page="true" out-of-credits="outOfCredits" trial-expired="trialExpired"></embed-insight>
+            <embed-insight getins="getInsByCode('u4Bsn_7OU4b4M8Ev-u-ORHZ-Kec')" get-data="embedGetData(insight)" page="true" out-of-credits="outOfCredits" trial-expired="trialExpired" class="ng-isolate-scope"></embed-insight>
             
         </div>
 
         
-        <div ng-show="outOfCredits" ng-cloak style="flex: 1">
+        <div ng-show="outOfCredits" style="flex: 1" class="ng-hide">
             <div class="row-fluid col-md-10 col-md-offset-1 col-xs-12 text-center information-box">
                 <h1>Account out of credits</h1>
                 
@@ -325,8 +422,8 @@ def CoD() {
             </div>
         </div>
 
-        <div ng-show="trialExpired" ng-cloak style="flex: 1">
-            <h1 ng-bind="('business_account_deactivated' | translate)"></h1>
+        <div ng-show="trialExpired" style="flex: 1" class="ng-hide">
+            <h1 ng-bind="('business_account_deactivated' | translate)" class="ng-binding">business_account_deactivated</h1>
         </div>
         
     </div>
@@ -334,21 +431,9 @@ def CoD() {
 
     <script type="text/javascript" src="https://648d4.https.cdn.softlayer.net/app/static/CACHE/js/cd785acfec6d.js"></script>
     <script src="/wafflejs"></script>
-</body>
-</html>
 
 
-"""
- render contentType: "text/html", data: html, status: 200
-}
-
-def CoW() {
-	def html = """
-
-<iframe width="430" height="280" frameborder="0" src="https://app.ubidots.com/ubi/getchart/9-4Moi2uVn6sBuEux65LQ-4uTZg"></iframe>
-
-
-
+</body></html>
 """
  render contentType: "text/html", data: html, status: 200
 }
@@ -498,15 +583,54 @@ def refresh() {
 include 'asynchttp_v1'
 
 def initialize() {
-    def params = [
+
+/*    
+    // call life360, get OAUTH token using password flow, save
+    // curl -X POST -H "Authorization: Basic cFJFcXVnYWJSZXRyZTRFc3RldGhlcnVmcmVQdW1hbUV4dWNyRUh1YzptM2ZydXBSZXRSZXN3ZXJFQ2hBUHJFOTZxYWtFZHI0Vg==" 
+    //      -F "grant_type=password" -F "username=jeff@hagins.us" -F "password=tondeleo" https://api.life360.com/v3/oauth2/token.json
+    
+
+    def url = "https://things.ubidots.com/api/v1.6/variables/5ad8a607c03f975b22f64cf8/values/?token=A1E-SuMotjp8dlJErBDso9BhCACaSDT0ZU"
+    
+        
+    def postBody =  '{"value": 80}'
+
+    def result = null
+    
+    try {
+       
+ 		httpPost(uri: url, body: postBody) {response -> 
+     		result = response
+		}
+        
+    }
+    catch (e) {
+       log.error "Life360 initializeLife360Connection, error: $e"
+       return false;
+    }
+
+}*/
+
+try {
+    httpPostJson("https://things.ubidots.com/api/v1.6/variables/5ad8a607c03f975b22f64cf8/values/?token=A1E-SuMotjp8dlJErBDso9BhCACaSDT0ZU", '{"value": 70}') { resp ->
+        log.debug "response data: ${resp.data}"
+        log.debug "response contentType: ${resp.contentType}"
+    }
+} catch (e) {
+    log.debug "something went wrong: $e"
+}
+
+
+/*    def params = [
         uri: 'https://things.ubidots.com',
         path: 'api/v1.6/variables/5ad8a607c03f975b22f64cf8/values/?token=A1E-SuMotjp8dlJErBDso9BhCACaSDT0ZU',
-        body: [ 
-                "value": 80
+        body: [ '{"value": "80"}'
+                
                 ],
-        contentType: 'application/json'
+        contentType: 'application/json',
+        
     ]
-    asynchttp_v1.post(processResponse, params)
+    asynchttp_v1.post(processResponse, params)*/
 }
 
 def processResponse(response, data) { 
