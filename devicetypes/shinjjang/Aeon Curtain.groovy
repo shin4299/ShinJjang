@@ -163,6 +163,7 @@ def zwaveEvent(physicalgraph.zwave.Command cmd) {
 }
 
 def open() {
+	log.debug "setOpen >> Open"
 	delayBetween([
 		zwave.basicV1.basicSet(value: 0xFF).format(),
 		zwave.switchBinaryV1.switchBinaryGet().format()
@@ -171,6 +172,7 @@ def open() {
 }
 
 def close() {
+	log.debug "setClose >> Close"	
 	delayBetween([
 		zwave.basicV1.basicSet(value: 0x00).format(),
 		zwave.switchBinaryV1.switchBinaryGet().format()
@@ -193,7 +195,7 @@ def setLevel(value) {
 		zwave.switchBinaryV1.switchBinaryGet().format()
 	])
 		sendEvent(name: "windowShade", value: "close")
-        sendEvent(name: "level", value: 0 )
+        	sendEvent(name: "level", value: 0 )
 
 	}
 //	sendEvent(name: "level", value: level, unit: "%")
