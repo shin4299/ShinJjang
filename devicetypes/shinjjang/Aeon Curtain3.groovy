@@ -12,219 +12,130 @@
  *
  */
 metadata {
-	definition (name: "Z-Wave Switch", namespace: "Curtain-smartthings", author: "SmartThings") {
-		capability "Actuator"
-		capability "Indicator"
- 		capability "Switch"
-		capability "Polling"
-		capability "Refresh"
-		capability "Sensor"
-		capability "Health Check"
-		capability "Switch Level"
-
-    	command "levelOpenClose"
-
-		fingerprint mfr:"0063", prod:"4952", deviceJoinName: "Z-Wave Wall Switch"
-		fingerprint mfr:"0063", prod:"5257", deviceJoinName: "Z-Wave Wall Switch"
-		fingerprint mfr:"0063", prod:"5052", deviceJoinName: "Z-Wave Plug-In Switch"
-		fingerprint mfr:"0113", prod:"5257", deviceJoinName: "Z-Wave Wall Switch"
-	}
-
-	// simulator metadata
-	simulator {
-		status "on":  "command: 2003, payload: FF"
-		status "off": "command: 2003, payload: 00"
-
-		// reply messages
-		reply "2001FF,delay 100,2502": "command: 2503, payload: FF"
-		reply "200100,delay 100,2502": "command: 2503, payload: 00"
-	}
-
-	preferences {
-		input "ledIndicator", "enum", title: "LED Indicator", description: "Turn LED indicator... ", required: false, options:["on": "When On", "off": "When Off", "never": "Never"], defaultValue: "off"
-	}
-
-	// tile definitions
-	tiles(scale: 2) {
-		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: true){
-			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-				attributeState "on", label: '${name}', action: "switch.off", icon: "st.switches.switch.on", backgroundColor: "#79b821"
-				attributeState "off", label: '${name}', action: "switch.on", icon: "st.switches.switch.off", backgroundColor: "#ffffff"
-			}
-			tileAttribute ("device.level", key: "SLIDER_CONTROL") {
-				attributeState "level", action:"switch level.setLevel"
-			}
-		}
-
-		standardTile("indicator", "device.indicatorStatus", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
-			state "when off", action:"indicator.indicatorWhenOn", icon:"st.indicators.lit-when-off"
-			state "when on", action:"indicator.indicatorNever", icon:"st.indicators.lit-when-on"
-			state "never", action:"indicator.indicatorWhenOff", icon:"st.indicators.never-lit"
-		}
-		standardTile("refresh", "device.switch", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
-			state "default", label:'', action:"refresh.refresh", icon:"st.secondary.refresh"
-		}
-
-		main "switch"
-		details(["switch","refresh"])
-	}
+definition (name: "Aeon Motor Controller x", namespace: "x", author: "x") {
+capability "Refresh"
+capability "Actuator"
+capability "Switch"
+capability "Switch Level"
+capability "Window Shade"
+    command "up"
+    command "down"
+    command "stop"
+    
+    fingerprint deviceId: "0x1107", inClusters: "0x25 0x26 0x70 0x85 0x72 0x86 0xEF 0x82"
+    
 }
-
-def updated(){
-		// Device-Watch simply pings if no device events received for 32min(checkInterval)
-		sendEvent(name: "checkInterval", value: 2 * 15 * 60 + 2 * 60, displayed: false, data: [protocol: "zwave", hubHardwareId: device.hub.hardwareID])
-  switch (ledIndicator) {
-        case "on":
-            indicatorWhenOn()
-            break
-        case "off":
-            indicatorWhenOff()
-            break
-        case "never":
-            indicatorNever()
-            break
-        default:
-            indicatorWhenOn()
-            break
+	tiles {
+    standardTile("windowShade", "device.windowShade", width: 3, height:2, canChangeIcon: true) {
+        state ("default", label: 'STOPPED', icon:"st.Transportation.transportation13", backgroundColor: "#79b821")
+        state("up", label:'UP', icon:"st.doors.garage.garage-opening", backgroundColor:"#53a7c0")
+        state("down", label:'Down', icon:"st.doors.garage.garage-closing",  backgroundColor:"#ff0d00")
+        state("stopUp", label:"STOPPED", icon:"st.Transportation.transportation13", backgroundColor:"#79b821")
+        state("stopDn", label:"STOPPED", icon:"st.Transportation.transportation13",  backgroundColor:"#79b821")
+   
+    }
+             
+    standardTile("up", "device.switch",decoration: "flat") {
+        state("default",label: "Up", action: "up", icon:"http://cdn.device-icons.smartthings.com/thermostat/thermostat-up@2x.png")
+        
+    }
+    
+    standardTile("down", "device.switch", decoration: "flat") {
+        state ("default", label: "Down", action: "down", icon:"http://cdn.device-icons.smartthings.com/thermostat/thermostat-down@2x.png")
+        
+    }
+    
+   standardTile("stop", "device.switch",decoration: "flat") {
+         state("default", label:"", action: "stop", icon:"http://cdn.device-icons.smartthings.com/sonos/stop-btn@2x.png")
+    }
+    
+   
+    standardTile("refresh", "device.switch", inactiveLabel: false, decoration: "flat") {
+        state ("default", label:"", action:"refresh.refresh", icon:"st.secondary.refresh")
     }
 }
-
+main(["windowShade"])
+details([ "windowShade", "up","down","stop","refresh",])
+}
+// parse events into attributes
 def parse(String description) {
-	def result = null
-	def cmd = zwave.parse(description, [0x20: 1, 0x70: 1])
-	if (cmd) {
-		result = createEvent(zwaveEvent(cmd))
-	}
-	if (result?.name == 'hail' && hubFirmwareLessThan("000.011.00602")) {
-		result = [result, response(zwave.basicV1.basicGet())]
-		log.debug "Was hailed: requesting state update"
-	} else {
-		log.debug "Parse returned ${result?.descriptionText}"
-	}
-	return result
+def result = []
+def cmd = zwave.parse(description,[0x20: 1, 0x26: 1])
+if (cmd) {
+result = zwaveEvent(cmd)
+log.debug "{$description} parsed to {$result}"
+} else {
+	log.debug("Couldn’t zwave.parse {$description}")
 }
-
+return result
+}
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
-	[name: "switch", value: cmd.value ? "on" : "off", type: "physical"]
+def result = []
+if (!state.stp){
+if(cmd.value == 0) {
+result << createEvent(name: "windowShade", value: "down")
+}else if(cmd.value == 255 || cmd.value == 99) {
+result << createEvent(name: "windowShade", value: "up")
+}}else {
+def stopVal = state.up ? "stopUp" : "stopDn"
+result << createEvent(name: "windowShade", value: stopVal)
 }
-
-def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicSet cmd) {
-	[name: "switch", value: cmd.value ? "on" : "off", type: "physical"]
+return result
 }
-
-def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cmd) {
-	[name: "switch", value: cmd.value ? "on" : "off", type: "digital"]
+def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv1.SwitchMultilevelReport cmd) {
+def result = []
+if (state.stp==false){
+if(cmd.value == 0) {
+result << createEvent(name: "windowShade", value: "down")
+}else if(cmd.value == 255 || cmd.value == 99) {
+result << createEvent(name: "windowShade", value: "up")
+}}else {
+def stopVal = state.up ? "stopUp" : "stopDn"
+result << createEvent(name: "windowShade", value: stopVal)
 }
-
-def zwaveEvent(physicalgraph.zwave.commands.configurationv1.ConfigurationReport cmd) {
-	def value = "when off"
-	if (cmd.configurationValue[0] == 1) {value = "when on"}
-	if (cmd.configurationValue[0] == 2) {value = "never"}
-	[name: "indicatorStatus", value: value, display: false]
+return result
 }
-
-def zwaveEvent(physicalgraph.zwave.commands.hailv1.Hail cmd) {
-	[name: "hail", value: "hail", descriptionText: "Switch button was pressed", displayed: false]
-}
-
-def zwaveEvent(physicalgraph.zwave.commands.manufacturerspecificv2.ManufacturerSpecificReport cmd) {
-	log.debug "manufacturerId:   ${cmd.manufacturerId}"
-	log.debug "manufacturerName: ${cmd.manufacturerName}"
-	log.debug "productId:        ${cmd.productId}"
-	log.debug "productTypeId:    ${cmd.productTypeId}"
-	def msr = String.format("%04X-%04X-%04X", cmd.manufacturerId, cmd.productTypeId, cmd.productId)
-	updateDataValue("MSR", msr)
-	updateDataValue("manufacturer", cmd.manufacturerName)
-	createEvent([descriptionText: "$device.displayName MSR: $msr", isStateChange: false])
-}
-
-
-def zwaveEvent(physicalgraph.zwave.Command cmd) {
-	// Handles all Z-Wave commands we aren't interested in
-	[:]
-}
-
-def on() {
-	delayBetween([
-		zwave.basicV1.basicSet(value: 0xFF).format(),
-		zwave.switchBinaryV1.switchBinaryGet().format()
-	])
-//		sendEvent(name: "level", value: 100 )
-}
-
-def off() {
-	delayBetween([
-		zwave.basicV1.basicSet(value: 0x00).format(),
-		zwave.switchBinaryV1.switchBinaryGet().format()
-	])
-//		sendEvent(name: "level", value: 0 )
-}
-def setLevel(value) {
-	log.debug "setLevel >> value: $value"
-	def level = value as Integer
-	if (level > 50) {
-	sendEvent(name: "level", value: 100, unit: "%")
-        	delayBetween([
-		zwave.basicV1.basicSet(value: 0xFF).format(),
-		zwave.switchBinaryV1.switchBinaryGet().format()
-        	])
-//		sendEvent(name: "switch", value: "on")
-//		sendEvent(name: "level", value: 100 )
-	} else {
-	sendEvent(name: "level", value: 0, unit: "%")
-	delayBetween([
-		zwave.basicV1.basicSet(value: 0x00).format(),
-		zwave.switchBinaryV1.switchBinaryGet().format()
-	])
-//		sendEvent(name: "switch", value: "off")
-//        sendEvent(name: "level", value: 0 )
-
-	}
-//	sendEvent(name: "level", value: level, unit: "%")
-//	delayBetween ([zwave.basicV1.basicSet(value: level).format(), zwave.switchMultilevelV1.switchMultilevelGet().format()], 5000)
-}
-
-def poll() {
-	delayBetween([
-		zwave.switchBinaryV1.switchBinaryGet().format(),
-		zwave.manufacturerSpecificV1.manufacturerSpecificGet().format()
-	])
-}
-
-/**
-  * PING is used by Device-Watch in attempt to reach the Device
-**/
-def ping() {
-		refresh()
-}
-
 def refresh() {
-	delayBetween([
-		zwave.switchBinaryV1.switchBinaryGet().format(),
-		zwave.manufacturerSpecificV1.manufacturerSpecificGet().format()
-	])
+delayBetween([
+zwave.switchMultilevelV1.switchMultilevelGet().format(),
+], 2000)
 }
-
-void indicatorWhenOn() {
-	sendEvent(name: "indicatorStatus", value: "when on", display: false)
-	sendHubCommand(new physicalgraph.device.HubAction(zwave.configurationV1.configurationSet(configurationValue: [1], parameterNumber: 3, size: 1).format()))
+def up() {
+state.up = true
+state.stp=false
+delayBetween([
+zwave.basicV1.basicSet(value: 0xFF).format(),
+zwave.switchMultilevelV1.switchMultilevelGet().format()
+], 2000)
 }
-
-void indicatorWhenOff() {
-	sendEvent(name: "indicatorStatus", value: "when off", display: false)
-	sendHubCommand(new physicalgraph.device.HubAction(zwave.configurationV1.configurationSet(configurationValue: [0], parameterNumber: 3, size: 1).format()))
+def down() {
+state.up = false
+state.stp=false
+delayBetween([
+zwave.basicV1.basicSet(value: 0x00).format(),
+zwave.switchMultilevelV1.switchMultilevelGet().format()
+], 2000)
 }
-
-void indicatorNever() {
-	sendEvent(name: "indicatorStatus", value: "never", display: false)
-	sendHubCommand(new physicalgraph.device.HubAction(zwave.configurationV1.configurationSet(configurationValue: [2], parameterNumber: 3, size: 1).format()))
+def stop() {
+state.stp=true
+delayBetween([
+zwave.switchMultilevelV1.switchMultilevelStopLevelChange().format(),
+zwave.switchMultilevelV1.switchMultilevelGet().format(),
+], 2000)
 }
-
-def invertSwitch(invert=true) {
-	if (invert) {
-		zwave.configurationV1.configurationSet(configurationValue: [1], parameterNumber: 4, size: 1).format()
-	}
-	else {
-		zwave.configurationV1.configurationSet(configurationValue: [0], parameterNumber: 4, size: 1).format()
-	}
+def on() {
+state.up = true
+state.stp=false
+delayBetween([
+zwave.basicV1.basicSet(value: 0xFF).format(),
+zwave.switchMultilevelV1.switchMultilevelGet().format()
+], 2000)
+}
+def off() {
+state.up = false
+state.stp=false
+delayBetween([
+zwave.basicV1.basicSet(value: 0x00).format(),
+zwave.switchMultilevelv1.switchMultilevelGet().format()
+], 2000)
 }
