@@ -30,12 +30,13 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Light Mono", namespace: "fison67", author: "fison67") {
-        capability "Switch"						//"on", "off"
+	definition (name: "Xiaomi Light Mono", namespace: "fison67", author: "fison67", ocfDeviceType: "oic.d.light", vid: "generic-dimmer", mnmn: "SmartThings") {
         capability "Actuator"
         capability "Configuration"
         capability "Refresh"
+        capability "Switch"
         capability "Switch Level"
+        capability "Health Check"
         capability "Light"
         
         attribute "lastOn", "string"

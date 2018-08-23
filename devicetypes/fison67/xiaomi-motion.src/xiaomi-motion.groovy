@@ -30,12 +30,12 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Motion", namespace: "fison67", author: "fison67") {
-        capability "Motion Sensor"
-        capability "Illuminance Measurement"
-        capability "Configuration"
-        capability "Sensor"
-	capability "Battery"
+	definition (name: "Xiaomi Motion", namespace: "fison67", author: "fison67", vid: "SmartThings-smartthings-Fibaro_Motion_Sensor") {
+        capability "Battery"
+		capability "Configuration"
+		capability "Illuminance Measurement"
+		capability "Motion Sensor"
+		capability "Sensor"
         capability "Refresh"
          
         attribute "lastMotion", "Date"
@@ -68,7 +68,7 @@ metadata {
 		}
         
         valueTile("illuminance", "device.illuminance", width: 2, height: 2) {
-            state "val", label:'${currentValue}', defaultState: true,
+            state "luminosity", label:'${currentValue}', defaultState: true,
                 backgroundColors:[
                     [value: 100, color: "#153591"],
                     [value: 200, color: "#1e9cbb"],

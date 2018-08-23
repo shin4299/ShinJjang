@@ -31,7 +31,7 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Power Plug", namespace: "fison67", author: "fison67") {
+	definition (name: "Xiaomi Power Plug", namespace: "fison67", author: "fison67", mnmn: "SmartThings", vid:"generic-switch-power-energy") {
         capability "Actuator"
         capability "Switch"
         capability "Power Meter"
@@ -58,7 +58,7 @@ metadata {
 			}
             
             tileAttribute("device.power", key: "SECONDARY_CONTROL") {
-    			attributeState("default", label:'Meter: ${currentValue}W\n ',icon: "st.Health & Wellness.health9")
+    			attributeState("default", label:'Meter: ${currentValue}\n ',icon: "st.Health & Wellness.health9")
             }
             tileAttribute("device.energy", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'                                 Energy: ${currentValue}KWh\n ',icon: "st.Health & Wellness.health9")
@@ -68,7 +68,7 @@ metadata {
             }
 		}
         valueTile("powerMeter", "device.power", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
-        	state "powerMeter", label: 'Meter\n${currentValue}W', action: "power", defaultState: true
+        	state "powerMeter", label: 'Meter\n${currentValue}', action: "power", defaultState: true
 		}
 //        valueTile("powerVolt", "device.powerVolt", width:2, height:2, inactiveLabel: false, decoration: "flat" ) {
 //        	state "volt", label: '현재전압\n${currentValue}', action: "volt", defaultState: true
@@ -104,13 +104,8 @@ def setStatus(params){
     case "power":
     	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"))
     	break;
-    case "powerLoad":params.data.replace(" lx","")
-                def para = "${params.data}"
-                String data = para
-                def st = data.replace(" w","");
-                def stf = Float.parseFloat(st)
-                def power = Math.round(stf)/1000		
-    	sendEvent(name:"power", value: power, unit: "W")
+    case "powerLoad":
+    	sendEvent(name:"power", value: params.data)
     	break;
     case "loadVoltage":
     	sendEvent(name:"powerVolt", value: params.data)

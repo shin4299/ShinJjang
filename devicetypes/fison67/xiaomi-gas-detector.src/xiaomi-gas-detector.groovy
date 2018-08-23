@@ -30,10 +30,12 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Gas Detector", namespace: "fison67", author: "fison67") {
-        capability "Sensor"
-        capability "Carbon Monoxide Detector"    //"detected", "clear", "tested"
-        capability "Refresh"
+	definition (name: "Xiaomi Gas Detector", namespace: "fison67", author: "fison67", ocfDeviceType: "x.com.st.d.sensor.smoke", vid: "generic-smoke", mnmn:"SmartThings") {
+		capability "Smoke Detector"
+		capability "Configuration"
+		capability "Health Check"
+		capability "Sensor"
+		capability "Refresh"
         attribute "density", "string"        
         attribute "lastCheckin", "Date"
         
@@ -43,8 +45,8 @@ metadata {
 	}
 
 	tiles {
-		multiAttributeTile(name:"gas", type: "generic", width: 6, height: 4){
-			tileAttribute ("device.carbonMonoxide", key: "PRIMARY_CONTROL") {
+		multiAttributeTile(name:"smoke", type: "generic", width: 6, height: 4){
+			tileAttribute ("device.smoke", key: "PRIMARY_CONTROL") {
                	attributeState "clear", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTg0/MDAxNTIyNjcwOTc2ODE1.2rSncv314VWU8irUYinoIi9JLQ3muxYJOVv0zNi_hpsg.ti_b998of00LFlzxjoNnD6Y2zAhq-I2Np7KvWXRaEHMg.PNG.shin4299/gas_main_off.png?type=w3" , backgroundColor:"#ffffff"
             	attributeState "detected", label:'${name}', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTI3/MDAxNTIyNjcwOTc2OTQ3.BhACHbETMGGIUQohpJx2USQ_QwLmvOtHMkTe5tTQBzgg.2BXHQDUXhu0f5GCsZ5IFwBvdDJY0DTXmPvs4YjVD6K4g.PNG.shin4299/gas_main_on.png?type=w3" , backgroundColor:"#e86d13"
 			}
@@ -67,7 +69,8 @@ metadata {
         }
 	}
 }
-
+		main "smoke"
+		details "smoke", "density", "refresh"
 // parse events into attributes
 def parse(String description) {
 	log.debug "Parsing '${description}'"
@@ -83,7 +86,7 @@ def setStatus(params){
 	log.debug "${params.key} : ${params.data}"
  	switch(params.key){
     case "gasDetected":
-    	sendEvent(name:"carbonMonoxide", value: (params.data == "true" ? "detected" : "clear") )
+    	sendEvent(name:"smoke", value: (params.data == "true" ? "detected" : "clear") )
     	break;
     case "density":
     	sendEvent(name:"density", value: params.data, unit:"㎍/㎥")
@@ -103,9 +106,11 @@ def callback(physicalgraph.device.HubResponse hubResponse){
     try {
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
+        log.debug jsonObj
         
         sendEvent(name:"density", value: jsonObj.properties.density, unit:"㎍/㎥")
-        
+        sendEvent(name:"smoke", value: (jsonObj.properties.gasDetected == "true" ? "detected" : "clear"))
+
         updateLastTime()
     } catch (e) {
         log.error "Exception caught while parsing data: "+e;

@@ -31,8 +31,11 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Wall Switch", namespace: "fison67", author: "fison67") {
-        capability "Switch"						
+	definition (name: "Xiaomi Wall Switch", namespace: "fison67", author: "fison67", mnmn: "SmartThings", vid: "generic-switch") {
+        capability "Switch"
+        capability "Relay Switch"
+        capability "Sensor"
+        capability "Actuator"
          
         attribute "switch", "string"
         
