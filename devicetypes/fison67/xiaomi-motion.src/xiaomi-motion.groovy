@@ -49,7 +49,10 @@ metadata {
 	simulator {
 	}
 	preferences {
-		input "motionReset", "number", title: "Motion Reset Time", description: "", value:120, displayDuringSetup: true
+		input "motionReset", "number", title: "Motion Reset Time", description: "", defaultValue:120, displayDuringSetup: true
+		input "historyDayCount", "number", title: "Day for History Graph", description: "", defaultValue:1, displayDuringSetup: true
+		input "motionHistoryDataMaxCount", "number", title: "Motion Graph Data Max Count", description: "0 is max", defaultValue:100, displayDuringSetup: true
+		input "illuminanceHistoryDataMaxCount", "number", title: "Illuminance Graph Data Max Count", description: "0 is max", defaultValue:0, displayDuringSetup: true
 	}
 
 
@@ -68,7 +71,7 @@ metadata {
 		}
         
         valueTile("illuminance", "device.illuminance", width: 2, height: 2) {
-            state "luminosity", label:'${currentValue}', defaultState: true,
+            state "val", label:'${currentValue}lx', defaultState: true,
                 backgroundColors:[
                     [value: 100, color: "#153591"],
                     [value: 200, color: "#1e9cbb"],
@@ -93,12 +96,25 @@ metadata {
         valueTile("lastMotion", "device.lastMotion", decoration: "flat", width: 3, height: 1) {
             state "default", label:'${currentValue}'
         }		
+        
+    	standardTile("chartMode", "device.chartMode", width: 2, height: 1, decoration: "flat") {
+			state "motion", label:'Motion', nextState: "illuminance", action: 'chartMotion'
+			state "illuminance", label:'Illuminance', nextState: "motion", action: 'chartIlluminance'
+		}
+        
+        carouselTile("history", "device.image", width: 6, height: 4) { }
+	
 	}
 }
 
 // parse events into attributes
 def parse(String description) {
 	log.debug "Parsing '${description}'"
+}
+
+def setExternalAddress(address){
+	log.debug "External Address >> ${address}"
+	state.externalAddress = address
 }
 
 def setInfo(String app_url, String id) {
@@ -109,21 +125,18 @@ def setInfo(String app_url, String id) {
 
 def setStatus(params){
 	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
-        if (settings.motionReset == null || settings.motionReset == "" ) settings.motionReset = 120	
  	switch(params.key){
     case "motion":
-	if (params.data == "true") {
-	        sendEvent(name:"motion", value: "active")
-		runIn(settings.motionReset, stopMotion)
-		 sendEvent(name: "lastMotion", value: now)
-	} else { }
-		
+        sendEvent(name:"motion", value: (params.data == "true" ? "active" : "inactive") )
+        if (settings.motionReset == null || settings.motionReset == "" ) settings.motionReset = 120
+        if (params.data == "true") runIn(settings.motionReset, stopMotion)
+		if (params.data == "true") sendEvent(name: "lastMotion", value: now)
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data)
     	break;
     case "illuminance":
-    	sendEvent(name:"illuminance", value: params.data )
+    	sendEvent(name:"illuminance", value: params.data.replace("lx","").replace(",","") )
     	break;
     }
     
@@ -141,7 +154,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         sendEvent(name:"motion", value: jsonObj.properties.motion == true ? "active" : "inactive")
         
         if(jsonObj.properties.illuminance != null && jsonObj.properties.illuminance != ""){
-        	sendEvent(name:"illuminance", value: jsonObj.properties.illuminance.value + jsonObj.properties.illuminance.unit)
+        	sendEvent(name:"illuminance", value: jsonObj.properties.illuminance.value )
         }
       
         updateLastTime()
@@ -183,6 +196,64 @@ def makeCommand(body){
         "body":body
     ]
     return options
+}
+
+def makeURL(type, name){
+	def sDate
+    def eDate
+	use (groovy.time.TimeCategory) {
+      def now = new Date()
+      def day = settings.historyDayCount == null ? 1 : settings.historyDayCount
+      sDate = (now - day.days).format( 'yyyy-MM-dd HH:mm:ss', location.timeZone )
+      eDate = now.format( 'yyyy-MM-dd HH:mm:ss', location.timeZone )
+    }
+	return [
+        uri: "http://${state.externalAddress}",
+        path: "/devices/history/${state.id}/${type}/${sDate}/${eDate}/image",
+        query: [
+        	"name": name
+        ]
+    ]
+}
+
+def chartMotion() {
+	def url = makeURL("motion", "Motion")
+    if(settings.motionHistoryDataMaxCount > 0){
+    	url.query.limit = settings.motionHistoryDataMaxCount
+    }
+    httpGet(url) { response ->
+    	processImage(response, "motion")
+    }
+}
+
+def chartIlluminance() {
+	def url = makeURL("illuminance", "Illuminance")
+    if(settings.illuminanceHistoryDataMaxCount > 0){
+    	url.query.limit = settings.illuminanceHistoryDataMaxCount
+    }
+    httpGet(url) { response ->
+    	processImage(response, "illuminance")
+    }
+}
+
+def processImage(response, type){
+	if (response.status == 200 && response.headers.'Content-Type'.contains("image/png")) {
+        def imageBytes = response.data
+        if (imageBytes) {
+            try {
+                storeImage(getPictureName(type), imageBytes)
+            } catch (e) {
+                log.error "Error storing image ${name}: ${e}"
+            }
+        }
+    } else {
+        log.error "Image response not successful or not a jpeg response"
+    }
+}
+
+private getPictureName(type) {
+  def pictureUuid = java.util.UUID.randomUUID().toString().replaceAll('-', '')
+  return "image" + "_$pictureUuid" + "_" + type + ".png"
 }
 
 def refresh(){
