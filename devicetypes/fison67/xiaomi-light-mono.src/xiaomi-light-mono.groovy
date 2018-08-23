@@ -67,6 +67,9 @@ metadata {
             tileAttribute ("device.level", key: "SLIDER_CONTROL") {
                 attributeState "level", action:"switch level.setLevel"
             }
+            tileAttribute ("device.color", key: "COLOR_CONTROL") {
+                attributeState "color", action:"setColor"
+            }
 		}
 		multiAttributeTile(name:"switch2", type: "lighting"){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
@@ -111,16 +114,21 @@ def setInfo(String app_url, String id) {
 }
 
 def setStatus(params){
+	log.debug "${params.key} >> ${params.data}"
     def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
  	switch(params.key){
+    case "color":
+    	def colors = params.data.split(",")
+        String hex = String.format("#%02x%02x%02x", colors[0].toInteger(), colors[1].toInteger(), colors[2].toInteger())
+    	sendEvent(name:"color", value: hex )
+    	break;
     case "power":
-    	log.debug "MI >> power " + (params.data == "true" ? "on" : "off")
         if(params.data == "true"){
-    	sendEvent(name:"switch", value: "on")
-	    sendEvent(name: "lastOn", value: now)
+            sendEvent(name:"switch", value: "on")
+            sendEvent(name: "lastOn", value: now)
         } else {
-        sendEvent(name:"switch", value: "off")
-	    sendEvent(name: "lastOff", value: now)
+            sendEvent(name:"switch", value: "off")
+            sendEvent(name: "lastOff", value: now)
         }
     	break;
     case "brightness":
@@ -148,19 +156,20 @@ def setLevel(brightness){
     def body = [
         "id": state.id,
         "cmd": "brightness",
-        "data": brightness
+        "data": brightness,
+        "subData": getDuration()
     ]
     def options = makeCommand(body)
     sendCommand(options, null)
 }
 
 def setColor(color){
-	log.debug "setColor >> ${state.id}"
-    log.debug "${color.hex}"
+	log.debug "setColor >> ${state.id} >> ${color.hex}"
     def body = [
         "id": state.id,
         "cmd": "color",
-        "data": color.hex
+        "data": color.hex,
+        "subData": getDuration()
     ]
     def options = makeCommand(body)
     sendCommand(options, null)
@@ -194,7 +203,10 @@ def callback(physicalgraph.device.HubResponse hubResponse){
     try {
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
-        log.debug jsonObj
+        
+        def colorRGB = colorTemperatureToRGB(jsonObj.state.colorTemperature)
+        String hex = String.format("#%02x%02x%02x", (int)colorRGB[0], (int)colorRGB[1], (int)colorRGB[2]);  
+    	sendEvent(name:"color", value: hex )
         sendEvent(name:"level", value: jsonObj.properties.brightness)
         sendEvent(name:"switch", value: jsonObj.properties.power == true ? "on" : "off")
 	    
@@ -224,4 +236,66 @@ def makeCommand(body){
         "body":body
     ]
     return options
+}
+
+
+def colorTemperatureToRGB(kelvin){
+    def temp = kelvin / 100;
+    def red, green, blue;
+    if( temp <= 66 ){ 
+        red = 255; 
+        green = temp;
+        green = 99.4708025861 * Math.log(green) - 161.1195681661;
+
+        if( temp <= 19){
+            blue = 0;
+        } else {
+            blue = temp-10;
+            blue = 138.5177312231 * Math.log(blue) - 305.0447927307;
+        }
+    } else {
+        red = temp - 60;
+        red = 329.698727446 * Math.pow(red, -0.1332047592);
+        
+        green = temp - 60;
+        green = 288.1221695283 * Math.pow(green, -0.0755148492 );
+
+        blue = 255;
+    }
+    return [ clamp(red,   0, 255), clamp(green, 0, 255), clamp(blue,  0, 255) ]
+}
+
+
+def clamp( x, min, max ) {
+    if(x<min){ return min; }
+    if(x>max){ return max; }
+    return x;
+}
+
+def rgbToColorTemperature(red, blue){
+	def temperature, testRGB;
+    def epsilon=0.4;
+    def minTemperature = 1000;
+    def maxTemperature = 40000;
+    while (maxTemperature - minTemperature > epsilon) {
+        temperature = (maxTemperature + minTemperature) / 2;
+        testRGB = colorTemperature2rgb(temperature);
+        if ((testRGB.blue / testRGB.red) >= (blue / red)) {
+          maxTemperature = temperature;
+        } else {
+          minTemperature = temperature;
+        }
+    }
+    return Math.round(temperature);
+}
+
+def getDuration(){
+	def smoothOn = settings.smooth == "" ? "On" : settings.smooth
+    def duration = 500
+    if(smoothOn == "On"){
+        if(settings.duration != null){
+            duration = settings.duration
+        }
+    }
+    return duration
 }
