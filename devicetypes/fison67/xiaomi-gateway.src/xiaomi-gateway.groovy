@@ -1,5 +1,5 @@
 /**
- *  Xiaomi Gateway (v.0.0.1)
+ *  Xiaomi Gateway (v.0.0.2)
  *
  * MIT License
  *
@@ -33,20 +33,19 @@ metadata {
 	definition (name: "Xiaomi Gateway", namespace: "fison67", author: "fison67") {
         capability "Switch"						//"on", "off"
         capability "Illuminance Measurement"
-         
-        attribute "switch", "string"
-        attribute "color", "string"
-        attribute "brightness", "string"
+        capability "Actuator"
+        capability "Configuration"
+        capability "Refresh"
         
+		capability "Color Control"
+        capability "Switch Level"
+        capability "Light"
+         
         attribute "lastCheckin", "Date"
         
-        command "refresh"
-         
-        command "setColor"
-        command "setBrightness"
-        
-        command "on"
-        command "off"
+        command "findChild"
+        command "chartPower"
+        command "chartIlluminance"
         
         command "playMusic"
         command "stopMusic"
@@ -65,7 +64,7 @@ metadata {
         command "bellKnock"
         command "bellAmuse"
         command "bellAlarmClock"
-        
+       
         command "alarmClockMiMix"
         command "alarmClockEnthusiastic"
         command "alarmClockGuitarClassic"
@@ -78,6 +77,7 @@ metadata {
         command "alarmClockThinker"
         
         command "alarmCustom"
+        
 	}
 
 
@@ -86,36 +86,32 @@ metadata {
 
 	preferences {
 		input name:"volume", type:"number", title:"Volume", range: "0..100", defaultValue:10, description:"Gateway Alarm Volume"
+        input "historyDayCount", "number", title: "Maximum days for single graph", description: "", defaultValue:1, displayDuringSetup: true
+		input "powerHistoryDataMaxCount", "number", title: "Maximum Power data count", description: "0 is max", defaultValue:100, displayDuringSetup: true
+		input "illuminanceHistoryDataMaxCount", "number", title: "Maximum Illuminance data count", description: "0 is max", defaultValue:0, displayDuringSetup: true
 	}
 
 	tiles {
-		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4){
+		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: false){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label:'${name}', action:"off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTY1/MDAxNTIyNjcxMDY1MDQz.t5428V2Zx71yNZ9-nvoMqFpaNao870xJTMKMmN1kjswg.LTBQMiU_1_snfSUTMzsyCFL-qOJRXfocN9FV2jVkjYcg.PNG.shin4299/gate_on_tile.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "off", label:'${name}', action:"on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNTcg/MDAxNTIyNjcxMDY0ODU2.gOuuXjBqKH7-ZkvK4ASa-sPrtKkSbxEach7FO8W0mFsg.CGEhP10hiJVUx5bFNLBpOkYcPMUAsx01L4DYiT94o38g.PNG.shin4299/gate_off_tile.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "on", label:'${name}', action:"off", icon:"https://github.com/fison67/mi_connector/blob/master/icons/gateway_on.png?raw=true", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "off", label:'${name}', action:"on", icon:"https://github.com/fison67/mi_connector/blob/master/icons/gateway_off.png?raw=true", backgroundColor:"#ffffff", nextState:"turningOn"
                 
-                attributeState "turningOn", label:'${name}', action:"off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMTY1/MDAxNTIyNjcxMDY1MDQz.t5428V2Zx71yNZ9-nvoMqFpaNao870xJTMKMmN1kjswg.LTBQMiU_1_snfSUTMzsyCFL-qOJRXfocN9FV2jVkjYcg.PNG.shin4299/gate_on_tile.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNTcg/MDAxNTIyNjcxMDY0ODU2.gOuuXjBqKH7-ZkvK4ASa-sPrtKkSbxEach7FO8W0mFsg.CGEhP10hiJVUx5bFNLBpOkYcPMUAsx01L4DYiT94o38g.PNG.shin4299/gate_off_tile.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"off", icon:"https://github.com/fison67/mi_connector/blob/master/icons/gateway_on.png?raw=true", backgroundColor:"#00a0dc", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"on", icon:"https://github.com/fison67/mi_connector/blob/master/icons/gateway_off.png?raw=true", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
             
             tileAttribute("device.lastCheckin", key: "SECONDARY_CONTROL") {
     			attributeState("default", label:'Updated: ${currentValue}')
             }
             
-            tileAttribute ("device.brightness", key: "SLIDER_CONTROL") {
-                attributeState "brightness", action:"setBrightness"
+            tileAttribute ("device.level", key: "SLIDER_CONTROL") {
+                attributeState "level", action:"setLevel"
             }
             tileAttribute ("device.color", key: "COLOR_CONTROL") {
                 attributeState "color", action:"setColor"
             }
 		}
-        standardTile("switch2", "device.switch", width: 2, height: 2) {
-                state "on", label:'${name}', action:"off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjEx/MDAxNTIyNjcwOTc3NTky.XWlh8N9oCU5I_sUR0kT6QHhVXxC1UeO9aaxSX76AdHkg.5UtFpmh0PFpI6wbX1WHkIXz_vAcLaZ2Enq5EokhmziIg.PNG.shin4299/gate_on.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
-                state "off", label:'${name}', action:"on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjY0/MDAxNTIyNjcwOTc3NDYw._aZN7_DPVUw-LfSc7sZV9opySZubbB7RaJHKnsWVec0g.usT1LTnRYQ1ogDlG9aXMT5vE5fpxXWxKUcR9__ccYPEg.PNG.shin4299/gate_off.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
-                
-                state "turningOn", label:'${name}', action:"off", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjY0/MDAxNTIyNjcwOTc3NDYw._aZN7_DPVUw-LfSc7sZV9opySZubbB7RaJHKnsWVec0g.usT1LTnRYQ1ogDlG9aXMT5vE5fpxXWxKUcR9__ccYPEg.PNG.shin4299/gate_off.png?type=w3", backgroundColor:"#00a0dc", nextState:"turningOff"
-                state "turningOff", label:'${name}', action:"on", icon:"https://postfiles.pstatic.net/MjAxODA0MDJfMjEx/MDAxNTIyNjcwOTc3NTky.XWlh8N9oCU5I_sUR0kT6QHhVXxC1UeO9aaxSX76AdHkg.5UtFpmh0PFpI6wbX1WHkIXz_vAcLaZ2Enq5EokhmziIg.PNG.shin4299/gate_on.png?type=w3", backgroundColor:"#ffffff", nextState:"turningOn"
-	}
         
         valueTile("illuminance", "device.illuminance", width: 2, height: 2) {
             state "val", label:'${currentValue}lx', defaultState: true,
@@ -130,12 +126,23 @@ metadata {
                 ]
         }
         
-        standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+        standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 1) {
             state "default", label:"", action:"refresh", icon:"st.secondary.refresh"
         }
         
         standardTile("stopMusic", "device.stopMusic", inactiveLabel: false, width: 2, height: 2) {
             state "stop", label:'STOP', action:"stopMusic", icon:"st.Appliances.appliances17", backgroundColor:"#00a0dc"
+        }
+        
+        standardTile("chartMode", "device.chartMode", width: 2, height: 1, decoration: "flat") {
+			state "chartPower", label:'Power', nextState: "chartIlluminance", action: 'chartPower'
+			state "chartIlluminance", label:'Illuminance', nextState: "chartPower", action: 'chartIlluminance'
+		}
+        
+        carouselTile("history", "device.image", width: 6, height: 4) { }
+        
+        standardTile("findChild", "device.findChild", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
+            state "default", label:"", action:"findChild", icon:"https://raw.githubusercontent.com/fison67/mi_connector/master/icons/find_child.png"
         }
         
        	standardTile("alarm1", "device.alarm1", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
@@ -225,20 +232,18 @@ metadata {
         standardTile("alarm25", "device.alarm25", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
             state "default", label:"", action:"alarmCustom", icon:"st.Entertainment.entertainment3"
         }
-   	main (["switch2"])
-	details(["switch", "illuminance", "stopMusic", "refresh", 
-		 "alarm1", "alarm2", "alarm3", "alarm4", "alarm5", "alarm6", 
-		 "alarm7", "alarm8", "alarm9", "alarm10", "alarm11", "alarm12", 
-		 "alarm13", "alarm14", "alarm15", "alarm16", "alarm17", "alarm18", 
-		 "alarm19", "alarm20", "alarm21", "alarm22", "alarm23", "alarm24", 
-		"alarm25"])
-		
+        
 	}
 }
 
 // parse events into attributes
 def parse(String description) {
 	log.debug "Parsing '${description}'"
+}
+
+def setExternalAddress(address){
+	log.debug "External Address >> ${address}"
+	state.externalAddress = address
 }
 
 def setInfo(String app_url, String id) {
@@ -259,10 +264,10 @@ def setStatus(params){
     	sendEvent(name:"color", value: String.format("#%02x%02x%02x", colors[0].toInteger(), colors[1].toInteger(), colors[2].toInteger()) )
     	break;
     case "brightness":
-    	sendEvent(name:"brightness", value: params.data )
+    	sendEvent(name:"level", value: params.data )
     	break;
     case "illuminance":
-    	sendEvent(name:"illuminance", value: params.data.replace(" lx","") )
+    	sendEvent(name:"illuminance", value: params.data.replace(" lx","").replace(",","") )
     	break;
     }
     
@@ -291,8 +296,8 @@ def stopMusic(){
     sendCommand(options, null)
 }
 
-def setBrightness(brightness){
-	log.debug "setBrightness >> ${state.id}, val=${brightness}"
+def setLevel(brightness){
+	log.debug "setLevel >> ${state.id}, val=${brightness}"
     def body = [
         "id": state.id,
         "cmd": "brightness",
@@ -394,7 +399,9 @@ def makeCommand(body){
     return options
 }
 
-
+def playAlarmByID(id){
+	log.debug("playAlarmByID >> " + id)
+}
 
 def makeAlarmContent(id){
 	if(settings.volume == null){
@@ -527,4 +534,76 @@ def alarmClockThinker(){
 def alarmCustom(){
 	log.debug "alarmCustom >> ${state.id}"
     sendCommand( makeCommand( makeAlarmContent(10001) ) , null)
+}
+
+def makeURL(type, name){
+	def sDate
+    def eDate
+	use (groovy.time.TimeCategory) {
+      def now = new Date()
+      def day = settings.historyDayCount == null ? 1 : settings.historyDayCount
+      sDate = (now - day.days).format( 'yyyy-MM-dd HH:mm:ss', location.timeZone )
+      eDate = now.format( 'yyyy-MM-dd HH:mm:ss', location.timeZone )
+    }
+	return [
+        uri: "http://${state.externalAddress}",
+        path: "/devices/history/${state.id}/${type}/${sDate}/${eDate}/image",
+        query: [
+        	"name": name
+        ]
+    ]
+}
+
+def findChild(){
+
+    def options = [
+     	"method": "GET",
+        "path": "/devices/gateway/${state.id}/findChild",
+        "headers": [
+        	"HOST": state.app_url,
+            "Content-Type": "application/json"
+        ]
+    ]
+    
+    sendCommand(options, null)
+}
+
+def chartPower() {
+	def url = makeURL("power", "Power")
+    if(settings.powerHistoryDataMaxCount > 0){
+    	url.query.limit = settings.powerHistoryDataMaxCount
+    }
+    httpGet(url) { response ->
+    	processImage(response, "power")
+    }
+}
+
+def chartIlluminance() {
+	def url = makeURL("illuminance", "Illuminance")
+    if(settings.illuminanceHistoryDataMaxCount > 0){
+    	url.query.limit = settings.illuminanceHistoryDataMaxCount
+    }
+    httpGet(url) { response ->
+    	processImage(response, "illuminance")
+    }
+}
+
+def processImage(response, type){
+	if (response.status == 200 && response.headers.'Content-Type'.contains("image/png")) {
+        def imageBytes = response.data
+        if (imageBytes) {
+            try {
+                storeImage(getPictureName(type), imageBytes)
+            } catch (e) {
+                log.error "Error storing image ${name}: ${e}"
+            }
+        }
+    } else {
+        log.error "Image response not successful or not a jpeg response"
+    }
+}
+
+private getPictureName(type) {
+  def pictureUuid = java.util.UUID.randomUUID().toString().replaceAll('-', '')
+  return "image" + "_$pictureUuid" + "_" + type + ".png"
 }
