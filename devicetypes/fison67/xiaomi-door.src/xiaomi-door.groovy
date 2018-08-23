@@ -116,7 +116,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
     try {
         msg = parseLanMessage(hubResponse.description)
 		def jsonObj = new JsonSlurper().parseText(msg.body)
-        sendEvent(name:"contact", value: (jsonObj.properties.contact == "true" ? "closed" : "open"))
+        sendEvent(name:"contact", value: (jsonObj.properties.contact == true ? "closed" : "open"))
         sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
     
         updateLastTime()
