@@ -30,7 +30,7 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Gateway2", namespace: "fison67", author: "fison67") {
+	definition (name: "Xiaomi Gateway2", namespace: "fison67", author: "fison67", vid: "generic-dimmer-power", ocfDeviceType: "oic.d.airconditioner") {
         capability "Switch"						//"on", "off"
         capability "Temperature Measurement"
         capability "Illuminance Measurement"

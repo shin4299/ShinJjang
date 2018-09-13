@@ -33,16 +33,19 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Light", namespace: "fison67", author: "fison67") {
-        capability "Switch"						//"on", "off"
-        capability "Actuator"
-        capability "Configuration"
-        capability "Refresh"
-		capability "Color Control"
-        capability "Switch Level"
-        capability "Health Check"
-        capability "Light"
+	definition (name: "Xiaomi Light", namespace: "fison67", author: "fison67", ocfDeviceType: "oic.d.light", vid: "SmartThings-smartthings-Simulated_RGBW_Bulb", mnmn: "SmartThings") {
 
+        capability "Health Check"
+        capability "Actuator"
+        capability "Sensor"
+        capability "Light"
+        capability "Switch"
+        capability "Switch Level"
+        capability "Color Control"
+        capability "Color Temperature"
+        capability "Refresh"
+        capability "Configuration"
+        
         attribute "lastOn", "string"
         attribute "lastOff", "string"
         
@@ -118,9 +121,17 @@ metadata {
         standardTile("tiemr0", "device.timeRemaining") {
 			state "default", label: "OFF", action: "stop", icon:"st.Health & Wellness.health7", backgroundColor:"#c7bbc9"
 		}
+/*    controlTile("colorTempSliderControl", "device.colorTemperature", "slider", width: 4, height: 2, inactiveLabel: false, range:"(2000..6500)") {
+        state "colorTemperature", action:"color temperature.setColorTemperature"
+    }
+
+    valueTile("colorTemp", "device.colorTemperature", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+        state "colorTemperature", label: 'WHITES'
+    }
+   */
         
         main (["switch2"])
-        details(["switch", "refresh", "lastOn_label", "lastOn", "lastOff_label","lastOff", "timer_label", "time", "tiemr0" ])       
+        details(["switch", "refresh", "lastOn_label", "lastOn", "lastOff_label","lastOff", "timer_label", "time", "tiemr0"])       
 	}
 }
 
@@ -136,7 +147,7 @@ def setInfo(String app_url, String id) {
 }
 
 def setStatus(params){
-//	log.debug "Status >> ${params}"
+	log.debug "Status >> ${params}"
     def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
  	switch(params.key){
     case "power":
@@ -149,7 +160,8 @@ def setStatus(params){
         }
     	break;
     case "color":
-    	def colors = params.data.split(",")
+    	def hsl = rgbToHSL(params.data)
+        def colors = params.data.split(",")
         String hex = String.format("#%02x%02x%02x", colors[0].toInteger(), colors[1].toInteger(), colors[2].toInteger());  
     	sendEvent(name:"color", value: hex )
     	break;
@@ -173,6 +185,14 @@ def refresh(){
     sendCommand(options, callback)
 }
 
+def setColorTemperature(temp){
+	log.debug "setBrightness >> ID(${state.id}), temp=${temp}"
+    chroma.kelvin(temp).hex(he)
+	log.debug "setBrightness >> ID(${state.id}), hex=${he}"
+
+}
+
+
 def setLevel(brightness){
 	log.debug "setBrightness >> ID(${state.id}), val=${brightness}"
     
@@ -194,8 +214,26 @@ def setLevel(brightness){
 }
 
 def setColor(color){
-	log.debug "setColor >> ${state.id} >> ${color.hex}"
+	log.debug "setColor >> ${state.id} >> ${color.hex} >> ${color}"
+
+	if( color.hex == null){
+        def srgb = hslToRGB(color.hue, color.saturation, 0.5)
+	log.debug "myRGB >> ${srgb}"
+        def shexColor = rgbToHex(srgb)
+	log.debug "myHEX >> ${shexColor}"
+
+    def body = [
+        "id": state.id,
+        "cmd": "color",
+        "data": shexColor,
+        "subData": getDuration()
+    ]
+    def options = makeCommand(body)
+    sendCommand(options, null)
     
+    setPowerByStatus(true)
+        
+} else{
     def body = [
         "id": state.id,
         "cmd": "color",
@@ -206,6 +244,118 @@ def setColor(color){
     sendCommand(options, null)
     
     setPowerByStatus(true)
+}
+}
+private hex(value, width=2) {
+	def s = new BigInteger(Math.round(value).toString()).toString(16)
+	while (s.size() < width) {
+		s = "0" + s
+	}
+	return s
+}
+def rgbToHex(rgb) {
+	log.debug "rgbToHex >> ${rgb}"
+
+    def r = hex(rgb.r)
+    def g = hex(rgb.g)
+    def b = hex(rgb.b)
+    def hexColor = "#${r}${g}${b}"
+
+    hexColor
+}
+
+def hslToRGB(var_h, var_s, var_l) {
+	float h = var_h / 100
+    float s = var_s / 100
+    float l = var_l
+
+    def r = 0
+    def g = 0
+    def b = 0
+
+	if (s == 0) {
+    	r = l * 255
+        g = l * 255
+        b = l * 255
+	} else {
+    	float var_2 = 0
+    	if (l < 0.5) {
+        	var_2 = l * (1 + s)
+        } else {
+        	var_2 = (l + s) - (s * l)
+        }
+
+        float var_1 = 2 * l - var_2
+
+        r = 255 * hueToRgb(var_1, var_2, h + (1 / 3))
+        g = 255 * hueToRgb(var_1, var_2, h)
+        b = 255 * hueToRgb(var_1, var_2, h - (1 / 3))
+    }
+    def rgb = [:]
+    rgb = [r: r as int, g: g as int, b: b as int]
+    	log.debug "hsl to rgb >> ${rgb}"
+
+    return rgb
+
+}
+
+def hueToRgb(v1, v2, vh) {
+	if (vh < 0) { vh += 1 }
+	if (vh > 1) { vh -= 1 }
+	if ((6 * vh) < 1) { return (v1 + (v2 - v1) * 6 * vh) }
+    if ((2 * vh) < 1) { return (v2) }
+    if ((3 * vh) < 2) { return (v1 + (v2 - v1) * ((2 / 3 - vh) * 6)) }
+    return (v1)
+}
+
+def rgbToHSL(rgb) {
+        def colors = rgb.split(",")
+//        String hex = String.format("#%02x%02x%02x", colors[0].toInteger(), colors[1].toInteger(), colors[2].toInteger());  
+
+    	log.debug "rgb to hsl >> rgb ${rgb}"
+    	log.debug "rgb to hsl >> rgbsplit ${colors[0].toInteger()},${colors[1].toInteger()},${colors[2].toInteger()}"
+
+
+
+
+	def r = colors[0].toInteger() / 255
+    def g = colors[1].toInteger() / 255
+    def b = colors[2].toInteger() / 255
+    def h = 0
+    def s = 0
+    def l = 0
+
+    def var_min = [r,g,b].min()
+    def var_max = [r,g,b].max()
+    def del_max = var_max - var_min
+
+    l = (var_max + var_min) / 2
+
+    if (del_max == 0) {
+            h = 0
+            s = 0
+    } else {
+    	if (l < 0.5) { s = del_max / (var_max + var_min) }
+        else { s = del_max / (2 - var_max - var_min) }
+
+        def del_r = (((var_max - r) / 6) + (del_max / 2)) / del_max
+        def del_g = (((var_max - g) / 6) + (del_max / 2)) / del_max
+        def del_b = (((var_max - b) / 6) + (del_max / 2)) / del_max
+
+        if (r == var_max) { h = del_b - del_g }
+        else if (g == var_max) { h = (1 / 3) + del_r - del_b }
+        else if (b == var_max) { h = (2 / 3) + del_g - del_r }
+
+		if (h < 0) { h += 1 }
+        if (h > 1) { h -= 1 }
+	}
+    def hsl = [:]
+    hsl = [h: h * 100, s: s * 100, l: l]
+    	log.debug "rgb to hsl >> ${hsl}"
+		sendEvent(name: "hue", value: h * 100, descriptionText: "Color has changed")
+		sendEvent(name: "saturation", value: s * 100, descriptionText: "Color has changed", displayed: false)
+
+    hsl
 }
 
 def on(){
@@ -352,3 +502,4 @@ def getDuration(){
     }
     return duration
 }
+

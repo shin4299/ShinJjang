@@ -30,7 +30,7 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Power Strip", namespace: "fison67", author: "fison67") {
+	definition (name: "Xiaomi Power Strip", namespace: "fison67", author: "fison67", mnmn: "SmartThings", vid:"generic-switch-power-energy") {
     	capability "Actuator"
         capability "Switch"				
         capability "Power Meter"

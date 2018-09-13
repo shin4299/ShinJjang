@@ -31,13 +31,16 @@ import groovy.json.JsonSlurper
 
 metadata {
 	definition (name: "Xiaomi Light Mono", namespace: "fison67", author: "fison67", ocfDeviceType: "oic.d.light", vid: "generic-dimmer", mnmn: "SmartThings") {
+        capability "HealthCheck"
         capability "Actuator"
-        capability "Configuration"
-        capability "Refresh"
+        capability "Sensor"
+        capability "Light"
+
         capability "Switch"
         capability "Switch Level"
-        capability "Health Check"
-        capability "Light"
+        capability "Color Temperature"
+        capability "Refresh"
+        capability "Configuration"
         
         attribute "lastOn", "string"
         attribute "lastOff", "string"
@@ -96,7 +99,8 @@ metadata {
         valueTile("lastOff", "device.lastOff", decoration: "flat", width: 3, height: 1) {
             state "default", label:'${currentValue}'
         }
-        
+//
+
    	main (["switch2"])
 	details(["switch", "refresh", "lastOn_label", "lastOn", "lastOff_label","lastOff" ])       
 	}
@@ -117,11 +121,11 @@ def setStatus(params){
 	log.debug "${params.key} >> ${params.data}"
     def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
  	switch(params.key){
-    case "color":
-    	def colors = params.data.split(",")
-        String hex = String.format("#%02x%02x%02x", colors[0].toInteger(), colors[1].toInteger(), colors[2].toInteger())
-    	sendEvent(name:"color", value: hex )
-    	break;
+//    case "color":
+//    	def colors = params.data.split(",")
+//        String hex = String.format("#%02x%02x%02x", colors[0].toInteger(), colors[1].toInteger(), colors[2].toInteger())
+//    	sendEvent(name:"color", value: hex )
+//    	break;
     case "power":
         if(params.data == "true"){
             sendEvent(name:"switch", value: "on")

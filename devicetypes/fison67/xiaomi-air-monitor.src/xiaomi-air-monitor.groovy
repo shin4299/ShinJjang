@@ -63,7 +63,7 @@ LANGUAGE_MAP = [
 ]
 
 metadata {
-	definition (name: "Xiaomi Air Monitor", namespace: "fison67", author: "fison67") {
+	definition (name: "Xiaomi Air Monitor", namespace: "fison67", author: "fison67", mnmn: "SmartThings", vid: "generic-switch") {
         capability "Switch"						//"on", "off"
         capability "Battery"
 		capability "Refresh"

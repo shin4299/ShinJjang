@@ -30,7 +30,7 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Motion", namespace: "fison67", author: "fison67", vid: "SmartThings-smartthings-Fibaro_Motion_Sensor") {
+	definition (name: "Xiaomi Motion", namespace: "fison67", author: "fison67", vid: "SmartThings-smartthings-Fibaro_Motion_Sensor", ocfDeviceType: "x.com.st.d.sensor.motion") {
         capability "Battery"
 		capability "Configuration"
 		capability "Illuminance Measurement"
@@ -71,7 +71,7 @@ metadata {
 		}
         
         valueTile("illuminance", "device.illuminance", width: 2, height: 2) {
-            state "val", label:'${currentValue}lx', defaultState: true,
+            state "val", label:'${currentValue} lux', unit: "lux", defaultState: true,
                 backgroundColors:[
                     [value: 100, color: "#153591"],
                     [value: 200, color: "#1e9cbb"],
@@ -136,7 +136,7 @@ def setStatus(params){
     	sendEvent(name:"battery", value: params.data)
     	break;
     case "illuminance":
-    	sendEvent(name:"illuminance", value: params.data.replace("lx","").replace(",","") )
+    	sendEvent(name:"illuminance", value: params.data.replace("lx","").replace(",","") as int , unit: "lux")
     	break;
     }
     
@@ -154,7 +154,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         sendEvent(name:"motion", value: jsonObj.properties.motion == true ? "active" : "inactive")
         
         if(jsonObj.properties.illuminance != null && jsonObj.properties.illuminance != ""){
-        	sendEvent(name:"illuminance", value: jsonObj.properties.illuminance.value )
+        	sendEvent(name:"illuminance", value: jsonObj.properties.illuminance.value as int , unit: "lux")
         }
       
         updateLastTime()

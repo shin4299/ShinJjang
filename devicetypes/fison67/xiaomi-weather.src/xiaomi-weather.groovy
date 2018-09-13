@@ -64,12 +64,14 @@ LANGUAGE_MAP = [
 ]
 
 metadata {
-	definition (name: "xiaomi weather", namespace: "fison67", author: "fison67") {
-        capability "Temperature Measurement"
-        capability "Relative Humidity Measurement"
-        capability "Sensor"
-        capability "Battery"
-        capability "Refresh"
+	definition (name: "Xiaomi Weather", namespace: "fison67", author: "fison67", "vid": "SmartThings-smartthings-Xiaomi_Temperature_Humidity_Sensor", ocfDeviceType: "oic.d.thermostat") {
+		capability "Configuration"
+		capability "Battery"
+		capability "Refresh"
+		capability "Temperature Measurement"
+		capability "Relative Humidity Measurement"
+		capability "Health Check"
+		capability "Sensor"
          
         attribute "pressure", "string"
 		attribute "maxTemp", "number"
@@ -111,7 +113,7 @@ metadata {
 	tiles(scale: 2) {
         multiAttributeTile(name:"temperature", type:"generic", width:6, height:4) {
             tileAttribute("device.temperature", key: "PRIMARY_CONTROL") {
-                attributeState("temperature", label:'${currentValue}°',
+                attributeState("temperature", label:'${currentValue}°', unit:"C",
                     backgroundColors:[
                         // Fahrenheit color set
                         [value: 0, color: "#153591"],
@@ -139,7 +141,7 @@ metadata {
                 attributeState("multiAttributesReport", label:'\n${currentValue}' //icon:"st.Weather.weather12",
                 ) }
         }        
-        valueTile("temperature2", "device.temperature", inactiveLabel: false) {
+ /*       valueTile("temperature", "device.temperature2", inactiveLabel: false) {
             state "temperature", label:'${currentValue}°', icon:"https://postfiles.pstatic.net/MjAxODA0MDJfNzkg/MDAxNTIyNjcwOTc4NTIy.9VGDZZ4ieBY5jCJ0tvO8L5HFKbkvnms3ymk62HL4rzMg.HYTGtieTVMLE421M8lF8WE1THRgdyFfb1GG39OhtrU4g.PNG.shin4299/temp.png?type=w3",
             backgroundColors:[
                 // Fahrenheit color set
@@ -160,9 +162,9 @@ metadata {
                 //[value: 0, color: "#153591"], [value: 7, color: "#1e9cbb"], [value: 15, color: "#90d2a7"], [value: 23, color: "#44b621"], [value: 28, color: "#f1d801"], [value: 35, color: "#d04e00"], [value: 37, color: "#bc2323"]
             ]
         }
-        
-        valueTile("humidity", "device.humidity", width: 2, height: 2, unit: "%") {
-            state("val", label:'${currentValue}%', defaultState: true, 
+*/        
+        valueTile("humidity", "device.humidity", width: 2, height: 2) {
+            state("val", label:'${currentValue}%', defaultState: true, unit:"%", 
             	backgroundColors:[
                     [value: 10, color: "#153591"],
                     [value: 30, color: "#1e9cbb"],
@@ -176,8 +178,8 @@ metadata {
         }
         
         
-        valueTile("pressure", "device.pressure", width: 2, height: 2, unit: "") {
-            state("val", label:'${currentValue} kpa', defaultState: true, 
+        valueTile("pressure", "device.pressure", width: 2, height: 2) {
+            state("val", label:'${currentValue} kpa', defaultState: true, unit: "", 
             	backgroundColors:[
                     [value: 10, color: "#153591"],
                     [value: 30, color: "#1e9cbb"],
@@ -190,7 +192,7 @@ metadata {
             )
         }
         valueTile("battery", "device.battery", width: 2, height: 2) {
-            state "val", label:'${currentValue}%', defaultState: true
+            state "val", label:'${currentValue}%', defaultState: true, unit:"%"
         }		
         valueTile("pre", "device.pre", decoration: "flat", inactiveLabel: false, width: 2, height: 1) {
             state("val", label:'${currentValue}', defaultState: true)
@@ -218,7 +220,7 @@ metadata {
 			state "totalPressure", label:'T-Pressure', nextState: "temperature", action: 'chartTotalPressure'
 		}
 
-        main("temperature2")
+        main("temperature")
         details(["temperature", "humi", "pre", "bat", "humidity", "pressure", "battery",
             "refresh", "chartMode", "history"
 		])
@@ -260,7 +262,7 @@ def setStatus(params){
 		String data = para
 		def stf = Float.parseFloat(data)
 		def humidity = Math.round(stf)
-    	sendEvent(name:"humidity", value: humidity )
+    	sendEvent(name:"humidity", value: humidity, unit:"%" )
         updateMinMaxHumidity(humidity)
     	break;
     case "temperature":
@@ -269,14 +271,14 @@ def setStatus(params){
 		def st = data.replace("C","");
 		def stf = Float.parseFloat(st)
 		def tem = Math.round(stf*10)/10
-        sendEvent(name:"temperature", value: tem )
+        sendEvent(name:"temperature", value: tem, unit: "C", )
         updateMinMaxTemps(tem)
     	break;
     case "atmosphericPressure":
     	sendEvent(name:"pressure", value: params.data.replace(" Pa","").replace(",","").toInteger()/1000 )
     	break;
     case "batteryLevel":
-    	sendEvent(name:"battery", value: params.data )
+    	sendEvent(name:"battery", value: params.data, unit:"%" )
     	break;	
     }
     checkNewDay()
@@ -450,8 +452,8 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         log.debug jsonObj
         
  		sendEvent(name:"battery", value: jsonObj.properties.batteryLevel)
-        sendEvent(name:"temperature", value: jsonObj.properties.temperature.value)
-        sendEvent(name:"humidity", value: jsonObj.properties.relativeHumidity)
+        sendEvent(name:"temperature", value: jsonObj.properties.temperature.value, unit:"C")
+        sendEvent(name:"humidity", value: jsonObj.properties.relativeHumidity, unit:"%")
         sendEvent(name:"pressure", value: jsonObj.properties.atmosphericPressure.value / 1000)
         
         updateLastTime()

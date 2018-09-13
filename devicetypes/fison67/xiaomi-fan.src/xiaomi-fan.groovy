@@ -63,8 +63,8 @@ LANGUAGE_MAP = [
 ]
 
 metadata {
-	definition (name: "Xiaomi Fan", namespace: "fison67", author: "fison67") {
-        capability "Switch"						//"on", "off"
+definition (name: "Xiaomi Fan", namespace: "fison67", author: "fison67", ocfDeviceType: "x.com.st.d.vent") {
+		capability "Switch"						//"on", "off"
 		capability "Fan Speed"
         capability "Switch Level"
         capability "Temperature Measurement"
@@ -93,6 +93,8 @@ metadata {
         
         attribute "lastCheckin", "Date"
          
+        command "swingfan"
+        
         command "setTimeRemaining"
         command "multiatt"
         command "generalOn"
@@ -283,8 +285,8 @@ metadata {
         details(["switch", "mode_label", "rotation_label",  "buzzer_label", "led_label", "timer_label", 
         "mode", "angle", "buzzer", "ledBrightness", "tiemr0", "time", 
         "head_label", "angle_label", "refresh",
-         "headl", "headr", "angle1", "angle2", "angle3", "angle4",
-         "chartMode", "history"
+         "headl", "headr", "angle1", "angle2", "angle3", "angle4"
+        // ,"chartMode", "history"
         ])
 
 	}
@@ -355,6 +357,7 @@ def setStatus(params){
     	break;        
     case "acPower":
     	state.acPower = (params.data == "on" ? "☈: " : "✕: ")
+    	sendEvent(name:"powerSource", value: (params.data == "on" ? "dc" : "battery"))        
 	multiatt()
     	break;        
     case "batteryLevel":
@@ -855,6 +858,7 @@ def sendCommand(options, _callback){
     sendHubCommand(myhubAction)
 }
 
+
 def makeCommand(body){
 	def options = [
      	"method": "POST",
@@ -868,7 +872,7 @@ def makeCommand(body){
     return options
 }
 
-
+/*
 def makeURL(type, name){
 	def sDate
     def eDate
@@ -948,3 +952,4 @@ def chartHumidity() {
     	processImage(response, "humidity")
     }
 }
+*/

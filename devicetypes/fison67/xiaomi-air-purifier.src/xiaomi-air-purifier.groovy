@@ -95,7 +95,7 @@ LANGUAGE_MAP = [
 ]
 
 metadata {
-	definition (name: "Xiaomi Air Purifier", namespace: "fison67", author: "fison67") {
+	definition (name: "Xiaomi Air Purifier", namespace: "fison67", author: "fison67", mnmn: "SmartThings", vid: "generic-switch", ocfDeviceType: "oic.d.airpurifier") {
         capability "Switch"						//"on", "off"
         capability "Switch Level"
         capability "Temperature Measurement"
