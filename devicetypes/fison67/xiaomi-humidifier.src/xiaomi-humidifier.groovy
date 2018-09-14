@@ -79,6 +79,9 @@ metadata {
         attribute "lastCheckin", "Date"
          
         command "humidifier"
+        command "noTemp"
+        command "noHumi"
+        
         command "setModeOn"
         command "setModeAuto"
         command "setModeSilent"

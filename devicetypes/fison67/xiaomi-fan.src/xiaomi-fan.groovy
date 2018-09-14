@@ -94,6 +94,8 @@ definition (name: "Xiaomi Fan", namespace: "fison67", author: "fison67", ocfDevi
         attribute "lastCheckin", "Date"
          
         command "swingfan"
+        command "noTemp"
+        command "noHumi"
         
         command "setTimeRemaining"
         command "multiatt"

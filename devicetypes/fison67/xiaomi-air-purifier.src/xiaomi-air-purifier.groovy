@@ -116,7 +116,12 @@ metadata {
         attribute "mode", "enum", ["auto", "silent", "favorite", "low", "medium", "high", "strong"]        
         
         attribute "lastCheckin", "Date"
-         
+
+        command "airpurifier"
+        command "noTemp"
+        command "noHumi"
+        command "noAQS"
+
         command "setSpeed"
         command "setStatus"
         command "refresh"
