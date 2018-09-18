@@ -30,7 +30,7 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Door", namespace: "fison67", author: "fison67, "runLocally: true, minHubCoreVersion: '000.017.0012', executeCommandsLocally: false, mnmn: "SmartThings", vid: "generic-contact") {
+	definition (name: "Xiaomi Door", namespace: "fison67", author: "fison67", runLocally: true, minHubCoreVersion: '000.017.0012', executeCommandsLocally: false, mnmn: "SmartThings", vid: "generic-contact") {
         capability "Sensor"
         capability "Contact Sensor"
         capability "Battery"
