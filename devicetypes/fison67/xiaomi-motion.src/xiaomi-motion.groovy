@@ -1,5 +1,5 @@
 /**
- *  Xiaomi Motion (v.0.0.1)
+ *  Xiaomi Motion (v.0.0.2)
  *
  * MIT License
  *
@@ -30,19 +30,21 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Motion", namespace: "fison67", author: "fison67", vid: "SmartThings-smartthings-Fibaro_Motion_Sensor", ocfDeviceType: "x.com.st.d.sensor.motion") {
-        capability "Battery"
-		capability "Configuration"
-		capability "Illuminance Measurement"
-		capability "Motion Sensor"
-		capability "Sensor"
+	definition (name: "Xiaomi Motion", namespace: "fison67", author: "fison67") {
+        capability "Motion Sensor"
+        capability "Illuminance Measurement"
+        capability "Configuration"
+        capability "Sensor"
         capability "Refresh"
          
+        attribute "battery", "string"
         attribute "lastMotion", "Date"
 
         attribute "lastCheckin", "Date"
-	command "reset"	
-         
+        
+		command "reset"	
+        command "chartMotion"
+        command "chartIlluminance"
 	}
 
 
@@ -71,7 +73,7 @@ metadata {
 		}
         
         valueTile("illuminance", "device.illuminance", width: 2, height: 2) {
-            state "val", label:'${currentValue} lux', unit: "lux", defaultState: true,
+            state "val", label:'${currentValue}lx', defaultState: true,
                 backgroundColors:[
                     [value: 100, color: "#153591"],
                     [value: 200, color: "#1e9cbb"],
@@ -127,16 +129,19 @@ def setStatus(params){
 	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
  	switch(params.key){
     case "motion":
-        sendEvent(name:"motion", value: (params.data == "true" ? "active" : "inactive") )
+    if(params.data == "true"){
+        sendEvent(name:"motion", value: "active" )
+//        sendEvent(name:"motion", value: (params.data == "true" ? "active" : "inactive") )
         if (settings.motionReset == null || settings.motionReset == "" ) settings.motionReset = 120
         if (params.data == "true") runIn(settings.motionReset, stopMotion)
 		if (params.data == "true") sendEvent(name: "lastMotion", value: now)
+        }
     	break;
     case "batteryLevel":
     	sendEvent(name:"battery", value: params.data)
     	break;
     case "illuminance":
-    	sendEvent(name:"illuminance", value: params.data.replace("lx","").replace(",","") as int , unit: "lux")
+    	sendEvent(name:"illuminance", value: params.data.replace("lx","").replace(",","") as int )
     	break;
     }
     
@@ -154,7 +159,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         sendEvent(name:"motion", value: jsonObj.properties.motion == true ? "active" : "inactive")
         
         if(jsonObj.properties.illuminance != null && jsonObj.properties.illuminance != ""){
-        	sendEvent(name:"illuminance", value: jsonObj.properties.illuminance.value as int , unit: "lux")
+        	sendEvent(name:"illuminance", value: jsonObj.properties.illuminance.value )
         }
       
         updateLastTime()

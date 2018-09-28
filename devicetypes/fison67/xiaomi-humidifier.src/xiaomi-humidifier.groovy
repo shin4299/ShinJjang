@@ -60,13 +60,15 @@ LANGUAGE_MAP = [
 
 
 metadata {
-	definition (name: "Xiaomi Humidifier", namespace: "fison67", author: "fison67") {
+	definition (name: "Xiaomi Humidifier", namespace: "fison67", author: "fison67", ocfDeviceType: "oic.d.airpurifier") {
         capability "Switch"						//"on", "off"
         capability "Switch Level"
         capability "Temperature Measurement"
         capability "Relative Humidity Measurement"
 		capability "Refresh"
 		capability "Sensor"
+		capability "Battery"
+
          
         attribute "mode", "enum", ["auto", "silent", "medium", "hight"]
         attribute "buzzer", "enum", ["on", "off"]
@@ -336,6 +338,7 @@ def setStatus(params){
 		def stf = Float.parseFloat(data)
 		def water = Math.round(stf/12*10)    
         sendEvent(name:"water", value: water )
+        sendEvent(name:"battery", value: water )
         sendEvent(name:"water2", value: state.wdep + ": " + water )
     	break;
     case "buzzer":
@@ -572,6 +575,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
         	sendEvent(name:"ledBrightness", value: jsonObj.state.ledBrightness + "2")
 	    	sendEvent(name:"dry", value: jsonObj.state.dry )
 	        sendEvent(name:"water", value: Math.round(jsonObj.properties.depth/12*10))
+	        sendEvent(name:"battery", value: Math.round(jsonObj.properties.depth/12*10))
 	        sendEvent(name:"water2", value: state.wdep + ": " + Math.round(jsonObj.properties.depth/12*10))
         }    
         sendEvent(name:"temperature", value: jsonObj.properties.temperature.value)

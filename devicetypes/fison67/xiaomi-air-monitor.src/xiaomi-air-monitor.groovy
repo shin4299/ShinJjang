@@ -64,6 +64,7 @@ LANGUAGE_MAP = [
 
 metadata {
 	definition (name: "Xiaomi Air Monitor", namespace: "fison67", author: "fison67", mnmn: "SmartThings", vid: "generic-switch") {
+        capability "Air Quality Sensor"						//"on", "off"
         capability "Switch"						//"on", "off"
         capability "Battery"
 		capability "Refresh"
@@ -78,6 +79,9 @@ metadata {
         
         attribute "lastCheckin", "Date"
      
+        command "XiaomiPM25"
+        command "noAQS"
+        command "noSwitch"
         command "clockOn"
         command "clockOff"
         command "nightOn"

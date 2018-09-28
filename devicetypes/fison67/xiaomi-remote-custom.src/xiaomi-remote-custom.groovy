@@ -30,7 +30,7 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Remote Custom", namespace: "fison67", author: "fison67") {
+	definition (name: "Xiaomi Remote Custom", namespace: "fison67", author: "fison67", mnmn: "SmartThings", vid: "generic-switch") {
         capability "Switch"
         capability "Configuration"
         
