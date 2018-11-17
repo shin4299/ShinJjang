@@ -37,18 +37,6 @@ metadata {
 		capability "Switch"
         capability "Sensor"
         capability "Refresh"
-        
-        attribute "mode", "enum", ["mist", "rest", "off"]        
-        
-        attribute "lastCheckinDate", "date"
-        
-        command "setData"
-        command "refresh"
-        command "timerLoop"
-		command	"checkNewDay"
-        command "sprinkler"
-
-
 	}
 
 
@@ -92,8 +80,6 @@ def on(){
    relayOn()
 }
 
-def auto(){
-}
 def off(){
 	relayOff()
 }
