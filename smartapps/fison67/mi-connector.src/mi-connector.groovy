@@ -1,5 +1,5 @@
 /**
- *  Mi Connector (v.0.0.1)
+ *  Mi Connector (v.0.0.9)
  *
  * MIT License
  *
@@ -29,9 +29,6 @@
  
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
-import groovy.transform.Field
-
-
 
 definition(
     name: "Mi Connector",
@@ -49,17 +46,24 @@ preferences {
    page(name: "mainPage")
    page(name: "monitorPage")
    page(name: "langPage")
+   page(name: "remoteDevicePage")
+   page(name: "remoteDeviceNextPage")
 }
 
 
 def mainPage() {
 	def languageList = ["English", "Korean"]
-    dynamicPage(name: "mainPage", title: "Home Assistant Manage", nextPage: null, uninstall: true, install: true) {
+    dynamicPage(name: "mainPage", title: "Mi Connector", nextPage: null, uninstall: true, install: true) {
    		section("Request New Devices"){
         	input "address", "string", title: "Server address", required: true
             input(name: "selectedLang", title:"Select a language" , type: "enum", required: true, options: languageList, defaultValue: "English", description:"Language for DTH")
-        	href url:"http://${settings.address}", style:"embedded", required:false, title:"Management", description:"This makes you easy to setup"
+            input "externalAddress", "string", title: "External network address", required: false
+        	href url:"http://${settings.externalAddress}", style:"embedded", required:false, title:"Management", description:"This makes you easy to setup"
         }
+        
+        section() {
+          	href "remoteDevicePage", title: "Remote Device Mapping", description:""
+       	}
         
        	section() {
             paragraph "View this SmartApp's configuration to use it in other places."
@@ -76,6 +80,101 @@ def langPage(){
     }
 }
 
+def remoteDevicePage(){
+    def resultList = [];
+    getChildDevices().each { child ->
+        try{
+        	def irDevice = child.isIRRemoteDevice()
+            if(irDevice){
+            	def networkID = child.deviceNetworkId
+            	resultList.push(child.label + " [" + networkID.substring(13, networkID.length()) + "]")
+            }
+        }catch(err){
+        }
+    }
+    
+	dynamicPage(name: "remoteDevicePage", title:"", nextPage:"remoteDeviceNextPage") {
+        
+    	section ("Remote Device Settings") {
+        	input(name: "selectedDevice", type: "enum", title: "Select a device", required: false, options: resultList ,submitOnChange: true)
+        }
+        
+        if(selectedDevice){
+        	try{
+        		state.selectedDeviceNetworkID = selectedDevice.split(" \\[")[1].split("]")[0]
+            }catch(err){}
+            
+            section {
+                input(name: "selectedMonitorType", type: "enum", title: "Type", options: ["Contact", "Power Meter", "Presence"], description: null, multiple: false, required: false, submitOnChange: true)
+            }
+            
+            if (selectedMonitorType) {
+                state.selectedMonitorType = selectedMonitorType
+                if(selectedMonitorType == "Contact"){
+                    section {
+                        input(name: "selectedContactDevice", type: "capability.contactSensor", title: "Select a device", required: true, submitOnChange: true)
+                        input(name: "selectedContactDefault", type: "enum", options: ["open", "closed"], title: "What is the ON status?", required: true, submitOnChange: true)
+                    }
+
+                    if(selectedContactDevice){
+                        state.selectedContactDevice = selectedContactDevice.deviceNetworkId
+                    }
+                }else if(selectedMonitorType == "Power Meter"){
+                    section {
+                        input(name: "selectedPowerMeterDevice", type: "capability.powerMeter", title: "Select a device", required: true, submitOnChange: true)
+                        input(name: "selectedPowerMeterLevelMin", type: "decimal", title: "Minumun", required: true, submitOnChange: true)
+                        input(name: "selectedPowerMeterLevelMax", type: "decimal", title: "Maximum", required: true, submitOnChange: true)
+                    }
+                    if(selectedPowerMeterDevice){
+                        state.selectedPowerMeterDevice = selectedPowerMeterDevice.deviceNetworkId
+                    }
+                }else if(selectedMonitorType == "Presence"){
+                	section {
+                        input(name: "selectedPresenceDevice", type: "capability.presenceSensor", title: "Select a device", required: true, submitOnChange: true)
+                    }
+                    if(selectedPresenceDevice){
+                        state.selectedPresenceDevice = selectedPresenceDevice.deviceNetworkId
+                    }
+                }
+            }
+            
+            
+        }
+    }
+}
+
+def remoteDeviceNextPage(){
+	dynamicPage(name: "remoteDeviceNextPage", title:"") {
+        section {
+            paragraph "Complete"
+        }
+        
+		if(selectedContactDevice && selectedContactDefault){
+            def item = [:]
+            item['default'] = selectedContactDefault
+            addMonitorDevice(selectedContactDevice, state.selectedDeviceNetworkID, "contact", item)
+        }
+        if(selectedPowerMeterDevice && selectedPowerMeterLevelMax && selectedPowerMeterLevelMin){
+            def item = [:]
+            item['max'] = selectedPowerMeterLevelMax
+            item['min'] = selectedPowerMeterLevelMin
+            addMonitorDevice(selectedPowerMeterDevice, state.selectedDeviceNetworkID, "power", item)
+        }
+        if(selectedPresenceDevice){
+        	def item = [:]
+            addMonitorDevice(selectedPresenceDevice, state.selectedDeviceNetworkID, "presence", item)
+        }
+        
+    	app.updateSetting("selectedDevice", "")
+    	app.updateSetting("selectedMonitorType", "")
+        app.updateSetting("selectedContactDevice", "")
+   	 	app.updateSetting("selectedPowerMeterDevice", "")
+   	 	app.updateSetting("selectedPowerMeterLevelMax", "")
+   	 	app.updateSetting("selectedPowerMeterLevelMin", "")
+   	 	app.updateSetting("selectedPresenceDevice", "")
+        
+    }
+}
 
 def installed() {
     log.debug "Installed with settings: ${settings}"
@@ -91,9 +190,64 @@ def updated() {
     log.debug "Updated with settings: ${settings}"
 
     // Unsubscribe from all events
-    unsubscribe()
+//    unsubscribe()
     // Subscribe to stuff
     initialize()
+}
+
+def addMonitorDevice(target, remoteDevice, attr, data){
+	log.debug "IR Mapping >> " + target.deviceNetworkId + " >> Target(" + state.selectedDeviceNetworkID + ") Attr >> " + attr
+	// Init
+	if(state.monitorMap == null){
+    	state.monitorMap = [:]
+    }
+    // Add
+    def item = [:]
+    item['id'] = target.deviceNetworkId
+    item['data'] = data
+    state.monitorMap[remoteDevice] = item
+    
+    log.debug state.monitorMap
+    
+    unsubscribe(target)
+    subscribe(target, attr, stateChangeHandler)
+}
+
+def stateChangeHandler(event){
+    def deviceNetworkID = event.getDevice().deviceNetworkId
+    setStateRemoteDevice(event.name, event.value, getDeviceToNotifyList(deviceNetworkID) )
+}
+
+def setStateRemoteDevice(eventName, eventValue, list){
+	log.debug "setStateRemoteDevice >> " + eventName + " [" + eventValue + "]"
+	for(item in list){
+        def targetRemoteDevice = getChildDevice(item.id)
+        if(targetRemoteDevice){
+            if(eventName == "contact"){
+                targetRemoteDevice.setStatus( eventValue == "open" ? (item.data.default == "open" ? "on" : "off") : (item.data.default == "open" ? "off" : "on") )
+            }else if(eventName == "power"){
+            	targetRemoteDevice.setStatus( (item.data.min <= Float.parseFloat(eventValue) && Float.parseFloat(eventValue) <= item.data.max) ? "on" : "off" )
+            }else if(eventName == "presence"){
+            	targetRemoteDevice.setStatus( eventValue == "present" ? "on" : "off" )
+            }
+        }
+    }
+}
+
+/**
+* deviceNetworkID : Reference Device. Not Remote Device
+*/
+def getDeviceToNotifyList(deviceNetworkID){
+	def list = []
+	state.monitorMap.each{ targetNetworkID, _data -> 
+        if(deviceNetworkID == _data.id){
+        	def item = [:]
+            item['id'] = 'mi-connector-' + targetNetworkID
+            item['data'] = _data.data
+            list.push(item)
+        }
+    }
+    return list
 }
 
 def updateLanguage(){
@@ -104,6 +258,18 @@ def updateLanguage(){
         	child.setLanguage(settings.selectedLang)
         }catch(e){
         	log.error "DTH is not supported to select language"
+        }
+    }
+}
+
+def updateExternalNetwork(){
+	log.debug "External Network >> ${settings.externalAddress}"
+    def list = getChildDevices()
+    list.each { child ->
+        try{
+        	child.setExternalAddress(settings.externalAddress)
+        }catch(e){
+        	log.error "DTH is not supported to select external address"
         }
     }
 }
@@ -129,6 +295,7 @@ def initialize() {
     sendHubCommand(myhubAction)
     
     updateLanguage()
+    updateExternalNetwork()
 }
 
 def dataCallback(physicalgraph.device.HubResponse hubResponse) {
@@ -175,15 +342,21 @@ def addDevice(){
         def dth = null
         def name = null
 
-        if(params.type == "zhimi.airpurifier.m1" || params.type == "zhimi.airpurifier.v1" || params.type == "zhimi.airpurifier.v2" || params.type ==  "zhimi.airpurifier.v3" || params.type ==  "zhimi.airpurifier.v6" || params.type ==  "zhimi.airpurifier.ma2"){
-            dth = "Xiaomi Air Purifier";
+        if(params.type == "zhimi.airpurifier.m1" || params.type == "zhimi.airpurifier.v1" || params.type == "zhimi.airpurifier.v2" || params.type ==  "zhimi.airpurifier.v3" || params.type ==  "zhimi.airpurifier.v6" || params.type ==  "zhimi.airpurifier.m2" || params.type ==  "zhimi.airpurifier.ma2"){
+        	dth = "Xiaomi Air Purifier";
             name = "Xiaomi Air Purifier";
         }else if(params.type == "lumi.gateway.v2"){
         	dth = "Xiaomi Gateway";
             name = "Xiaomi Gateway V2";
-        }else if(params.type == "lumi.gateway.v3" || params.type == "lumi.acpartner.v1"){
+        }else if(params.type == "lumi.gateway.v3"){
         	dth = "Xiaomi Gateway";
             name = "Xiaomi Gateway V3";
+        }else if(params.type == "cgllc.airmonitor.b1"){
+        	dth = "Xiaomi Air Detector";
+            name = "Xiaomi Air Detector";
+        }else if(params.type == "cgllc.airmonitor.s1"){
+        	dth = "Xiaomi CG Air Detector";
+            name = "Xiaomi CG Air Detector";
         }else if(params.type == "lumi.magnet" || params.type == "lumi.magnet.aq2"){
         	dth = "Xiaomi Door";
             name = "Xiaomi Door";
@@ -202,31 +375,31 @@ def addDevice(){
         }else if(params.type == "lumi.86sw2"){
         	dth = "Xiaomi Button SW";
             name = "Xiaomi Button SW";
-        }else if(params.type == "lumi.cube"){
+        }else if(params.type == "lumi.cube" || params.type == "lumi.cube.aq2"){
         	dth = "Xiaomi Cube";
             name = "Xiaomi Cube";
         }else if(params.type == "zhimi.humidifier.v1" || params.type == "zhimi.humidifier.ca1"){
         	dth = "Xiaomi Humidifier";
             name = "Xiaomi Humidifier";
-        }else if(params.type == "zhimi.fan.v3"){	
+        }else if(params.type == "zhimi.heater.za1"){
+        	dth = "Xiaomi Heater";
+            name = "Xiaomi Heater";    
+       	}else if(params.type == "zhimi.fan.v1" || params.type == "zhimi.fan.v2" || params.type == "zhimi.fan.v3" || params.type == "zhimi.fan.sa1" || params.type == "zhimi.fan.za1"){	
         	dth = "Xiaomi Fan";	
             name = "Xiaomi Fan";	
-        }else if(params.type == "zhimi.airmonitor.v1"){	
-        	dth = "Xiaomi Air Monitor";	
-            name = "Xiaomi Air Monitor";		
-       	}else if(params.type == "yeelink.light.color1"){
+        }else if(params.type == "yeelink.light.color1" || params.type == "yeelink.light.color2"){
         	dth = "Xiaomi Light";
             name = "Xiaomi Light";
         }else if(params.type == "yeelink.light.strip1"){
         	dth = "Xiaomi Light Strip";
             name = "Xiaomi Light Strip";
-        }else if(params.type == "yeelink.light.lamp1" || params.type == "yeelink.light.mono1"){
+        }else if(params.type == "yeelink.light.lamp1" || params.type == "yeelink.light.mono1" || params.type == "yeelink.light.ct2"){
         	dth = "Xiaomi Light Mono";
             name = "Xiaomi Light Mono";
         }else if(params.type == "philips.light.sread1" || params.type == "philips.light.bulb"){
         	dth = "Xiaomi Light";
             name = "Philips Light";
-        }else if(params.type == "rockrobo.vacuum.v1" || params.type == "roborock.vacuum.s5"){
+        }else if(params.type == "rockrobo.vacuum.v1" || params.type == "roborock.vacuum.s5" || params.type == "roborock.vacuum.c1"){
         	dth = "Xiaomi Vacuums";
             name = "Xiaomi Vacuums";
         }else if(params.type == "qmi.powerstrip.v1" || params.type == "zimi.powerstrip.v2"){
@@ -250,17 +423,59 @@ def addDevice(){
         }else if(params.type == "lumi.weather"){
         	dth = "Xiaomi Weather";
             name = "Xiaomi Weather";
-        }else if(params.type == "lumi.smoke"){
-        	dth = "Xiaomi Smoke Detector";
-            name = "Xiaomi Smoke Dectector";
-	}else if(params.type == "lumi.gas"){
-		dth = "Xiaomi Gas Detector";
+        }else if(params.type == "lumi.gas"){
+			dth = "Xiaomi Gas Detector";
             name = "Xiaomi Gas Dectector";
-	}else if(params.type == "lumi.water"){
-		dth = "Xiaomi Water Detector";
+		}else if(params.type == "lumi.smoke"){
+        	dth = "Xiaomi Smoke Dectector";
+            name = "Xiaomi Smoke Dectector";
+        }else if(params.type == "yeelink.light.ceiling1"){
+        	dth = "Xiaomi Light Ceiling";
+            name = "Xiaomi Light Ceiling";
+        }else if(params.type == "philips.light.ceiling"){
+        	dth = "Xiaomi Philips Light Ceiling";
+            name = "Xiaomi Philips Light Ceiling";
+        }else if(params.type == "lumi.curtain"){
+        	dth = "Xiaomi Curtain";
+            name = "Xiaomi Curtain";
+        }else if(params.type == "lumi.water"){
+			dth = "Xiaomi Water Detector";
             name = "Xiaomi Water Dectector";
-	}
-
+		}else if(params.type == "miband"){
+			dth = "Xiaomi Mi band";
+            name = "Xiaomi Miband";
+		}else if(params.type == "ble.flora"){
+			dth = "Xiaomi Flora";
+            name = "Xiaomi Flora";
+		}else if(params.type == "ble.floraPot"){
+			dth = "Xiaomi Flora Pot";
+            name = "Xiaomi Flora Pot";
+		}else if(params.type == "chuangmi.ir.v2"){
+			dth = "Xiaomi Remote";
+            name = "Xiaomi Remote";
+		}else if(params.type == "virtual.remote.tv"){
+        	dth = "Xiaomi Remote TV";
+            name = "Xiaomi Remote TV";
+        }else if(params.type == "virtual.remote.custom"){
+        	dth = "Xiaomi Remote Custom";
+            name = "Xiaomi Remote Custom";
+        }else if(params.type == "virtual.remote.air"){
+        	dth = "Xiaomi Remote Air Conditioner";
+            name = "Xiaomi Remote Air Conditioner";
+        }else if(params.type == "virtual.ping"){
+        	dth = "Xiaomi Virtual Device";
+            name = "Xiaomi Virtual Device";
+        }else if(params.type == "lumi.acpartner.v3"  || params.type == "lumi.acpartner.v1"){
+        	dth = "Xiaomi Gateway2";
+            name = "Xiaomi Gateway2";
+        }else if(params.type == "ble.mitemperature"){
+        	dth = "Xiaomi Bluetooth Weather";
+            name = "Xiaomi Bluetooth Weather";
+        }else if(params.type == "lumi.vibration"){
+        	dth = "Xiaomi Vibration Sensor"
+            name = "Xiaomi Vibration Sensor"
+        }
+        
         
         if(dth == null){
         	log.warn("Failed >> Non exist DTH!!! Type >> " + type);
@@ -275,6 +490,7 @@ def addDevice(){
                 
                 try{ childDevice.refresh() }catch(e){}
                 try{ childDevice.setLanguage(settings.selectedLang) }catch(e){}
+                try{ childDevice.setExternalAddress(settings.externalAddress) }catch(e){}
                 
                 log.debug "Success >> ADD Device : ${type} DNI=${dni}"
                 def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
@@ -295,6 +511,7 @@ def addDevice(){
                     
                 	try{ childDevice.refresh() }catch(e){}
                 	try{ childDevice.setLanguage(settings.selectedLang) }catch(e){}
+                	try{ childDevice.setExternalAddress(settings.externalAddress) }catch(e){}
                     
                     log.debug "Success >> ADD Device : ${type} DNI=${dni}"
                     index += 1
@@ -307,6 +524,18 @@ def addDevice(){
                 def resultString = new groovy.json.JsonOutput().toJson("result":"fail")
                 render contentType: "application/javascript", data: resultString
             }
+        }else if(params.type == "virtual.remote.tv" || params.type == "virtual.remote.custom" || params.type == "virtual.remote.air"){
+     		dni = "mi-connector-" + id.toLowerCase() + "-" + new Date().getTime()
+        	def childDevice = addChildDevice("fison67", dth, dni, location.hubs[0].id, [
+                "label": name
+            ])    
+            childDevice.setInfo(settings.address, id)
+            childDevice.setData(data)
+            try{ childDevice.setLanguage(settings.selectedLang) }catch(e){}
+            try{ childDevice.setExternalAddress(settings.externalAddress) }catch(e){}
+            
+            def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
+            render contentType: "application/javascript", data: resultString
         }else{
             try{
                 def childDevice = addChildDevice("fison67", dth, dni, location.hubs[0].id, [
@@ -317,11 +546,12 @@ def addDevice(){
          
                 try{ childDevice.refresh() }catch(e){}
                 try{ childDevice.setLanguage(settings.selectedLang) }catch(e){}
+                try{ childDevice.setExternalAddress(settings.externalAddress) }catch(e){}
                 
                 def resultString = new groovy.json.JsonOutput().toJson("result":"ok")
                 render contentType: "application/javascript", data: resultString
             }catch(e){
-                console.log("Failed >> ADD Device Error : " + e);
+                log.error "Failed >> ADD Device Error : ${e}"
                 def resultString = new groovy.json.JsonOutput().toJson("result":"fail")
                 render contentType: "application/javascript", data: resultString
             }
