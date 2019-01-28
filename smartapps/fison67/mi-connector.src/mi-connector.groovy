@@ -381,6 +381,9 @@ def addDevice(){
         }else if(params.type == "zhimi.humidifier.v1" || params.type == "zhimi.humidifier.ca1"){
         	dth = "Xiaomi Humidifier";
             name = "Xiaomi Humidifier";
+        }else if(params.type == "shuii.humidifier.jsq001"){
+        	dth = "Xiaomi Humidifier 3";
+            name = "Xiaomi Humidifier 3";
         }else if(params.type == "zhimi.heater.za1"){
         	dth = "Xiaomi Heater";
             name = "Xiaomi Heater";    
