@@ -86,10 +86,19 @@ def setStatus(params){
 	log.debug "${params.key} : ${params.data}"
  	switch(params.key){
     case "gasDetected":
-    	sendEvent(name:"smoke", value: (params.data == "true" ? "detected" : "clear") )
+	    if (params.data == "true") {
+   			 if (device.currentValue('density') < 15) {
+    			sendEvent(name:"smoke", value: "clear" )
+        	} else {
+    		//	sendEvent(name:"smoke", value: "detected" )
+        	}
+     	}else {
+        	sendEvent(name:"smoke", value: "clear" )
+        }
+//    	sendEvent(name:"smoke", value: (params.data == "true" ? "detected" : "clear") )
     	break;
     case "density":
-    	sendEvent(name:"density", value: params.data, unit:"㎍/㎥")
+    	sendEvent(name:"density", value: params.data as int, unit:"㎍/㎥")
     	break;
     }
     
@@ -108,7 +117,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
 		def jsonObj = new JsonSlurper().parseText(msg.body)
         log.debug jsonObj
         
-        sendEvent(name:"density", value: jsonObj.properties.density, unit:"㎍/㎥")
+        sendEvent(name:"density", value: jsonObj.properties.density as int, unit:"㎍/㎥")
         sendEvent(name:"smoke", value: (jsonObj.properties.gasDetected == "true" ? "detected" : "clear"))
 
         updateLastTime()
